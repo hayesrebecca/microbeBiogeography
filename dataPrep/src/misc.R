@@ -1,31 +1,6 @@
 
 ## Function for updating plant names based on output of Taxonstand
 
-## fixPlantNames <- function(data.to.fix, ## specimen or veg data
-##                           col.name.to.fix="PlantGenusSpecies", ## column name of plant species
-##                           checked.plant.names ## output of Taxonstand
-##                           ){
-##     plant.names <- data.frame(newNames = fix.white.space(paste(checked.plant.names$New.Genus,
-##                                                                checked.plant.names$New.Species,
-##                                                                checked.plant.names$New.Infraspecific.rank,
-##                                                                checked.plant.names$New.Infraspecific)),
-##                               oldNames = checked.plant.names$Taxon)
-##     data.to.fix$PlantFamily  <- NA
-##     data.to.fix$PlantFamily <- checked.plant.names$Family[match(data.to.fix[, col.name.to.fix],
-##                                                                 checked.plant.names$Taxon)]
-
-##     data.to.fix$PlantGenus <- NA
-##     data.to.fix$PlantGenus <- checked.plant.names$New.Genus[match(data.to.fix[, col.name.to.fix],
-##                                                                   checked.plant.names$Taxon)]
-    
-##     data.to.fix[, col.name.to.fix] <-
-##         plant.names$newNames[match(data.to.fix[, col.name.to.fix],
-##                                    plant.names$oldNames)]
-##     return(data.to.fix)
-
-## }
-
-
 
 fixPlantNamesgBIF <- function(data.to.fix, ## specimen or veg data
                           col.name.to.fix="PlantGenusSpecies", ## column name of plant species
@@ -53,13 +28,12 @@ fixPlantNamesgBIF <- function(data.to.fix, ## specimen or veg data
 
 ## standardize a vector
 standardize <- function(x)
-  (x-mean(x, na.rm=TRUE))/sd(x, na.rm=TRUE)
+  (x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)
 
 
-## This functions takes site-species-abundance data and creates a
+## This function takes site-species-abundance data and creates a
 ## matrix where the sites are columns and the rows are species.
-
-samp2site.spp <- function(site, spp, abund, FUN=mean) {
+samp2site.spp <- function(site, spp, abund, FUN = mean) {
   x <- tapply(abund, list(site = site, spp = spp), FUN)
   x[is.na(x)] <- 0
   return(x)
@@ -80,17 +54,17 @@ comm.mat2sample <-  function (z) {
 fix.white.space <- function(d) {
   d <- as.character(d)
   remove.first <- function(s) substr(s, 2, nchar(s))
-  d <- gsub("      ", " ", d, fixed=TRUE)
-  d <- gsub("     ", " ", d, fixed=TRUE)
-  d <- gsub("    ", " ", d, fixed=TRUE)
-  d <- gsub("   ", " ", d, fixed=TRUE)
-  d <- gsub("  ", " ", d, fixed=TRUE)
+  d <- gsub("      ", " ", d, fixed = TRUE)
+  d <- gsub("     ", " ", d, fixed = TRUE)
+  d <- gsub("    ", " ", d, fixed = TRUE)
+  d <- gsub("   ", " ", d, fixed = TRUE)
+  d <- gsub("  ", " ", d, fixed = TRUE)
 
   tmp <- strsplit(as.character(d), " ")
   d <- sapply(tmp, function(x) paste(x, collapse=" "))
 
   first <- substr(d, 1, 1)
-  d[first==" "] <- remove.first(d[first==" "])
+  d[first == " "] <- remove.first(d[first == " "])
   d
 }
 
@@ -106,9 +80,9 @@ make.mats <- function(pollinator.id,
                       var2,
                       occ) {
   make.mat <- function(P) {
-    var1 <- var1[pollinator==P]
-    var2 <- var2[pollinator==P]
-    occ <- occ[pollinator==P]
+    var1 <- var1[pollinator == P]
+    var2 <- var2[pollinator == P]
+    occ <- occ[pollinator == P]
     null.mat[unique(var1),
              unique(as.character(var2))][!is.na(null.mat)] <- occ
     null.mat
@@ -124,7 +98,7 @@ catchDups <- function(indiv.comm){
     ## community matrix
     dups  <-
         na.omit(unique(colnames(indiv.comm)[(duplicated(colnames(indiv.comm)))]))
-    #browser()
+
     print(length(dups))
     for(dup in dups){
         columnstomerge <- indiv.comm[,colnames(indiv.comm) == dup]
@@ -137,13 +111,15 @@ catchDups <- function(indiv.comm){
 }
 
 
-makeComm <- function(taxonomy, features, feature.col="Feature.ID"){
-    ## this function make a specimne by species matrix
+makeComm <- function(taxonomy,
+                     features,
+                     feature.col = "Feature.ID"){
+    ## this function makes a specimen by species matrix
     rownames(taxonomy) <- features$Taxon[match(rownames(taxonomy),
                                                features[, feature.col])]
     
     
     indiv.comm <- t(taxonomy)
-    #browser()
+    
     return(indiv.comm)
 }
