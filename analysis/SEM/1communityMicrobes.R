@@ -7,7 +7,7 @@ setwd("~/")
 source("lab_paths.R")
 local.path
 setwd(local.path)
-setwd("microbeBiogeography/analysis/microbiome/")
+setwd("microbeBiogeography/analysis/SEM/")
 
 ## Toggle on or off to run individual genus models
 run.bombus = TRUE
@@ -55,12 +55,11 @@ vars_site <- "Lat"
 ## Source files
 ## **********************************************************
 
-source("microbe_biogeography_ms/src/misc_microbe.R")
-source('microbe_biogeography_ms/src/makeMultiLevelData.R')
-source("microbe_biogeography_ms/src/standardize_weights_microbes.R")
-source("microbe_biogeography_ms/src/init_microbe.R")
-source("microbe_biogeography_ms/src/writeResultsTable.R")
-source("microbe_biogeography_ms/src/runPlotFreqModelDiagnostics.R")
+source("src/misc_microbe.R")
+source('src/makeMultiLevelData.R')
+source("src/standardize_weights_microbes.R")
+source("src/init_microbe.R")
+source("src/writeResultsTable.R")
 
 ## TODO need to fix colnames here and leading X / double .. in microbe colnames
 #load("../../spec_microbes.Rdata")
