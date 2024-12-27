@@ -128,9 +128,6 @@ spec.net <- spec.net[!(spec.net$UniqueID %in% drop.PD.NA),] %>%
 ## make genus specific weights 0s and  bombus
 spec.net$BombusWeights = ifelse(spec.net$Genus=='Bombus'&spec.net$WeightsMicrobe==1, 1, 0)
 
-## make genus specific weights 0s and 1s apis
-spec.net$ApisWeights = ifelse(spec.net$Genus=='Apis'&spec.net$WeightsMicrobe==1, 1, 0)
-
 ## make genus specific weights 0s and 1s melissodes
 spec.net$MelissodesWeights = ifelse(spec.net$Genus=='Melissodes'&spec.net$WeightsMicrobe==1, 1, 0)
 
@@ -151,5 +148,11 @@ spec.net$PD.obligate.log <- ifelse(is.na(spec.net$PD.obligate.log), 0, spec.net$
 spec.net$PD.transient.log <- log(spec.net$PD.transient + 1)
 spec.net$PD.transient.log <- ifelse(is.na(spec.net$PD.transient.log), 0, spec.net$PD.transient.log)
 
+## need to clean up 
+names(spec.net) <- gsub("X16s", "16s", names(spec.net))
+
+## TODO some problems still with the microbe labels
+
+## names(spec.net) <- gsub("..", "; ", names(spec.net))
 
 save(spec.net, file="../../spec_microbes.Rdata")
