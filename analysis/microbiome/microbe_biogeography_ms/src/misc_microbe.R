@@ -1,4 +1,32 @@
-## Miscellaneous helper functions for manipulating and cleaning data and outputs
+#' Miscellaneous Helper Functions for Data Manipulation and Cleaning
+#'
+#' This module contains a collection of utility functions designed for common data 
+#' manipulation, cleaning, and processing tasks in R. These functions support 
+#' generating visual outputs, handling missing values, standardizing data, modifying 
+#' colors, and cleaning strings. They aim to streamline workflows and provide 
+#' reusable solutions for repetitive tasks.
+#'
+#' Functions Included:
+#' - `pdf.f`: Save the output of a plotting function to a PDF file.
+#' - `add.alpha`: Add transparency (alpha) to colors for use in visualizations.
+#' - `standardize`: Standardize a numeric vector by subtracting the mean and dividing 
+#'   by the standard deviation.
+#' - `unstandardize`: Reverse standardization by restoring the original scale of a numeric vector.
+#' - `standardize.axis`: Standardize a vector relative to a reference vector for 
+#'   consistent scaling in visualizations.
+#' - `fix.white.space`: Remove extra spaces and clean up character strings.
+#' - `check_for_NA`: Check for missing values (NAs) in specific elements of a global 
+#'   data frame and report counts.
+#'
+#' Usage:
+#' These functions are intended to be modular and reusable across different projects.
+#' Each function includes detailed inline documentation with examples to help users 
+#' understand their behavior and applications.
+#'
+#' Note:
+#' - The global object `spec.net` is required for the `check_for_NA` function to operate.
+#' - Ensure appropriate arguments are provided for each function to prevent errors.
+#'
 
 
 
