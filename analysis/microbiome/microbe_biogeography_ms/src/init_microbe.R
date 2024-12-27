@@ -14,13 +14,11 @@ library(viridis)
 library(tidybayes)
 library(gridExtra)
 library(grid)
-#library(scales)
 library(RColorBrewer)
 
 library(rstantools)
 library(performance)
 library(bayestestR)
-#library(see)
 
 save.dir <- "saved/tables"
 if(!dir.exists(save.dir)) {
@@ -71,14 +69,7 @@ dir.create(path="saved/tables", showWarnings = FALSE)
 
 spec.net <- spec.net[order(spec.net$Site),]
 
-
-## TODO trying Nicole's function for prep SEM data
-## all of the variables that are explanatory variables and thus need
-## to be centered
-
-
-# maybe change ones with no ID to NoID instead of Na
-# TODO check if i need this
+## fixing blank spaces with noID
 spec.net$GenusSpecies <- if_else(spec.net$GenusSpecies=='', 'NoID', spec.net$GenusSpecies)
 
 ## raw, non standardized data for plotting
@@ -99,12 +90,6 @@ spec.net <- prepDataSEM(spec.net, variables.to.log,
 phylo <- ape::read.tree("../../data/BEE_mat7_fulltree.nwk")
 
 
-## i think we need to drop the tips that aren't in our dataset
-## changing sp labels to match phylogeny
-# spec.net$GenusSpecies <- gsub("Megachile gemula fulvogemula", "Megachile gemula", spec.net$GenusSpecies)
-# spec.net$GenusSpecies <- gsub("Megachile melanophaea rohweri", "Megachile melanophaea", spec.net$GenusSpecies)
-
-
 ##clean up unwanted portion of labels
 pattern <- "(_n\\d+m\\d+_[A-Za-z0-9]+)?$"
 phylo$tip.label <- gsub(pattern, "", phylo$tip.label)
@@ -112,7 +97,6 @@ phylo$tip.label <- gsub(pattern, "", phylo$tip.label)
 ## replace underscore with space
 phylo$tip.label <- gsub("_", " ", phylo$tip.label)
 
-## TODO check if this works
 ## Species that are not in the phylogeny are not used. brms is not allowing an incomplete
 ## phylogeny, to avoid the error we changed the species not present to one that is in the phylogeny. 
 ## We chose a species for which we did not do parasite screening and should not influence results.
@@ -120,25 +104,8 @@ not_in_phylo <- unique(spec.net$GenusSpecies[!spec.net$GenusSpecies %in% phylo$t
 spec.net$GenusSpecies[spec.net$GenusSpecies %in% not_in_phylo]<- "Agapostemon angelicus"
 
 
-# ## i think we need to drop the tips that aren't in our dataset
-# ## changing sp labels to match phylogeny
-# species_to_keep <- na.omit(unique(spec.net$GenusSpecies))
-# 
-# ## megachile comate and megachile subexilis are not in phylogeny so will drop these
-# species_to_keep <- species_to_keep[!species_to_keep %in% c("Megachile comata", "Megachile subexilis")]
-# 
-# phylo_tips <- phylo$tip.label
-# #only keep tips that match our species
-# phylo <- ape::keep.tip(phylo, species_to_keep[species_to_keep %in% phylo_tips])
-# 
-phylo_matrix <- ape::vcv.phylo(phylo)
-# 
-# ## dropping species not in the phylogeny from the dataset
-# drop.species <- unique(spec.net$GenusSpecies[!(spec.net$GenusSpecies %in% rownames(phylo_matrix))])
-# 
-# # here is where weights are all 0 TODO: fix
-# spec.net <- spec.net[!spec.net$GenusSpecies %in% drop.species,]
 
+phylo_matrix <- ape::vcv.phylo(phylo)
 
 ## check which individuals don't have microbe data
 drop.PD.NA <- unique(spec.net$UniqueID[spec.net$WeightsMicrobe == 1 &
@@ -149,17 +116,11 @@ drop.PD.NA <- unique(spec.net$UniqueID[spec.net$WeightsMicrobe == 1 &
 spec.net <- spec.net[!(spec.net$UniqueID %in% drop.PD.NA),] %>%
   mutate(PD = ifelse(!is.na(PD), PD, 0))
 
-## TODO figure out why this csv is returning one value
-
 ##adding abundance weights column
 abund_csv <- data.frame(read.csv("../../data/sp_year_site_round.csv"))
 
 #join abundance csv
 spec.net <- merge(spec.net, abund_csv)
-
-#genus.microbes <- spec.microbes[spec.microbes$Genus == this_genus, ]
-
-## TODO make this a function?
 
 ## what I want:
 ## for subset -- should be ones and zeroes ones for bombus that had microbe screening
@@ -204,29 +165,15 @@ spec.net$MelissodesLogWeightsObligateAbund <- ifelse(spec.net$Genus=='Melissodes
 ## log weights by abundance for transient Melissodes microbes only
 spec.net$MelissodesLogWeightsTransientAbund <- ifelse(spec.net$Genus=='Melissodes'&spec.net$LogWeightsTransientAbund>0, spec.net$LogWeightsTransientAbund, 0)
 
-## TODO add to init if works
+
 spec.net$WeightsObligateBombus = spec.net$WeightsObligateMicrobe*spec.net$BombusWeights
 
-## TODO add to init if works
+
 spec.net$WeightsTransientBombus = spec.net$WeightsTransientMicrobe*spec.net$BombusWeights
 
-## TODO add to init if works
-
-# use pd obligate with skew normal
-spec.net$WeightsObligateApis = spec.net$WeightsObligateMicrobe*spec.net$ApisWeights
-
-#use pd transient with skew normal?
-spec.net$WeightsTransientApis = spec.net$WeightsTransientMicrobe*spec.net$ApisWeights
-
-# use pd obligate lof with skew normal?
 spec.net$WeightsObligateMelissodes = spec.net$WeightsObligateMicrobe*spec.net$MelissodesWeights
-# use pd transient log with gaussian or student t?
+
 spec.net$WeightsTransientMelissodes = spec.net$WeightsTransientMicrobe*spec.net$MelissodesWeights
-
-
-
-
-## 8/21/24 I think this can be done on all the spec.net data since I set up the weights differently above 
 
 spec.net$PD.obligate.log <- log(spec.net$PD.obligate + 1)
 spec.net$PD.obligate.log <- ifelse(is.na(spec.net$PD.obligate.log), 0, spec.net$PD.obligate.log)
