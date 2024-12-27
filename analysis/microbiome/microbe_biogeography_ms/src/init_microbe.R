@@ -86,7 +86,7 @@ spec.net <- prepDataSEM(spec.net, variables.to.log,
 ##load tree from :
 ##Henriquez Piskulich, Patricia Andrea; Hugall, Andrew F.; Stuart-Fox, Devi (2023). A supermatrix phylogeny of the world’s bees (Hymenoptera: Anthophila) [Dataset]. Dryad. https://doi.org/10.5061/dryad.80gb5mkw1
 
-phylo <- ape::read.tree("../../data/BEE_mat7_fulltree.nwk")
+phylo <- ape::read.tree("../../../skyIslands/data/BEE_mat7_fulltree.nwk") #TODO update once ask LP about how to handle this additional data
 
 
 ##clean up unwanted portion of labels
@@ -115,11 +115,11 @@ drop.PD.NA <- unique(spec.net$UniqueID[spec.net$WeightsMicrobe == 1 &
 spec.net <- spec.net[!(spec.net$UniqueID %in% drop.PD.NA),] %>%
   mutate(PD = ifelse(!is.na(PD), PD, 0))
 
-##adding abundance weights column
-abund_csv <- data.frame(read.csv("../../data/sp_year_site_round.csv"))
-
-#join abundance csv
-spec.net <- merge(spec.net, abund_csv)
+# ##adding abundance weights column
+# abund_csv <- data.frame(read.csv("../../../skyIslands/data/sp_year_site_round.csv")) #TODO update once ask LP about how to handle this additional data
+# 
+# #join abundance csv
+# spec.net <- merge(spec.net, abund_csv)
 
 ## what I want:
 ## for subset -- should be ones and zeroes ones for bombus that had microbe screening
@@ -134,35 +134,6 @@ spec.net$ApisWeights = ifelse(spec.net$Genus=='Apis'&spec.net$WeightsMicrobe==1,
 ## make genus specific weights 0s and 1s melissodes
 spec.net$MelissodesWeights = ifelse(spec.net$Genus=='Melissodes'&spec.net$WeightsMicrobe==1, 1, 0)
 
-## multiply weightspar by abundance to get abundance weights
-spec.net$WeightsAbund <- spec.net$WeightsMicrobe * spec.net$AbundanceSYR
-
-## log transformed weights abund
-spec.net$LogWeightsAbund <- log(spec.net$WeightsAbund + 1)
-
-## log weights by abundance for obligate microbes only
-spec.net$LogWeightsObligateAbund <- spec.net$WeightsObligateMicrobe * spec.net$LogWeightsAbund
-
-## log weights by abundance for transient microbes only
-spec.net$LogWeightsTransientAbund <- spec.net$WeightsTransientMicrobe * spec.net$LogWeightsAbund
-
-## log weights by abundance for obligate Bombus microbes only
-spec.net$BombusLogWeightsObligateAbund <- ifelse(spec.net$Genus=='Bombus'&spec.net$LogWeightsObligateAbund>0, spec.net$LogWeightsObligateAbund, 0)
-
-## log weights by abundance for transient Bombus microbes only
-spec.net$BombusLogWeightsTransientAbund <- ifelse(spec.net$Genus=='Bombus'&spec.net$LogWeightsTransientAbund>0, spec.net$LogWeightsTransientAbund, 0)
-
-## log weights by abundance for obligate Apis microbes only
-spec.net$ApisLogWeightsObligateAbund <- ifelse(spec.net$Genus=='Apis'&spec.net$LogWeightsObligateAbund>0, spec.net$LogWeightsObligateAbund, 0)
-
-## log weights by abundance for transient Apis microbes only
-spec.net$ApisLogWeightsTransientAbund <- ifelse(spec.net$Genus=='Apis'&spec.net$LogWeightsTransientAbund>0, spec.net$LogWeightsTransientAbund, 0)
-
-## log weights by abundance for obligate Melissodes microbes only
-spec.net$MelissodesLogWeightsObligateAbund <- ifelse(spec.net$Genus=='Melissodes'&spec.net$LogWeightsObligateAbund>0, spec.net$LogWeightsObligateAbund, 0)
-
-## log weights by abundance for transient Melissodes microbes only
-spec.net$MelissodesLogWeightsTransientAbund <- ifelse(spec.net$Genus=='Melissodes'&spec.net$LogWeightsTransientAbund>0, spec.net$LogWeightsTransientAbund, 0)
 
 
 spec.net$WeightsObligateBombus = spec.net$WeightsObligateMicrobe*spec.net$BombusWeights
@@ -181,4 +152,4 @@ spec.net$PD.transient.log <- log(spec.net$PD.transient + 1)
 spec.net$PD.transient.log <- ifelse(is.na(spec.net$PD.transient.log), 0, spec.net$PD.transient.log)
 
 
-save(spec.net, file="../../data/spec_microbes.Rdata")
+save(spec.net, file="../../spec_microbes.Rdata")
