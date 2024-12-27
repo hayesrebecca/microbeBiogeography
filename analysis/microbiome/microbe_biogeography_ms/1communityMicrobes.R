@@ -7,8 +7,9 @@ setwd("~/")
 source("lab_paths.R")
 local.path
 setwd(local.path)
-setwd("skyIslands/analysis/microbiome/")
+setwd("microbeBiogeography/analysis/microbiome/")
 
+## Toggle on or off to run individual genus models
 run.bombus = TRUE
 run.melissodes = TRUE
 
@@ -20,6 +21,7 @@ library(brms)
 library(performance)
 library(R2admb)
 library(shinystan)
+## If not already installed
 # install.packages("glmmADMB", 
 #                  repos=c("http://glmmadmb.r-forge.r-project.org/repos",
 #                          getOption("repos")),
@@ -37,30 +39,31 @@ variables.to.log <- c("rare.degree",
                       "BeeAbundance"
 )
 
-vars_yearsr <- c("MeanFloralAbundance",
+vars_yearsr <- c(#"MeanFloralAbundance",
                  "MeanFloralDiversity",
-                 "SRDoy",
+                 #"SRDoy",
                  "BeeAbundance",
-                 "BeeDiversity",
-                 "VisitedFloralDiversity"
+                 "BeeDiversity"
+                 #"VisitedFloralDiversity"
 )
 
 vars_yearsrsp <- "rare.degree"
-vars_sp <- "MeanITD.x"
+vars_sp <- "MeanITD"
 vars_site <- "Lat"
 
 ## **********************************************************
 ## Source files
 ## **********************************************************
 
-source("src/misc_microbe.R")
-source("src/misc.R")
-source('src/makeMultiLevelData.R')
-source("src/standardize_weights_parasites.R") #TODO fix title
-source("src/init_microbe.R")
-source("src/writeResultsTable.R")
-source("src/runPlotFreqModelDiagnostics.R")
+source("microbe_biogeography_ms/src/misc_microbe.R")
+source('microbe_biogeography_ms/src/makeMultiLevelData.R')
+source("microbe_biogeography_ms/src/standardize_weights_microbes.R")
+source("microbe_biogeography_ms/src/init_microbe.R")
+source("microbe_biogeography_ms/src/writeResultsTable.R")
+source("microbe_biogeography_ms/src/runPlotFreqModelDiagnostics.R")
 
+## TODO need to fix colnames here and leading X / double .. in microbe colnames
+#load("../../spec_microbes.Rdata")
 
 ncores <- 1
 
@@ -103,23 +106,12 @@ formula.tot.bee.div <- as.formula(paste(tot.bee.div.y, "~",tot.bee.div.x))
 ## **********************************************************
 bf.fdiv <- bf(formula.flower.div)
 bf.tot.babund <- bf(formula.tot.bee.abund)
-bf.bdiv <- bf(formula.bee.div)
 bf.tot.bdiv <- bf(formula.tot.bee.div)
 
 ## **********************************************************
-## add weights for each genus and microbe type
+## change NAs to 0 to prevent brms dropping missing data
 ## **********************************************************
 
-## TODO add to init file
-## Bombus weights
-spec.net$WeightsObligateBombus = spec.net$WeightsObligateMicrobe*spec.net$BombusWeights
-spec.net$WeightsTransientBombus = spec.net$WeightsTransientMicrobe*spec.net$BombusWeights
-
-## Melissodes weights
-spec.net$WeightsObligateMelissodes = spec.net$WeightsObligateMicrobe*spec.net$MelissodesWeights
-spec.net$WeightsTransientMelissodes = spec.net$WeightsTransientMicrobe*spec.net$MelissodesWeights
-
-## change NAs to 0 to prevent brms dropping missing data
 spec.net[is.na(spec.net)] <- 0
 
 ## **********************************************************
@@ -131,7 +123,7 @@ ob.microbe.bombus.vars <- c("BeeAbundance",
                          "BeeDiversity",
                          "Lat", 
                          "MeanFloralDiversity",
-                         "MeanITD.x",
+                         "MeanITD",
                          "rare.degree",
                          "(1|Site)",
                          "(1|gr(GenusSpecies, cov = phylo_matrix))") 
@@ -149,7 +141,7 @@ non.ob.microbe.bombus.vars <- c("BeeAbundance",
                             "BeeDiversity",
                             "Lat", 
                             "MeanFloralDiversity",
-                            "MeanITD.x",
+                            "MeanITD",
                             "rare.degree",
                             "(1|Site)",
                             "(1|gr(GenusSpecies, cov = phylo_matrix))") 
@@ -160,7 +152,6 @@ formula.non.ob.microbe.bombus <- as.formula(paste(non.ob.microbe.bombus.y, "~",
                                               non.ob.microbe.bombus.x))
 
 bf.non.ob.microbe.bombus.student <- bf(formula.non.ob.microbe.bombus, family=student())
-
 
 ## combined model
 bform.bombus <- bf.fdiv +
