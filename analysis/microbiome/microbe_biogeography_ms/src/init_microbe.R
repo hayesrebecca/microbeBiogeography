@@ -8,14 +8,10 @@ library(bayestestR)
 library(gtools)
 
 ## plotting
-library(tidyr)
-library(dplyr)
 library(viridis)
-library(tidybayes)
 library(gridExtra)
 library(grid)
 library(RColorBrewer)
-
 library(rstantools)
 library(performance)
 library(bayestestR)
@@ -32,14 +28,13 @@ if(!dir.exists(fig.dir)) {
 
 
 
-load('../../data/spec_RBCL_16s.Rdata')
-load("../../data/trees.Rdata")
-site.sum <- read.csv("../../data/sitestats.csv")
+load('../../microbeBiogeography_data.Rdata')
+load("../../../skyIslands/data/trees.Rdata") #TODO update once ask LP about how to handle this additional data
+site.sum <- read.csv("../../../skyIslands/data/sitestats.csv") #TODO update once ask LP about how to handle this additional data
 
 
 spec.net <- spec.net[!is.na(spec.net$GenusSpecies),]
 
-spec.net <- spec.net[spec.net$Family != "Syrphidae",]
 
 parasites <- c(#"AspergillusSpp", ## problematic parasite!
   "AscosphaeraSpp",
@@ -50,19 +45,23 @@ parasites <- c(#"AspergillusSpp", ## problematic parasite!
   "NosemaBombi",
   "NosemaCeranae")
 
-spec.net <- merge(spec.net, site.sum, all.x=TRUE)
-
-traits <-
-    read.csv("../../../skyIslands_saved/data/raw/bee_traits.csv")
-traits$GenusSpecies <- fix.white.space(traits$GenusSpecies)
-traits <- traits[, c("GenusSpecies", "Sociality", "Lecty", "MeanITD"),]
-
-net.traits <- read.csv("../../data/networks_traits.csv")
-net.traits <- net.traits[, c("GenusSpecies", "r.degree"),]
-
-traits <- merge(traits, net.traits, by="GenusSpecies", all.x=TRUE)
-
-spec.net <- merge(spec.net, traits, all.x=TRUE, by="GenusSpecies")
+# site.sum <- site.sum[,c("Site",
+#                         "Year",
+#                         "SampleRound")]
+# 
+# spec.net <- merge(spec.net, site.sum, all.x=TRUE)
+# 
+# traits <-
+#     read.csv("../../../skyIslands_saved/data/raw/bee_traits.csv") #TODO update once ask LP about how to handle this additional data
+# traits$GenusSpecies <- fix.white.space(traits$GenusSpecies)
+# traits <- traits[, c("GenusSpecies", "Sociality", "Lecty", "MeanITD"),]
+# 
+# net.traits <- read.csv("../../../skyIslands/data/networks_traits.csv") #TODO update once ask LP about how to handle this additional data
+# net.traits <- net.traits[, c("GenusSpecies", "r.degree"),]
+# 
+# traits <- merge(traits, net.traits, by="GenusSpecies", all.x=TRUE)
+# 
+# spec.net <- merge(spec.net, traits, all.x=TRUE, by="GenusSpecies")
 
 dir.create(path="saved", showWarnings = FALSE)
 dir.create(path="saved/tables", showWarnings = FALSE)
