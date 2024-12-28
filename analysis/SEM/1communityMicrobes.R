@@ -39,12 +39,9 @@ variables.to.log <- c("rare.degree",
                       "BeeAbundance"
 )
 
-vars_yearsr <- c(#"MeanFloralAbundance",
-                 "MeanFloralDiversity",
-                 #"SRDoy",
+vars_yearsr <- c("MeanFloralDiversity",
                  "BeeAbundance",
                  "BeeDiversity"
-                 #"VisitedFloralDiversity"
 )
 
 vars_yearsrsp <- "rare.degree"
