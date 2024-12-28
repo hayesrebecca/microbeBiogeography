@@ -1,4 +1,4 @@
-# Module: Decay Model Analysis and Visualization
+# Module: Distance Decay Model Analysis and Visualization
 #
 # Description:
 # This module provides functions for analyzing and visualizing decay models in ecological data. Specifically, it includes:
