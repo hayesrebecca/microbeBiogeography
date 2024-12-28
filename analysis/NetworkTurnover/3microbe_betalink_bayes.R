@@ -157,22 +157,6 @@ if (run.decay.mictype.mods == TRUE){
 ## **********************************************************
 
 
-
-# GENUS comparison
-panelA <- plot_decay_ggplot_combined(bombus_model,
-                           melissodes_model,
-                           mod1color='navy',
-                           mod2color='gold',
-                           alpha1=0.1,
-                           alpha2=0.3,
-                           lty1='solid',
-                           lty2='solid',
-                           xlab="Geographic Distance (km)",
-                           ylab='Bray-Curtis Dissimilarity')
-
-panelA <- panelA + labs(tag="A.")
-
-
 # microbe type comparison
 altpanelA <- plot_decay_ggplot_combined(ob_model,
                                      trans_model,
@@ -187,7 +171,7 @@ altpanelA <- plot_decay_ggplot_combined(ob_model,
 
 altpanelA <- altpanelA + labs(tag="A.")
 
-## A. Interaction turnover
+## B. Interaction turnover
 int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
                                                    mod2=int.transient.mod,
                                                    this.network1=obligate_poll_betalink,
@@ -202,21 +186,6 @@ int.plot[[1]]
 panelB <- int.plot[[1]] + labs(tag="B.")
 int.table <- int.plot[[2]]
 
-## B. Dissimilarity in species composition
-## Replacing this one with distance decay fig
-# speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
-#                                               mod2=speccomp.transient.mod,
-#                                               this.network1=obligate_poll_betalink,
-#                                               this.network2=transient_poll_betalink,
-#                                               network_type1='Obligate',
-#                                               network_type2='Transient',
-#                                               this.effect="GeoDist",
-#                                               this.resp="DissimilaritySpeciesComposition",
-#                                               label="Dissimilarity: Species Composition")
-# speccomp.plot[[1]]
-# 
-# panelB <- speccomp.plot[[1]] + labs(tag="B.")
-# speccomp.table <- speccomp.plot[[2]]
 
 ## C. rewiring
 
@@ -282,7 +251,7 @@ complete.table <- complete.plot[[2]]
 
 
 # Now arrange all panels in the PDF output
-pdf("../microbiome/figures/final/turnover_combined.pdf", width = 8.5, height = 11)  # Open a new PDF file
+pdf("../microbiome/figures/final/turnover_combined.pdf", width = 8.5, height = 11)  # TODO fix filepath
 grid.arrange(
     altpanelA,
     panelB,
@@ -296,11 +265,10 @@ dev.off()
 
 ## Combine results tables and save out
 combined.table <- bind_rows(int.table,
-                            #speccomp.table,
                             rewiring.table,
                             host.table,
                             microbe.table,
                             complete.table)
 
 write.csv(combined.table,
-          file=sprintf("../microbiome/saved/tables/turnover.csv"))
+          file=sprintf("../microbiome/saved/tables/turnover.csv")) ## TODO fix filepath
