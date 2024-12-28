@@ -88,8 +88,13 @@ axis.itd <-  standardize.axis(labs.itd,
 ## **********************************************************
 
 ## load model output data
-load(file="saved/fullMicrobeBombusFit_2_log.Rdata") #TODO update with filepath for this fork once working
-load(file="saved/fullMicrobeMelissodesFit_2.Rdata") #TODO update with filepath for this fork once working
+
+load(file="../../../skyIslands/analysis/microbiome/saved/fullMicrobeBombusFit_2_log.Rdata") #TODO update with filepath for this fork once working
+load(file="../../../skyIslands/analysis/microbiome/saved/fullMicrobeMelissodesFit_2.Rdata") #TODO update with filepath for this fork once working
+
+
+#load(file="saved/fullMicrobeBombusFit_2_log.Rdata") #TODO update with filepath for this fork once working
+#load(file="saved/fullMicrobeMelissodesFit_2.Rdata") #TODO update with filepath for this fork once working
 
 
 ## **********************************************************
@@ -136,7 +141,7 @@ obligate.bee.div.plot <- plot_model_condeff_compare(model.a=fit.microbe.bombus,
                                        fill.a=TRUE,
                                        fill.b=FALSE
                                        )
-obligate.bee.div.plot 
+obligate.bee.div.plot
 
 panelA <- obligate.bee.div.plot + labs(tag="A.")
 
