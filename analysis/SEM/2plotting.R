@@ -25,7 +25,7 @@ library(performance)
 #                  type="source")
 
 ## **********************************************************
-## Prep model variables and load src files
+## Prep model variables and load data files
 ## **********************************************************
 
 ## all of the variables that are explanatory variables and thus need
@@ -45,10 +45,8 @@ vars_sp <- "MeanITD"
 vars_site <- "Lat"
 
 source("src/misc_microbe.R")
-source('src/makeMultiLevelData.R')
-source("src/standardize_weights_microbes.R")
-source("src/init_microbe.R")
-source("src/writeResultsTable.R")
+
+load("../../microbeBiogeographyData.Rdata")
 
 ## **********************************************************
 ## Set up model weights
@@ -207,8 +205,13 @@ panelD <- obligate.abund.plot + labs(tag="D.")
 ## Save out panel figure
 ## **********************************************************
 
+fig.dir <- "figures"
+if(!dir.exists(fig.dir)) {
+  dir.create(fig.dir, showWarnings = FALSE)
+}
+
 ## Make panel figs and save out
-pdf("figures/final/SEM_combined.pdf", width = 8.5, height = 8.5) # Open a new pdf file
+pdf("figures/SEM_panel_figure.pdf", width = 8.5, height = 8.5) # Open a new pdf file
 grid.arrange(panelA,
              panelB,
              panelC,

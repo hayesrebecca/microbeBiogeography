@@ -28,10 +28,15 @@ if(!dir.exists(fig.dir)) {
 
 
 
-load('../../microbeBiogeographyData.Rdata')
-load("../../../skyIslands/data/trees.Rdata") #TODO update once ask LP about how to handle this additional data
-site.sum <- read.csv("../../../skyIslands/data/sitestats.csv") #TODO update once ask LP about how to handle this additional data
+load('../../../skyIslands/data/spec_RBCL_16s.Rdata')
+load("../../../skyIslands/data/trees.Rdata") 
+site.sum <- read.csv("../../../skyIslands/data/sitestats.csv") 
 
+source("src/misc_microbe.R")
+source('src/makeMultiLevelData.R')
+source("src/standardize_weights_microbes.R")
+# source("src/init_microbe.R")
+source("src/writeResultsTable.R")
 
 spec.net <- spec.net[!is.na(spec.net$GenusSpecies),]
 
