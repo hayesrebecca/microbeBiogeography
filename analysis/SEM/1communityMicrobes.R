@@ -49,17 +49,12 @@ vars_sp <- "MeanITD"
 vars_site <- "Lat"
 
 ## **********************************************************
-## Source files
+## Load Data
 ## **********************************************************
 
-source("src/misc_microbe.R")
-source('src/makeMultiLevelData.R')
-source("src/standardize_weights_microbes.R")
-source("src/init_microbe.R")
-source("src/writeResultsTable.R")
 
 ## TODO need to fix colnames here and leading X / double .. in microbe colnames
-#load("../../spec_microbes.Rdata")
+load("../../microbeBiogeographyData.Rdata")
 
 ncores <- 1
 

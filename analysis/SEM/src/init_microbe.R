@@ -28,7 +28,7 @@ if(!dir.exists(fig.dir)) {
 
 
 
-load('../../microbeBiogeography_data.Rdata')
+load('../../microbeBiogeographyData.Rdata')
 load("../../../skyIslands/data/trees.Rdata") #TODO update once ask LP about how to handle this additional data
 site.sum <- read.csv("../../../skyIslands/data/sitestats.csv") #TODO update once ask LP about how to handle this additional data
 
