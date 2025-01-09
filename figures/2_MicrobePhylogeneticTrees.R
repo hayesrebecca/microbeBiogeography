@@ -18,11 +18,42 @@ library(ggpubr)
 library(gridExtra)
 library(grid)
 library(ggplot2)
+library(dplyr)
+library(ggtree)
+library(tidyverse)
+library(ggtreeExtra)
+library(ggstar)
+library(ggplot2)
+library(treeio)
+library(ggnewscale)
+library(tibble)
+library(pals)
+library(viridis)
+library(phyloseq)
+library(randomcoloR)
+library(phytools)
 
 load("../microbeBiogeographyData.Rdata")
 
 source('src/trees_init.R')
 source('src/tree_functions.R')
+
+meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Meadow')
+
+meta <- spec.net %>%
+  filter(Apidae == 1) %>%
+  select(all_of(meta_cols), Apidae, starts_with('16s')) %>%
+  na.omit() %>%
+  select(!starts_with('16s')) 
+
+comm_presabs <- as.data.frame(indiv.comm.16sR0) #load in the pres/abs table
+comm_presabs[comm_presabs > 0] <- 1 #change all rel abund to 1
+comm_presabs <- tibble::rownames_to_column(comm_presabs, "UniqueID") #make rownames (UniqueID) into column
+
+finalASV <- as.data.frame(finalASVtable)
+finalASV[finalASV > 0] <- 1 #change all rel abund to 1
+finalASV <- tibble::rownames_to_column(finalASV, "UniqueID") #make rownames (UniqueID) into column
+
 
 ## **********************************************************
 ## Create microbe phylo trees by genus

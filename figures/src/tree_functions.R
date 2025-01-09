@@ -66,9 +66,6 @@ collapse_identical_tips <- function(phy,tip_label){
 ##function that filters a tree object to a certain sample bee genus, generates a presence absence heatmap for whether that tree tip was found 
 ## at any given site, then plots the tree with the appended heatmap
 
-
-##probs want to make sure each site in each individual graph is colored uniformly for all graphs 
-
 phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.species, presAbsTable, site.order, all_levels=TRUE, levels_to_drop, clade_names=NULL, do_collapse=FALSE){
   #filter to include just the unique IDs in the specified genus
   if (genus.or.spp=='Species'){
@@ -79,7 +76,6 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
     #pull out all sites that include the specified genus
     my_sites <- unique(meta$Site[meta$GenusSpecies==this.species])
   }
-  #browser()
   if (genus.or.spp=='Genus'){
     sp_ids <- meta %>%
       filter(Genus==this.species) %>%
@@ -88,21 +84,12 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
     #pull out all sites that include the specified genus
     my_sites <- unique(meta$Site[meta$Genus==this.species])
   }
-  #browser()
+  
   #remove tips from the tree that are not in the list of unique IDs in the specified genus
   trimmed_tree <- prune_samples(rownames(tree.object@sam_data) %in% sp_ids$UniqueID, tree.object)
   
   #remove taxa from the tree where there were less than zero observations
   pruned_tree <- prune_taxa(taxa_sums(trimmed_tree) > 0, trimmed_tree)
-  
-  ## for apis drop the incorrect bifidobacterium that is sorting with orbaceae
-  #pruned_tree <- prune_taxa(!"16s:d__Bacteria; p__Actinobacteriota; c__Actinobacteria; o__Bifidobacteriales; f__Bifidobacteriaceae; g__Bifidobacterium; s__Bifidobacterium_coryneforme", pruned_tree)
-  
-  
-  # #read in the taxonomic info for each feature
-  # feature.2.tax.16s <-
-  #   read.table("SI_pipeline/merged/16s/taxonomy.tsv", sep="\t",
-  #              header=TRUE)
   
   #make labels from the taxonomic info
   feature.2.tax.16s$Taxon <- paste("16s", feature.2.tax.16s$Taxon, sep=':')
@@ -113,7 +100,6 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   ## match the tip labs to the table with feature ID and Taxon
   gentree$tip.label  <-  feature.2.tax.16s$Taxon[match(gentree$tip.label,
                                                        feature.2.tax.16s$Feature.ID)]
-  
   
   # Identify tips with labels exactly matching '16s:D_0__Bacteria'
   matching_tips <- grep('^16s:D_0__Bacteria$', gentree$tip.label)
@@ -149,20 +135,8 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   }
   print(length(gentree$tip.label))
   
-  
-  # if(all_levels==FALSE){
-  #   if(final_level == ' s__'){
-  #     rest_of_label <- 'to genus'
-  #   } else if(final_level == ' g__'){
-  #     rest_of_label <- 'to family'
-  #   }
-  #   this_level <- paste(": Collapsed", rest_of_label)
-  # } else {this_level <- ': Full Tree'}
-  
-  
   matched_presabs <- match_shared_tiplabels(gentree, presAbsTable)
-  ## dropping lots of tiplabels here...
-  #browser()
+
   matched_pres_meta <- match_shared_ID(matched_presabs, meta)
   
   
@@ -184,11 +158,8 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
       pivot_longer(cols=2:length(colnames(.)),
                    names_to='Site',
                    values_to='Site_present') %>%
-      filter(Site_present > 0) #%>%
-    #mutate(Site = factor(Site, levels=site.order))
-    #browser()
+      filter(Site_present > 0) 
   }
-  #browser()
   
   if (genus.or.spp=='Genus'){
     meta_match_sites <- match_shared_ID(meta, matched_pres_meta) %>%
@@ -205,15 +176,12 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
       pivot_longer(cols=2:length(colnames(.)),
                    names_to='Site',
                    values_to='Site_present') %>%
-      filter(Site_present > 0) #%>%
-    #mutate(Site = factor(Site, levels=site.order))
-    #browser()
+      filter(Site_present > 0) 
   }
   
   
   features_site_metadata <- match_shared_ID(matched_pres_meta, meta_match_sites) %>%
     right_join(meta_match_sites, by='UniqueID') %>%
-    #browser()
     pivot_longer(cols = starts_with('16s'), names_to = 'bacteria', values_to = 'bact_pres') %>%
     group_by(bacteria) %>%
     filter(bact_pres == 1) %>%
@@ -223,7 +191,7 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
     add_count(Site, name="n_individuals") %>%
     mutate(SiteCount = as.numeric(n_distinct(Site))) %>%
     mutate(Obligate = as.numeric(str_detect(bacteria, "Lactobacillaceae|Bifidobacteriaceae|Neisseriaceae|Orbaceae|Bartonella|Acetobacteraceae")))
-  #browser() 
+  
   
   # Preprocess data to create a 'color' column
   features_site_metadata <- features_site_metadata %>%
@@ -241,7 +209,7 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   
   #dropping branches that weren't in the presence abs table
   final_drop <- gentree$tip.label[!(gentree$tip.label %in% features_site_metadata$bacteria)]
-  #browser()
+  
   
   if (length(final_drop) > 0){
     gentree <- drop.tip(gentree, final_drop)
@@ -254,13 +222,20 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   
   tip.order <- gentree$tip.label[ordered_tips]
   
-  
+  #browser()
   p <- ggtree(gentree, layout='rectangular') 
   p
+  
+  # Add logical columns to p$data for each family
+  p$data$Orbaceae_match <- grepl("Orbaceae", p$data$label, fixed = TRUE)
+  p$data$Lactobacillaceae_match <- grepl("Lactobacillaceae", p$data$label, fixed = TRUE)
+  p$data$Neisseriaceae_match <- grepl("Neisseriaceae", p$data$label, fixed = TRUE)
+  p$data$Bifidobacteriaceae_match <- grepl("Bifidobacteriaceae", p$data$label, fixed = TRUE)
+  p$data$Acetobacteraceae_match <- grepl("Acetobacteraceae", p$data$label, fixed = TRUE)
+  p$data$Bartonella_match <- grepl("Bartonella", p$data$label, fixed = TRUE)
   #browser()
   p2 <- p +
-    new_scale_fill() + 
-    #geom_tiplab(align=TRUE, size=2) + 
+    new_scale_fill() +
     coord_cartesian(clip="off") +
     geom_fruit(
       data=features_site_metadata,
@@ -268,13 +243,11 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
       pwidth=0.05,
       offset=0.1,
       mapping=aes(y=bacteria,
-                  #x=SiteCount,
                   fill=SiteCount, width=0.1),
       show.legend=TRUE) +
     labs(fill='Number of Sites')+
     scale_fill_gradient(high = "black", low ="lightgrey") +
-    #ggtitle(paste(this.species, this_level)) +
-    new_scale_fill() + 
+    new_scale_fill() +
     geom_fruit(
       data=features_site_metadata,
       geom=geom_tile,
@@ -285,24 +258,21 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
                   fill=obligate_color, width=0.1),
       show.legend=FALSE) +
     scale_fill_identity() + # Use exact colors from the data
-    new_scale_fill() + 
-    #geom_tiplab(align=TRUE, linetype='dashed', aes(label = "")) +
-    # geom_tippoint(aes(
-    #  subset=(!grepl("Lactobacillus|Bifidobacterium|Snodgrassella|Gilliamella|Frischella|Bartonella|Commensalibacter",label,fixed=TRUE)==TRUE)), pch=15, color='black')+
-    geom_tippoint(aes(
-      subset=(grepl("Orbaceae",tip.label,fixed=TRUE)==TRUE)), pch=21, fill="#8DB600", size=4)+
-    geom_tippoint(aes(
-      subset=(grepl("Lactobacillaceae",label,fixed=TRUE)==TRUE)), pch=21, fill="#882D17", size=4)+
-    geom_tippoint(aes(
-      subset=(grepl("Neisseriaceae",label,fixed=TRUE)==TRUE)), pch=21, fill="#DCD300", size=4)+
-    geom_tippoint(aes(
-      subset=(grepl( "Bifidobacteriaceae",label,fixed=TRUE)==TRUE)), pch=21, fill="#B3446C", size=4)+
-    geom_tippoint(aes(
-      subset=(grepl( "Acetobacteraceae",label,fixed=TRUE)==TRUE)), pch=21, fill="#F6A600", size=4)+
-    geom_tippoint(aes(
-      subset=(grepl("Bartonella",label,fixed=TRUE)==TRUE)), pch=21, fill="#604E97", size=4) 
-  
+    new_scale_fill() +
+    geom_tippoint(aes(subset = Orbaceae_match), 
+                  pch = 21, fill = "#8DB600", size = 4) +
+    geom_tippoint(aes(subset = Lactobacillaceae_match), 
+                  pch = 21, fill = "#882D17", size = 4) +
+    geom_tippoint(aes(subset = Neisseriaceae_match), 
+                  pch = 21, fill = "#DCD300", size = 4) +
+    geom_tippoint(aes(subset = Bifidobacteriaceae_match), 
+                  pch = 21, fill = "#B3446C", size = 4) +
+    geom_tippoint(aes(subset = Acetobacteraceae_match), 
+                  pch = 21, fill = "#F6A600", size = 4) +
+    geom_tippoint(aes(subset = Bartonella_match), 
+                  pch = 21, fill = "#604E97", size = 4)
   ## list [[1]] is tree, [[2]] is metadata, [[3]] is tip.order
+
   
   return(list(p2, features_site_metadata, tip.order))
   
