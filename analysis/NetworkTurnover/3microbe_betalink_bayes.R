@@ -13,6 +13,8 @@ setwd("microbeBiogeography/analysis/NetworkTurnover/")
 source("src/chao.R")
 source("src/betaNet.R")
 source("src/writeResultsTable.R")
+source("src/networkTurnover.R")
+
 library(ggplot2)
 library(lme4)
 library(lmerTest)
@@ -31,10 +33,8 @@ library(performance)
 library(betapart)
 library(grid)
 library(gridExtra)
-load("../../../skyIslands/data/networks/microNets.RData") ## TODO update filepath to correct rdata file containing all
-load("../../../skyIslands/data/spec_RBCL_16s.RData") ## TODO update filepath to correct rdata file containing all
-source("src/networkTurnover.R")
 
+load("../../microbeBiogeographyData.Rdata")
 ## **********************************************************
 ## Prep obligate and transient networks
 ## **********************************************************
@@ -250,7 +250,7 @@ panelF <- complete.plot[[1]] + labs(tag="F.")
 complete.table <- complete.plot[[2]]
 
 
-# Now arrange all panels in the PDF output
+# Arrange all panels in the PDF output
 pdf("../microbiome/figures/final/turnover_combined.pdf", width = 8.5, height = 11)  # TODO fix filepath
 grid.arrange(
     altpanelA,
