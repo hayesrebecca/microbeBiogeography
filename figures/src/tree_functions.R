@@ -1,6 +1,21 @@
+# Module: tree_functions
 
-## functions
-##match unique IDs
+# This module includes functions to aid in plotting microbial phylogenetic trees for each bee host genus.
+
+# Function: match_shared_ID
+# This function takes two data frames and returns a filtered version of the first data frame.
+# It keeps only the rows where the `UniqueID` column matches any `UniqueID` values 
+# found in the second data frame.
+
+# Arguments:
+# - first_df: A data frame that contains a column named `UniqueID`. 
+#   This is the data frame to be filtered.
+# - second_df: A data frame that contains a column named `UniqueID`. 
+#   This is the data frame used to identify matching `UniqueID` values.
+
+# Returns:
+# A filtered version of `first_df` containing only the rows with `UniqueID` values 
+# that are also present in `second_df`.
 match_shared_ID <- function(first_df, second_df){
   shared <- first_df$UniqueID[first_df$UniqueID %in% second_df$UniqueID]
   matched_df <- first_df %>%
@@ -8,20 +23,53 @@ match_shared_ID <- function(first_df, second_df){
   matched_df
 }
 
-#match tip labels
+# Function: match_shared_tiplabels
+# This function matches the tip labels of a phylogenetic tree to the column names 
+# of a presence-absence table and returns an updated table with only the matched columns.
+
+# Arguments:
+# - tree: A phylogenetic tree object that contains a vector of tip labels (`tip.label`).
+# - pres_abs_table: A presence-absence table, where columns represent features, 
+#   and there is a column named `UniqueID` to identify rows.
+
+# Returns:
+# A filtered version of the presence-absence table that retains only the columns 
+# corresponding to the tip labels of the tree, along with the `UniqueID` column.
 match_shared_tiplabels <- function(tree, pres_abs_table){ #input a phyloseq tree and a presence absense table
   tree_tips <- tree$tip.label #create object to store tree tip labels (strains)
-  #browser()
+
   all_cols <- pres_abs_table %>% #filter the pres/abs table to remove unique ID
     select(-UniqueID) 
-  #browser()
+ 
   match_cols <- all_cols[colnames(all_cols) %in% tree_tips] #match the features to the tree tips
-  #browser()
+  
   match_cols$UniqueID <- pres_abs_table$UniqueID # add back in the unique IDs
   match_cols #return the updated pres abs table with the tiplabels matched to the tree
 }
 
-#collapse tips that have the same label into one clade
+# Function: collapse_identical_tips
+# This function collapses identical tips in a phylogenetic tree by removing redundant tips with the same label, ensuring the tree retains a single representative branch for identical labels.
+
+# Arguments:
+# - phy: A phylogenetic tree object. The tree should contain tip labels stored in `phy$tip.label`.
+# - tip_label: A character string representing the label of the tips in the tree that should be collapsed into a single branch.
+
+# Returns:
+# A new phylogenetic tree where all tips with the specified `tip_label` are collapsed into a single branch.
+
+# Example:
+# Input:
+# phy <- read.tree(text = "((A,A),(B,B),(C,C));") # Example tree
+# collapsed_phy <- collapse_identical_tips(phy, "A")
+# print(collapsed_phy)
+# Output:
+# The tree will have a single tip labeled "A", with redundant tips removed.
+
+# Details:
+# - The function identifies all tips in the tree with the label matching `tip_label`.
+# - It determines which tips can be collapsed based on their most recent common ancestor (MRCA).
+# - Only one tip for each group of identical labels is retained, and others are removed.
+#
 collapse_identical_tips <- function(phy,tip_label){
   #matching_tips is initialized with the indices of tips in the phylogenetic tree (phy) whose labels match the provided tip_label. The function identifies all tips with the same label.
   matching_tips <- which(phy$tip.label==tip_label)
@@ -56,16 +104,37 @@ collapse_identical_tips <- function(phy,tip_label){
   }
   #After the loop completes, the to_drop variable contains the indices of the tips that need to be dropped to collapse identical labels.
   to_drop <- matching_tips[!keep]
-  #The function then creates a new phylogenetic tree (new_phy) by using the drop.tip function to remove the tips identified in to_drop.
+  #create a new phylogenetic tree (new_phy) by using the drop.tip function to remove the tips identified in to_drop.
   new_phy <- drop.tip(phy,to_drop)
-  #browser()
-  #Finally, the new phylogenetic tree is returned as the output of the function.
+  
   return(new_phy)
 }
 
-##function that filters a tree object to a certain sample bee genus, generates a presence absence heatmap for whether that tree tip was found 
-## at any given site, then plots the tree with the appended heatmap
+# Function: phylotree_heatmap_byGenus
+# This function creates a phylogenetic tree with an associated heatmap that visualizes 
+# bacterial presence/absence across different sites. The heatmap includes information 
+# on bacterial families and the number of sites where a given taxon is present.
 
+# Arguments:
+# - tree.object: A phylogenetic tree object.
+# - meta: Metadata containing site and genus/species information.
+# - genus.or.spp: A string specifying whether to focus on 'Species' or 'Genus'.
+# - this.species: The specific species or genus of interest.
+# - presAbsTable: A table with bacterial presence/absence data.
+# - site.order: A vector specifying the desired order of sites.
+# - all_levels: A logical value indicating whether to include all taxonomic levels 
+#   (default TRUE).
+# - levels_to_drop: Taxonomic levels to exclude from the tree.
+# - clade_names: Optional vector of clade names for custom groupings.
+# - do_collapse: A logical value indicating whether to collapse identical tips in 
+#   the tree (default FALSE).
+
+# Returns:
+# A list containing:
+# 1. A `ggtree` object with the phylogenetic tree and heatmap.
+# 2. A dataframe with features and site metadata.
+# 3. The ordered tip labels of the tree.
+#
 phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.species, presAbsTable, site.order, all_levels=TRUE, levels_to_drop, clade_names=NULL, do_collapse=FALSE){
   #filter to include just the unique IDs in the specified genus
   if (genus.or.spp=='Species'){
@@ -138,8 +207,6 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   matched_presabs <- match_shared_tiplabels(gentree, presAbsTable)
 
   matched_pres_meta <- match_shared_ID(matched_presabs, meta)
-  
-  
   
   matched_id <- matched_pres_meta$UniqueID
   row.names(matched_pres_meta) <- matched_id
@@ -222,7 +289,6 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   
   tip.order <- gentree$tip.label[ordered_tips]
   
-  #browser()
   p <- ggtree(gentree, layout='rectangular') 
   p
   
@@ -233,7 +299,7 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   p$data$Bifidobacteriaceae_match <- grepl("Bifidobacteriaceae", p$data$label, fixed = TRUE)
   p$data$Acetobacteraceae_match <- grepl("Acetobacteraceae", p$data$label, fixed = TRUE)
   p$data$Bartonella_match <- grepl("Bartonella", p$data$label, fixed = TRUE)
-  #browser()
+  
   p2 <- p +
     new_scale_fill() +
     coord_cartesian(clip="off") +
@@ -254,10 +320,9 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
       pwidth=0.05,
       offset=0.085,
       mapping=aes(y=bacteria,
-                  #x=SiteCount,
                   fill=obligate_color, width=0.1),
       show.legend=FALSE) +
-    scale_fill_identity() + # Use exact colors from the data
+    scale_fill_identity() + 
     new_scale_fill() +
     geom_tippoint(aes(subset = Orbaceae_match), 
                   pch = 21, fill = "#8DB600", size = 4) +
