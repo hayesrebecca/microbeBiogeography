@@ -3,15 +3,14 @@
 ## Load libraries and source files
 ## **********************************************************
 
-## tutorial: https://bioconductor.org/packages/devel/bioc/vignettes/ggtreeExtra/inst/doc/ggtreeExtra.html
-
+## based on the following tutorial: https://bioconductor.org/packages/devel/bioc/vignettes/ggtreeExtra/inst/doc/ggtreeExtra.html
 
 rm(list=ls())
 setwd("~/")
 source("lab_paths.R")
 local.path
 setwd(local.path)
-setwd('skyIslands/')
+setwd('microbeBiogeography/figures')
 
 library(pals)
 library(cowplot)
@@ -20,23 +19,17 @@ library(gridExtra)
 library(grid)
 library(ggplot2)
 
-source('dataPrep/src/trees_init.R')
-load("indiv.comm16sR0.Rdata")
-load('presAbsTable.Rdata')
-load('spec_RBCL_16s.Rdata')
-load('physeq16s.Rdata')
-load('networks/microNets.Rdata')
-load('spec_RBCL_16s.Rdata')
+load("../microbeBiogeographyData.Rdata")
 
-
-setwd("../../skyIslands_saved")
+source('src/trees_init.R')
+source('src/tree_functions.R')
 
 ## **********************************************************
 ## Create microbe phylo trees by genus
 ## **********************************************************
 
 ## Bombus tree
-bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE)
+bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE)
 panelA <- bombus_tree[[1]] + labs(tag="A. Bombus (n=444)")
 bombus_meta <- bombus_tree[[2]]
 panelA
