@@ -46,13 +46,10 @@ analysis/
     - NetworkTurnover  
       - 1_NetworkTurnover.R  
         - This script runs the network turnover and dissimilarity by geographic distance analyses and generates the results figures.  
+
 figures/  
-  - This folder includes the scripts to generate the site map and microbial phylogenetic tree figures.
-  
+  - This folder includes the scripts to generate the site map and microbial phylogenetic tree figures.  
 
-
-## Species that are not in the phylogeny are not used. brms is not allowing an incomplete
-## phylogeny, to avoid the error we changed the species not present to one that is in the phylogeny. 
-## We chose a species for which we did not do parasite screening and should not influence results.
-
-## 
+## To use this repository:  
+  1. Run packages.sh to install all necessary packages.  
+  1. The only scripts that need to be run in particular order are the SEM scripts. Otherwise, scripts are self-contained and can be run out of order.
