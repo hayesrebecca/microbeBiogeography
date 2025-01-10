@@ -36,7 +36,7 @@ microbeBiogeographyData.Rdata
   - feature.2.tax.16s  
     - This data frame includes the taxonomic assignment for each 16s feature to facilitate generation of phylogenetic tree figures.
 
-analysis/  
+analysis  
   - This folder includes the scripts to run the two main analyses for this manuscript, including:  
     - SEM  
       - 1_microbeSEM.R  
@@ -46,8 +46,8 @@ analysis/
     - NetworkTurnover  
       - 1_NetworkTurnover.R  
         - This script runs the network turnover and dissimilarity by geographic distance analyses and generates the results figures.  
-
-figures/  
+  
+figures  
   - This folder includes the scripts to generate the site map and microbial phylogenetic tree figures.  
 
 ## To use this repository:  
