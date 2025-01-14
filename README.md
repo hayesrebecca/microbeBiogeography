@@ -50,6 +50,6 @@ analysis
 figures  
   - This folder includes the scripts to generate the site map and microbial phylogenetic tree figures.  
 
-## To use this repository:  
+## To use this repository  
   1. Run packages.sh to install all necessary packages.  
   1. The only scripts that need to be run in particular order are the SEM scripts. Otherwise, scripts are self-contained and can be run out of order.
