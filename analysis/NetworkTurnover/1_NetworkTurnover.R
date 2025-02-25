@@ -251,7 +251,7 @@ complete.table <- complete.plot[[2]]
 
 
 # Arrange all panels in the PDF output
-pdf("../microbiome/figures/final/turnover_combined.pdf", width = 8.5, height = 11)  # TODO fix filepath
+pdf("figures/turnover_combined.pdf", width = 8.5, height = 11)  
 grid.arrange(
     altpanelA,
     panelB,
