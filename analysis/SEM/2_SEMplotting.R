@@ -10,11 +10,11 @@ local.path
 setwd(local.path)
 setwd("microbeBiogeography/analysis/SEM/")
 
+library(plyr)
 library(lme4)
 library(R2admb)
-library(shinystan)
+#library(shinystan)
 library(picante)
-library(plyr)
 library(bayesplot)
 library(pscl)
 library(brms)
@@ -133,7 +133,7 @@ obligate.bee.div.plot <- plot_model_condeff_compare(model.a=fit.microbe.bombus,
                                        axis.breaks=axis.bee.div,
                                        axis.labs=labs.bee.div,
                                        xlabel="Bee Diversity",
-                                       ylabel="Obligate Microbe PD (logged)",
+                                       ylabel="Strong Associate PD (logged)",
                                        mod1color='navy',
                                        mod2color='gold',
                                        fill.a=TRUE,
@@ -155,7 +155,7 @@ obligate.rare.degree.plot <- plot_model_condeff_compare(model.a=fit.microbe.bomb
                                          axis.breaks=axis.degree,
                                          axis.labs=labs.degree,
                                          xlabel="Diet Breadth (logged)",
-                                         ylabel="Obligate Microbe PD (logged)",
+                                         ylabel="Strong Associate PD (logged)",
                                          mod1color='navy',
                                          mod2color='gold',
                                          fill.a=TRUE,
@@ -174,7 +174,7 @@ transient.itd.plot  <- plot_model_condeff_single(model=fit.microbe.bombus,
                                       axis.breaks=axis.itd,
                                       axis.labs=labs.itd,
                                       xlabel="Body Size (mm)",
-                                      ylabel="Facultative Microbe PD (logged)",
+                                      ylabel="Weak Associate PD (logged)",
                                       mod1color='navy')
 
 transient.itd.plot
@@ -185,14 +185,14 @@ panelC <- transient.itd.plot + labs(tag="C.")
 obligate.abund.plot <- plot_model_condeff_compare(model.a=fit.microbe.bombus,
                                                 model.b=fit.microbe.melissodes,
                                                 this.effect='BeeAbundance',
-                                                this.resp.a="PDobligatelog", ## TODO: potentially update to both be PD obligate log?
+                                                this.resp.a="PDobligatelog",
                                                 this.resp.b="PDobligatelog",
                                                 point.data.a=bombus.obligate,
                                                 point.data.b=melissodes.obligate,
                                                 axis.breaks=axis.bee.abund,
                                                 axis.labs=labs.bee.abund,
                                                 xlabel="Bee Abundance (logged)",
-                                                ylabel="Obligate Microbe PD (logged)",
+                                                ylabel="Strong Associate PD (logged)",
                                                 mod1color='navy',
                                                 mod2color='gold',
                                                 fill.a=FALSE,
