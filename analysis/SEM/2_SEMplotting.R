@@ -11,6 +11,8 @@ setwd(local.path)
 setwd("microbeBiogeography/analysis/SEM/")
 
 library(plyr)
+library(dplyr)
+library(ggplot2)
 library(lme4)
 library(R2admb)
 #library(shinystan)

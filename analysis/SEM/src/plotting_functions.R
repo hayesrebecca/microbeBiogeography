@@ -81,52 +81,59 @@ plot_model_condeff_compare <- function(model.a,
   ## model a fill
   if (fill.a==TRUE){
     mod1fill=mod1color
-  } else {mod1fill=NA}
+    linetype1='solid'
+  } else {
+    mod1fill=NA
+    linetype1='dashed'}
   
   ## model b fill
   if (fill.b==TRUE){
     mod2fill=mod2color
-  } else {mod2fill=NA}
+    linetype2='solid'
+  } else {
+    mod2fill=NA
+    linetype2='dashed'
+    }
   
   
   # Plot using ggplot2 for credible intervals with geom_ribbon
   plot_obj <- ggplot(plot_data_a, aes(x = .data[[this.effect]], y = .data$estimate__)) +
     # Add ribbons for the 95%, 80%, and 50% credible intervals
-    geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, 
+    geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.5, 
                 fill=mod1fill,
-                color = mod1color, linetype='dotted') +
-    geom_ribbon(aes(ymin = lower__ + 0.1 * (upper__ - lower__),
-                    ymax = upper__ - 0.1 * (upper__ - lower__)),
-                alpha = 0.3, 
-                fill=mod1fill, 
-                color = mod1color, linetype='dashed') +
-    geom_ribbon(aes(ymin = lower__ + 0.25 * (upper__ - lower__),
-                    ymax = upper__ - 0.25 * (upper__ - lower__)),
-                alpha = 0.4, 
-                fill=mod1fill,
-                color = mod1color, linetype='solid') +
-    # Add ribbons for the 95%, 80%, and 50% credible intervals
-    geom_ribbon(data=plot_data_b, aes(ymin = lower__, ymax = upper__), alpha = 0.2, fill=mod2fill, color = mod2color, linetype='dotted') +
-    geom_ribbon(data=plot_data_b, aes(ymin = lower__ + 0.1 * (upper__ - lower__),
-                                      ymax = upper__ - 0.1 * (upper__ - lower__)),
-                alpha = 0.3, fill=mod2fill, color = mod2color, linetype='dashed') +
-    geom_ribbon(data=plot_data_b, aes(ymin = lower__ + 0.25 * (upper__ - lower__),
-                                      ymax = upper__ - 0.25 * (upper__ - lower__)),
-                alpha = 0.4, fill=mod2fill, color = mod2color, linetype='solid') +
-    #Add line for the estimates
-    geom_line(data = plot_data_a, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    #Add line for the estimates
-    geom_line(data = plot_data_a, color = mod1color, linewidth=2, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    #Add line for the estimates
-    geom_line(data = plot_data_b, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    # Add line for the estimates
-    geom_line(data=plot_data_b, linewidth=2, aes(x = .data[[this.effect]],  y = .data$estimate__), color = mod2color) +
+                color = mod1color) +
+    # geom_ribbon(aes(ymin = lower__ + 0.1 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.1 * (upper__ - lower__)),
+    #             alpha = 0.3, 
+    #             fill=mod1fill, 
+    #             color = mod1color, linetype='dashed') +
+    # geom_ribbon(aes(ymin = lower__ + 0.25 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.25 * (upper__ - lower__)),
+    #             alpha = 0.4, 
+    #             fill=mod1fill,
+    #             color = mod1color, linetype='solid') +
+    # # Add ribbons for the 95%, 80%, and 50% credible intervals
+    geom_ribbon(data=plot_data_b, aes(ymin = lower__, ymax = upper__), alpha = 0.5, fill=mod2fill, color = mod2color) +
+    # geom_ribbon(data=plot_data_b, aes(ymin = lower__ + 0.1 * (upper__ - lower__),
+    #                                   ymax = upper__ - 0.1 * (upper__ - lower__)),
+    #             alpha = 0.3, fill=mod2fill, color = mod2color, linetype='dashed') +
+    # geom_ribbon(data=plot_data_b, aes(ymin = lower__ + 0.25 * (upper__ - lower__),
+    #                                   ymax = upper__ - 0.25 * (upper__ - lower__)),
+    #             alpha = 0.4, fill=mod2fill, color = mod2color, linetype='solid') +
+    # #Add line for the estimates
+    #geom_line(data = plot_data_a, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
     # Add points for original data
     geom_point(data = point.data.a, aes(x = .data[[this.effect]], y = .data[[this.resp.a]]),
-               fill = mod1color, alpha = 0.9,color="black", pch=21, cex=3) +
+               fill = mod1color, alpha = 0.5, pch=21, cex=3) +
     # Add points for original data
     geom_point(data = point.data.b, aes(x = .data[[this.effect]], y = .data[[this.resp.b]]),
-               fill = mod2color, alpha = 0.9, color="black", pch=21, cex=3) +
+               fill = mod2color, alpha = 0.5, pch=21, cex=3) +
+    #Add line for the estimates
+    geom_line(data = plot_data_a, color = mod1color, linewidth=3, linetype=linetype1, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+    #Add line for the estimates
+    #geom_line(data = plot_data_b, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+    # Add line for the estimates
+    geom_line(data=plot_data_b, linewidth=3, linetype=linetype2, aes(x = .data[[this.effect]],  y = .data$estimate__), color = mod2color) +
     coord_cartesian(xlim = if_else(range(point.data.a[[this.effect]]) > range(point.data.b[[this.effect]]), range(point.data.a[[this.effect]]), range(point.data.b[[this.effect]]))) +
     # Labels and theme
     labs(x = xlabel, y = ylabel) +
@@ -193,26 +200,26 @@ plot_model_condeff_single <- function(model,
   # Plot using ggplot2 for credible intervals with geom_ribbon
   plot_obj <- ggplot(plot_data, aes(x = .data[[this.effect]], y = .data$estimate__)) +
     # Add ribbons for the 95%, 80%, and 50% credible intervals
-    geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, 
+    geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.5, 
                 fill=mod1color,
-                color = mod1color, linetype='dotted') +
-    geom_ribbon(aes(ymin = lower__ + 0.1 * (upper__ - lower__),
-                    ymax = upper__ - 0.1 * (upper__ - lower__)),
-                alpha = 0.3, 
-                fill=mod1color, 
-                color = mod1color, linetype='dashed') +
-    geom_ribbon(aes(ymin = lower__ + 0.25 * (upper__ - lower__),
-                    ymax = upper__ - 0.25 * (upper__ - lower__)),
-                alpha = 0.4, 
-                fill=mod1color,
-                color = mod1color, linetype='solid') +
-    #Add line for the estimates
-    geom_line(data = plot_data, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    #Add line for the estimates
-    geom_line(data = plot_data, color = mod1color, linewidth=2, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    # Add points for original data
+                color = mod1color) +
+    # geom_ribbon(aes(ymin = lower__ + 0.1 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.1 * (upper__ - lower__)),
+    #             alpha = 0.3, 
+    #             fill=mod1color, 
+    #             color = mod1color, linetype='dashed') +
+    # geom_ribbon(aes(ymin = lower__ + 0.25 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.25 * (upper__ - lower__)),
+    #             alpha = 0.4, 
+    #             fill=mod1color,
+    #             color = mod1color, linetype='solid') +
+    # #Add line for the estimates
+    #geom_line(data = plot_data, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+       # Add points for original data
     geom_point(data = point.data, aes(x = .data[[this.effect]], y = .data[[this.resp]]),
-               fill = mod1color, alpha = 0.9,color="black", pch=21, cex=3) +
+               fill = mod1color, alpha = 0.5, pch=21, cex=3) +
+    #Add line for the estimates
+    geom_line(data = plot_data, color = mod1color, linewidth=3, aes(x = .data[[this.effect]], y = .data$estimate__)) +
     coord_cartesian(xlim = range(point.data[[this.effect]])) +
     # Labels and theme
     labs(x = xlabel, y = ylabel) +
