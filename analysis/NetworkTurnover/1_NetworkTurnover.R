@@ -162,14 +162,14 @@ altpanelA <- plot_decay_ggplot_combined(ob_model,
                                      trans_model,
                                      mod1color='darkgreen',
                                      mod2color='darkorange',
-                                     alpha1=0.1,
-                                     alpha2=0.1,
+                                     alpha1=0.01,
+                                     alpha2=0.01,
                                      lty1='solid',
                                      lty2='solid',
                                      xlab="Geographic Distance (km)",
-                                     ylab='Bray-Curtis Dissimilarity', add.points=FALSE)
+                                     ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
 
-altpanelA <- altpanelA + labs(tag="A.")
+altpanelA #<- altpanelA + labs(tag="A.")
 
 ## B. Interaction turnover
 int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
