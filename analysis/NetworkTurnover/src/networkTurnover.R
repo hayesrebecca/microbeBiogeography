@@ -360,18 +360,28 @@ plot_network_turnover_mod_compare <- function(mod1,
     point_color1 <- "darkgreen"
     if(model_geodist1$Pgt0 >= 0.95){
       ribbon_color1 <- "darkgreen"
+      linetype1 <- 'solid'
     } else if (model_geodist1$Pgt0 <= 0.05) {
       ribbon_color1 <- "darkgreen"
-    } else {ribbon_color1 <- NA}
+      linetype1 <- 'solid'
+    } else {
+      ribbon_color1 <- NA
+      linetype1 <- 'dashed'
+    }
   }
   
   if(network_type1 == "Transient") {
     point_color1 <- "darkorange"
     if(model_geodist1$Pgt0 >= 0.95){
       ribbon_color1 <- "darkorange"
+      linetype1 <- 'solid'
     } else if (model_geodist1$Pgt0 <= 0.05) {
       ribbon_color1 <- "darkorange"
-    } else {ribbon_color1 <- NA}
+      linetype1 <- 'solid'
+    } else {
+      ribbon_color1 <- NA
+      linetype1 <- 'dashed'
+      }
   }
   
   # Extract the data from conditional_effects
@@ -386,19 +396,31 @@ plot_network_turnover_mod_compare <- function(mod1,
     point_color2 <- "darkgreen"
     if(model_geodist2$Pgt0 >= 0.95){
       ribbon_color2 <- "darkgreen"
+      linetype2 <- 'solid'
     } else if (model_geodist2$Pgt0 <= 0.05) {
       ribbon_color2 <- "darkgreen"
-    } else {ribbon_color2 <- NA}
+      linetype2 <- 'solid'
+    } else {
+      ribbon_color2 <- NA
+      linetype2 <- 'dashed'
+      }
   }
   
   if(network_type2 == "Transient") {
     point_color2 <- "darkorange"
     if(model_geodist2$Pgt0 >= 0.95){
       ribbon_color2 <- "darkorange"
+      linetype2 <- 'solid'
     } else if (model_geodist2$Pgt0 <= 0.05) {
       ribbon_color2 <- "darkorange"
-    } else {ribbon_color2 <- NA}
+      linetype2 <- 'solid'
+    } else {
+      ribbon_color2 <- NA
+      linetype2 <- 'dashed'
+      }
   }
+  
+ 
   
   # Extract the data from conditional_effects
   cond_effects_data2 <- conditional_effects(mod2, effects = this.effect, resp = this.resp, plot = FALSE)
@@ -407,57 +429,57 @@ plot_network_turnover_mod_compare <- function(mod1,
   # Plot using ggplot2 for credible intervals with geom_ribbon
   plot_obj <- ggplot(plot_data1, aes(x = .data[[this.effect]], y = .data$estimate__)) +
     # Add ribbons for the 95%, 80%, and 50% credible intervals
-    geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.2, 
+    geom_ribbon(aes(ymin = lower__, ymax = upper__), alpha = 0.5, 
                 fill = ribbon_color1,
                 color = point_color1#, linetype='dotted'
                 ) +
-    geom_ribbon(aes(ymin = lower__ + 0.1 * (upper__ - lower__),
-                    ymax = upper__ - 0.1 * (upper__ - lower__)),
-                alpha = 0.3, 
-                fill=ribbon_color1, 
-                color = point_color1
-                #, linetype='dashed'
-                ) +
-    geom_ribbon(aes(ymin = lower__ + 0.25 * (upper__ - lower__),
-                    ymax = upper__ - 0.25 * (upper__ - lower__)),
-                alpha = 0.4, 
-                fill=ribbon_color1,
-                color = point_color1
-                #, linetype='solid'
-                ) +
-      # Add ribbons for the 95%, 80%, and 50% credible intervals
-    geom_ribbon(data=plot_data2, aes(ymin = lower__, ymax = upper__), alpha = 0.2, 
+    # geom_ribbon(aes(ymin = lower__ + 0.1 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.1 * (upper__ - lower__)),
+    #             alpha = 0.3, 
+    #             fill=ribbon_color1, 
+    #             color = point_color1
+    #             #, linetype='dashed'
+    #             ) +
+    # geom_ribbon(aes(ymin = lower__ + 0.25 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.25 * (upper__ - lower__)),
+    #             alpha = 0.4, 
+    #             fill=ribbon_color1,
+    #             color = point_color1
+    #             #, linetype='solid'
+    #             ) +
+    #   # Add ribbons for the 95%, 80%, and 50% credible intervals
+    geom_ribbon(data=plot_data2, aes(ymin = lower__, ymax = upper__), alpha = 0.5, 
                 fill = ribbon_color2,
                 color = point_color2
                 #, linetype='dotted'
                 ) +
-    geom_ribbon(data=plot_data2, aes(ymin = lower__ + 0.1 * (upper__ - lower__),
-                    ymax = upper__ - 0.1 * (upper__ - lower__)),
-                alpha = 0.3, 
-                fill=ribbon_color2, 
-                color = point_color2
-                #, linetype='dashed'
-                ) +
-    geom_ribbon(data=plot_data2, aes(ymin = lower__ + 0.25 * (upper__ - lower__),
-                    ymax = upper__ - 0.25 * (upper__ - lower__)),
-                alpha = 0.4, 
-                fill=ribbon_color2,
-                color = point_color2#, linetype='solid'
-                ) +
-    #Add line for the estimates
-    geom_line(data = plot_data1, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    #Add line for the estimates
-    geom_line(data = plot_data1, color = point_color1, linewidth=2, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    # Add points for original data
+    # geom_ribbon(data=plot_data2, aes(ymin = lower__ + 0.1 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.1 * (upper__ - lower__)),
+    #             alpha = 0.3, 
+    #             fill=ribbon_color2, 
+    #             color = point_color2
+    #             #, linetype='dashed'
+    #             ) +
+    # geom_ribbon(data=plot_data2, aes(ymin = lower__ + 0.25 * (upper__ - lower__),
+    #                 ymax = upper__ - 0.25 * (upper__ - lower__)),
+    #             alpha = 0.4, 
+    #             fill=ribbon_color2,
+    #             color = point_color2#, linetype='solid'
+    #             ) +
+    #   # Add points for original data
     geom_point(data = this.network1, aes(x = .data[[this.effect]], y = .data[[this.resp]]),
-               fill = point_color1, alpha = 0.9, pch=21, cex=3) +
-    #Add line for the estimates
-    geom_line(data = plot_data2, color = 'black', linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
-    #Add line for the estimates
-    geom_line(data = plot_data2, color = point_color2, linewidth=2, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+               fill = point_color1, alpha = 0.5, pch=21, cex=3) +
     # Add points for original data
     geom_point(data = this.network2, aes(x = .data[[this.effect]], y = .data[[this.resp]]),
-               fill = point_color2, alpha = 0.9, pch=21, cex=3) +
+               fill = point_color2, alpha = 0.5, pch=21, cex=3) +
+    #Add line for the estimates
+    #geom_line(data = plot_data1, color = 'black', linetype=linetype1, linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+    #Add line for the estimates
+    geom_line(data = plot_data1, color = point_color1, linetype=linetype1, linewidth=3, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+    #Add line for the estimates
+    #geom_line(data = plot_data2, color = 'black', linetype=linetype2, linewidth=2.5, aes(x = .data[[this.effect]], y = .data$estimate__)) +
+    #Add line for the estimates
+    geom_line(data = plot_data2, color = point_color2, linetype=linetype2, linewidth=3, aes(x = .data[[this.effect]], y = .data$estimate__)) +
     theme_classic()  +
     labs(x = "Geographic Distance (km)", y = label,
          fill = "Credible Interval") +
