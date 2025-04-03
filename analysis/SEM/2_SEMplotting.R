@@ -21,6 +21,7 @@ library(bayesplot)
 library(pscl)
 library(brms)
 library(performance)
+library(gridExtra)
 # install.packages("glmmADMB", 
 #                  repos=c("http://glmmadmb.r-forge.r-project.org/repos",
 #                          getOption("repos")),
