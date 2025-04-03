@@ -170,7 +170,7 @@ altpanelA <- plot_decay_ggplot_combined(ob_model,
                                      xlab="Geographic Distance (km)",
                                      ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
 
-altpanelA #<- altpanelA + labs(tag="A.")
+altpanelA <- altpanelA + labs(tag="A.")
 
 ## B. Interaction turnover
 int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
