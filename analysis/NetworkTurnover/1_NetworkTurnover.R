@@ -14,6 +14,7 @@ source("src/chao.R")
 source("src/betaNet.R")
 source("src/writeResultsTable.R")
 source("src/networkTurnover.R")
+source("src/distDecay.R")
 
 library(ggplot2)
 library(lme4)
@@ -43,11 +44,11 @@ load("../../microbeBiogeographyData.Rdata")
 only_obligate_network <- prep_obligate_network(raw_network=spNet_micro)
 
 only_obligate_network_BM <- prep_obligate_network(raw_network=spNet_micro,  
-                                                      genera_to_keep=c("Melissodes", "Bombus"))
+                                                      genera_to_keep=c("Melissodes", "Bombus", "Apis"))
 
 
 only_transient_network <- prep_transient_network(raw_network=spNet_micro)
-only_transient_network_BM <- prep_transient_network(raw_network=spNet_micro,genera_to_keep=c("Melissodes", "Bombus"))
+only_transient_network_BM <- prep_transient_network(raw_network=spNet_micro,genera_to_keep=c("Melissodes", "Bombus", "Apis"))
 
 ## **********************************************************
 ## Run network betalinkr function and prep output table
@@ -143,9 +144,16 @@ if (run.decay.genus.mods == TRUE){
     load("../../../skyIslands/analysis/microbiome/saved/decay_genus_mods.Rdata") ## TODO update corrected filepaths
 }
 
-run.decay.mictype.mods=TRUE
+run.decay.mictype.mods=FALSE
 
 if (run.decay.mictype.mods == TRUE){
+  #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+  meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateMicrobe", "WeightsTransientMicrobe")
+  
+  spec16s <- spec.net %>%
+    filter(Apidae == 1) %>%
+    select(all_of(meta_cols), starts_with('16s')) %>%
+    na.omit()
   ob_model <- microbe_type_decay_model(spec16s, 'Obligate', model.type = 'exp')
   trans_model <- microbe_type_decay_model(spec16s, 'Facultative', model.type='exp')
   ## save out models
