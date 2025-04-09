@@ -81,7 +81,8 @@
 #   containing only the obligate symbionts is created.
 # - The output is a list of networks where each site contains only the interactions of obligate species.
 #
-prep_obligate_network <- function(raw_network=spNet_micro){
+prep_obligate_network <- function(raw_network=spNet_micro, genera_to_keep=NULL){
+  
   site_list <- names(raw_network)
   
   ## obligate symbionts
@@ -102,7 +103,15 @@ prep_obligate_network <- function(raw_network=spNet_micro){
     
     ob_rows_to_keep <- grep(paste(these_obligates, collapse = "|"), obligates_rows)
     
-    ob_new_net <- raw_network[[x]][ob_rows_to_keep,]
+    if (is.null(genera_to_keep)){
+      ob_new_net <- raw_network[[x]][ob_rows_to_keep,]
+      } else {
+        
+        keep_these_genera <- grep(paste(genera_to_keep, collapse = "|"), colnames(raw_network[[x]]))
+        #browser()
+        ob_new_net <- raw_network[[x]][ob_rows_to_keep,keep_these_genera]
+    }
+    
     print(dim(ob_new_net))
     new_name <- x
     
@@ -132,7 +141,7 @@ prep_obligate_network <- function(raw_network=spNet_micro){
 # - The function filters out rows corresponding to obligate symbionts and retains the transient ones.
 # - The output is a list of networks with transient symbionts for each site.
 #
-prep_transient_network <- function(raw_network=spNet_micro){
+prep_transient_network <- function(raw_network=spNet_micro, genera_to_keep=NULL){
   site_list <- names(raw_network)
   
   ## obligate symbionts
@@ -148,6 +157,17 @@ prep_transient_network <- function(raw_network=spNet_micro){
     trans_rows_to_drop <- !grepl(bee.obligates, trans_rows)
     
     trans_new_net <- raw_network[[x]][trans_rows_to_drop,]
+    
+    if (is.null(genera_to_keep)){
+      trans_new_net <- raw_network[[x]][trans_rows_to_drop,]
+    } else {
+      
+      keep_these_genera <- grep(paste(genera_to_keep, collapse = "|"), colnames(raw_network[[x]]))
+      #browser()
+      trans_new_net <- raw_network[[x]][trans_rows_to_drop,keep_these_genera]
+    }
+    
+    
     print(dim(trans_new_net))
     new_name <- x
     
