@@ -13,7 +13,7 @@
 # SC <- only_obligate_network$SC 
 # SM <- only_obligate_network$SM
 
-CH <- only_obligate_network_BM$CH
+CH <- as.matrix(only_obligate_network_BM$CH)
 CH <- CH[,colnames(CH)!=""]
 HM <- only_obligate_network_BM$HM
 JC <- only_obligate_network_BM$JC
@@ -29,7 +29,7 @@ lower.order <- "Microbes"
 higher.order <- "Pollinators"
 
 
-obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC),
+obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(HM, JC, MM, PL, SM, SC),
                                           partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
 #View(obligate_poll_betalink)
@@ -74,7 +74,7 @@ dir.create("figures/final", showWarnings = FALSE)
 # SC1 <- only_transient_network$SC 
 # SM1 <- only_transient_network$SM
 
-CH1 <- only_transient_network_BM$CH
+CH1 <- as.matrix(only_transient_network_BM$CH)
 CH1 <- CH1[,colnames(CH1)!=""]
 HM1 <- only_transient_network_BM$HM
 JC1 <- only_transient_network_BM$JC
@@ -91,7 +91,7 @@ lower.order <- "Microbes"
 higher.order <- "Pollinators"
 
 
-transient_poll_betalink <- betalinkr_multi(webarray = webs2array(CH1, HM1, JC1, MM1, PL1, SM1, SC1),
+transient_poll_betalink <- betalinkr_multi(webarray = webs2array(HM1, JC1, MM1, PL1, SM1, SC1),
                                            partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
 #View(transient_poll_betalink)

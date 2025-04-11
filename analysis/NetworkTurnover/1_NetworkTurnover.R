@@ -44,11 +44,11 @@ load("../../microbeBiogeographyData.Rdata")
 only_obligate_network <- prep_obligate_network(raw_network=spNet_micro)
 
 only_obligate_network_BM <- prep_obligate_network(raw_network=spNet_micro,  
-                                                      genera_to_keep=c("Melissodes", "Bombus", "Apis"))
+                                                      genera_to_keep=c("Bombus"))
 
 
 only_transient_network <- prep_transient_network(raw_network=spNet_micro)
-only_transient_network_BM <- prep_transient_network(raw_network=spNet_micro,genera_to_keep=c("Melissodes", "Bombus", "Apis"))
+only_transient_network_BM <- prep_transient_network(raw_network=spNet_micro,genera_to_keep=c("Bombus"))
 
 ## **********************************************************
 ## Run network betalinkr function and prep output table
@@ -62,7 +62,7 @@ source("src/betalinkrPrep.R")
 
 ## only need to run models once, otherwise will load models
 
-run.mods=FALSE
+run.mods=TRUE
 
 if (run.mods==TRUE){
   
@@ -144,7 +144,7 @@ if (run.decay.genus.mods == TRUE){
     load("../../../skyIslands/analysis/microbiome/saved/decay_genus_mods.Rdata") ## TODO update corrected filepaths
 }
 
-run.decay.mictype.mods=FALSE
+run.decay.mictype.mods=TRUE
 
 if (run.decay.mictype.mods == TRUE){
   #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
