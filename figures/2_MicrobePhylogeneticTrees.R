@@ -60,41 +60,102 @@ finalASV <- tibble::rownames_to_column(finalASV, "UniqueID") #make rownames (Uni
 ## **********************************************************
 
 ## Bombus tree
-bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE)
+bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE, add_tip_labs = TRUE)
 panelA <- bombus_tree[[1]] + labs(tag="A. Bombus (n=444)")
 bombus_meta <- bombus_tree[[2]]
 panelA
 
+# Open a PDF device to save the plot
+pdf("bombus.pdf",
+    height=24, width=33)  # Adjust width and height as needed
+
+# Plot the final combined figure
+plot(panelA)
+
+# Close the PDF device to complete saving
+dev.off()
+
 ## Melissodes tree
-melissodes_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Melissodes", genus.or.spp='Genus', finalASV, melissodes_sites, do_collapse = TRUE)
-panelB <- melissodes_tree[[1]] + labs(tag="B. Melissodes (n=51)")
+melissodes_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Melissodes", genus.or.spp='Genus', finalASV, melissodes_sites, do_collapse = TRUE, add_tip_labs = TRUE)
+panelD <- melissodes_tree[[1]] + labs(tag="D. Melissodes (n=51)")
 melissodes_meta <- melissodes_tree[[2]]
-panelB
+panelD
+
+# Open a PDF device to save the plot
+pdf("melissodes.pdf",
+    height=24, width=33)  # Adjust width and height as needed
+
+# Plot the final combined figure
+plot(panelD)
+
+# Close the PDF device to complete saving
+dev.off()
 
 
 ## Apis tree
-apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE)
-panelC <- apis_tree[[1]] + labs(tag="C. Apis (n=245)")
+apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE, add_tip_labs = TRUE)
+panelB <- apis_tree[[1]] + labs(tag="B. Apis (n=245)")
 apis_meta <- apis_tree[[2]]
-panelC
+panelB
+
+# Open a PDF device to save the plot
+pdf("apis.pdf",
+    height=24, width=33)  # Adjust width and height as needed
+
+# Plot the final combined figure
+plot(panelB)
+
+# Close the PDF device to complete saving
+dev.off()
 
 ## Megachile tree
-megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE)
-panelD <- megachile_tree[[1]] + labs(tag="D. Megachile (n=43)")
+megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE, add_tip_labs = TRUE)
+panelF <- megachile_tree[[1]] + labs(tag="F. Megachile (n=43)")
 megachile_meta <- megachile_tree[[2]]
-panelD
+panelF
+
+# Open a PDF device to save the plot
+pdf("megachile.pdf",
+    height=24, width=33)  # Adjust width and height as needed
+
+# Plot the final combined figure
+plot(panelF)
+
+# Close the PDF device to complete saving
+dev.off()
 
 ## Anthophora tree
-anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE)
-panelE <- anthophora_tree[[1]] + labs(tag="E. Anthophora (n=38)")
+anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE, add_tip_labs = TRUE)
+panelC <- anthophora_tree[[1]] + labs(tag="C. Anthophora (n=38)")
 anthophora_meta <- anthophora_tree[[2]]
-panelE
+panelC
+
+# Open a PDF device to save the plot
+pdf("anthophora.pdf",
+    height=24, width=33)  # Adjust width and height as needed
+
+# Plot the final combined figure
+plot(panelC)
+
+# Close the PDF device to complete saving
+dev.off()
 
 ## Andrena tree
-andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE)
-panelF <- andrena_tree[[1]] + labs(tag="F. Andrena (n=115)")
+andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE, add_tip_labs=TRUE)
+panelE <- andrena_tree[[1]] + labs(tag="E. Andrena (n=115)")
 andrena_meta <- andrena_tree[[2]]
-panelF
+panelE
+
+## save out andrena tree
+# Open a PDF device to save the plot
+pdf("andrena.pdf",
+    height=24, width=33)  # Adjust width and height as needed
+
+# Plot the final combined figure
+plot(panelE)
+
+# Close the PDF device to complete saving
+dev.off()
 
 ## **********************************************************
 ## Create custom legend
@@ -134,7 +195,7 @@ gplot <- ggplot(data.leg, aes(Xdata, Ydata, color = Family)) +
                                                   legend.title=element_text(size=12))
 
 ## Draw only legend without plot 
-panelD  <- get_legend(gplot)                     
+panelG  <- get_legend(gplot)                     
 plot(get_legend(gplot) )
 
 ## **********************************************************
@@ -142,22 +203,22 @@ plot(get_legend(gplot) )
 ## **********************************************************
 
 #Set up the layout matrix so that the bottom legend spans both columns
-layout <- rbind(c(1, 2),
-                c(3, 3)) # The legend will span both columns
+layout <- rbind(c(1, 2, 3, 4, 5, 6),
+                c(7, 7, 7, 7, 7, 7)) # The legend will span both columns
 
 # Create the final layout
-final_plot <- arrangeGrob(panelA, panelB, panelD,
+final_plot <- arrangeGrob(panelA, panelB, panelC, panelD, panelE, panelF, panelG,
                           layout_matrix = layout,
                           heights = c(9, 1)) # Adjust the heights as needed
 
 # Center the legend panelD properly within its grid
-panelD_centered <- arrangeGrob(panelD, 
+panelG_centered <- arrangeGrob(panelG, 
                                ncol = 1, 
                                padding = unit(1, "lines"))  # Add padding if necessary
 
 # Open a PDF device to save the plot
-pdf("../skyIslands/analysis/microbiome/figures/final/grid_trees.pdf",
-    height=8, width=11)  # Adjust width and height as needed
+pdf("grid_trees_all.pdf",
+    height=24, width=33)  # Adjust width and height as needed
 
 # Plot the final combined figure
 grid.arrange(final_plot)

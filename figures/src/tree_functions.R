@@ -135,7 +135,17 @@ collapse_identical_tips <- function(phy,tip_label){
 # 2. A dataframe with features and site metadata.
 # 3. The ordered tip labels of the tree.
 #
-phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.species, presAbsTable, site.order, all_levels=TRUE, levels_to_drop, clade_names=NULL, do_collapse=FALSE){
+phylotree_heatmap_byGenus <- function(tree.object,
+                                      meta,
+                                      genus.or.spp,
+                                      this.species,
+                                      presAbsTable,
+                                      site.order,
+                                      all_levels=TRUE,
+                                      levels_to_drop,
+                                      clade_names=NULL,
+                                      do_collapse=FALSE,
+                                      add_tip_labs=FALSE){
   #filter to include just the unique IDs in the specified genus
   if (genus.or.spp=='Species'){
     sp_ids <- meta %>%
@@ -289,9 +299,13 @@ phylotree_heatmap_byGenus <- function(tree.object, meta, genus.or.spp, this.spec
   
   tip.order <- gentree$tip.label[ordered_tips]
   
+  if(add_tip_labs==FALSE){
   p <- ggtree(gentree, layout='rectangular') 
   p
-  
+  }else{
+    p <- ggtree(gentree, layout='rectangular') + geom_tiplab()
+    p
+  }
   # Add logical columns to p$data for each family
   p$data$Orbaceae_match <- grepl("Orbaceae", p$data$label, fixed = TRUE)
   p$data$Lactobacillaceae_match <- grepl("Lactobacillaceae", p$data$label, fixed = TRUE)
