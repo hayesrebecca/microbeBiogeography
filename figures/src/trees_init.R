@@ -54,6 +54,10 @@ meta_cols <- c('UniqueID', 'Family', 'Genus', 'Species',
 ## frustrated so hard coded this
 bombus_sites <- c('JC', 'SM', 'SC', 'MM', 'HM', 'PL', 'CH')
 melissodes_sites <- c('JC', 'SC', 'MM', 'HM', 'PL', 'CH', 'RP')
+apis_sites <- c("CH", "HM", "MM", "PL", "JC", "RP", "SC", "SM")
+megachile_sites <- c("HM", "MM", "SM", "PL", "SC", "JC")
+andrena_sites <- c("JC", "MM", "PL", "SC", "SM", "CH", "RP")
+anthophora_sites <- c("JC", "MM", "SC", "SM", "HM")
 
 meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Meadow')
 

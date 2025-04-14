@@ -71,6 +71,31 @@ panelB <- melissodes_tree[[1]] + labs(tag="B. Melissodes (n=51)")
 melissodes_meta <- melissodes_tree[[2]]
 panelB
 
+
+## Apis tree
+apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE)
+panelC <- apis_tree[[1]] + labs(tag="C. Apis (n=245)")
+apis_meta <- apis_tree[[2]]
+panelC
+
+## Megachile tree
+megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE)
+panelD <- megachile_tree[[1]] + labs(tag="D. Megachile (n=43)")
+megachile_meta <- megachile_tree[[2]]
+panelD
+
+## Anthophora tree
+anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE)
+panelE <- anthophora_tree[[1]] + labs(tag="E. Anthophora (n=38)")
+anthophora_meta <- anthophora_tree[[2]]
+panelE
+
+## Andrena tree
+andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE)
+panelF <- andrena_tree[[1]] + labs(tag="F. Andrena (n=115)")
+andrena_meta <- andrena_tree[[2]]
+panelF
+
 ## **********************************************************
 ## Create custom legend
 ## **********************************************************

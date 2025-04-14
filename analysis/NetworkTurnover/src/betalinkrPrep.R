@@ -1,35 +1,35 @@
 
 ## this script prepares networks for analysis using the betalinkr function from betapartite
 
-# CH <- only_obligate_network$CH
-# CH <- CH[,colnames(CH)!=""]
-# HM <- only_obligate_network$HM
-# JC <- only_obligate_network$JC
-# MM <- only_obligate_network$MM 
-# MM <- MM[,colnames(MM)!=""]
-# PL <- only_obligate_network$PL
-# PL <- PL[,colnames(PL)!=""]
-# RP <- only_obligate_network$RP
-# SC <- only_obligate_network$SC 
-# SM <- only_obligate_network$SM
-
-CH <- as.matrix(only_obligate_network_BM$CH)
+CH <- only_obligate_network$CH
 CH <- CH[,colnames(CH)!=""]
-HM <- only_obligate_network_BM$HM
-JC <- only_obligate_network_BM$JC
-MM <- only_obligate_network_BM$MM 
+HM <- only_obligate_network$HM
+JC <- only_obligate_network$JC
+MM <- only_obligate_network$MM
 MM <- MM[,colnames(MM)!=""]
-PL <- only_obligate_network_BM$PL
+PL <- only_obligate_network$PL
 PL <- PL[,colnames(PL)!=""]
-SC <- only_obligate_network_BM$SC 
-SM <- only_obligate_network_BM$SM
+RP <- only_obligate_network$RP
+SC <- only_obligate_network$SC
+SM <- only_obligate_network$SM
+
+# CH <- as.matrix(only_obligate_network_BM$CH)
+# CH <- CH[,colnames(CH)!=""]
+# HM <- only_obligate_network_BM$HM
+# JC <- only_obligate_network_BM$JC
+# MM <- only_obligate_network_BM$MM 
+# MM <- MM[,colnames(MM)!=""]
+# PL <- only_obligate_network_BM$PL
+# PL <- PL[,colnames(PL)!=""]
+# SC <- only_obligate_network_BM$SC 
+# SM <- only_obligate_network_BM$SM
 
 
 lower.order <- "Microbes"
 higher.order <- "Pollinators"
 
 
-obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(HM, JC, MM, PL, SM, SC),
+obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
                                           partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
 #View(obligate_poll_betalink)
@@ -62,36 +62,36 @@ dir.create("figures/final", showWarnings = FALSE)
 
 
 #### species level networks
-# CH1 <- only_transient_network$CH
-# CH1 <- CH1[,colnames(CH1)!=""]
-# HM1 <- only_transient_network$HM
-# JC1 <- only_transient_network$JC
-# MM1 <- only_transient_network$MM 
-# MM1 <- MM1[,colnames(MM1)!=""]
-# PL1 <- only_transient_network$PL
-# PL1 <- PL1[,colnames(PL1)!=""]
-# RP1 <- only_transient_network$RP
-# SC1 <- only_transient_network$SC 
-# SM1 <- only_transient_network$SM
-
-CH1 <- as.matrix(only_transient_network_BM$CH)
+CH1 <- only_transient_network$CH
 CH1 <- CH1[,colnames(CH1)!=""]
-HM1 <- only_transient_network_BM$HM
-JC1 <- only_transient_network_BM$JC
-MM1 <- only_transient_network_BM$MM 
+HM1 <- only_transient_network$HM
+JC1 <- only_transient_network$JC
+MM1 <- only_transient_network$MM
 MM1 <- MM1[,colnames(MM1)!=""]
-PL1 <- only_transient_network_BM$PL
+PL1 <- only_transient_network$PL
 PL1 <- PL1[,colnames(PL1)!=""]
-#RP1 <- only_transient_network_BM$RP
-SC1 <- only_transient_network_BM$SC 
-SM1 <- only_transient_network_BM$SM
+RP1 <- only_transient_network$RP
+SC1 <- only_transient_network$SC
+SM1 <- only_transient_network$SM
+
+# CH1 <- as.matrix(only_transient_network_BM$CH)
+# CH1 <- CH1[,colnames(CH1)!=""]
+# HM1 <- only_transient_network_BM$HM
+# JC1 <- only_transient_network_BM$JC
+# MM1 <- only_transient_network_BM$MM 
+# MM1 <- MM1[,colnames(MM1)!=""]
+# PL1 <- only_transient_network_BM$PL
+# PL1 <- PL1[,colnames(PL1)!=""]
+# #RP1 <- only_transient_network_BM$RP
+# SC1 <- only_transient_network_BM$SC 
+# SM1 <- only_transient_network_BM$SM
 
 
 lower.order <- "Microbes"
 higher.order <- "Pollinators"
 
 
-transient_poll_betalink <- betalinkr_multi(webarray = webs2array(HM1, JC1, MM1, PL1, SM1, SC1),
+transient_poll_betalink <- betalinkr_multi(webarray = webs2array(HM1, JC1, MM1, PL1, SM1, SC1, CH1, RP1),
                                            partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
 #View(transient_poll_betalink)
