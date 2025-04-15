@@ -98,7 +98,7 @@ only_transient_network <- prep_transient_network(raw_network=spNet_micro,
 
 social_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
                                                  these_obligates = social_obligate_list,
-                                                 genera_to_keep=c("Bombus", "Apis", "Melissodes"))
+                                                 genera_to_keep=c("Bombus", "Apis"))
 
 social_transient_network <- prep_transient_network(raw_network=spNet_micro,
                                                    these_obligates = social_obligate_list,

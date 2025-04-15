@@ -93,21 +93,21 @@ prep_obligate_network <- function(raw_network=spNet_micro, these_obligates, gene
     
     obligates_rows <- rownames(raw_network[[x]])
     
-    ob_rows_to_keep <- grep(paste(bee.obligates, collapse = "|"), obligates_rows)
+    ob_rows_to_keep <- grep(bee.obligates, obligates_rows)
     
     if (is.null(genera_to_keep)){
-      ob_new_net <- raw_network[[x]][ob_rows_to_keep,]
+      ob_new_net <- raw_network[[x]][ob_rows_to_keep, , drop=FALSE]
       } else {
         
         keep_these_genera <- grep(paste(genera_to_keep, collapse = "|"), colnames(raw_network[[x]]))
         #browser()
-        ob_new_net <- raw_network[[x]][ob_rows_to_keep,keep_these_genera]
+        ob_new_net <- raw_network[[x]][ob_rows_to_keep,keep_these_genera, drop=FALSE]
     }
     
     print(dim(ob_new_net))
     new_name <- x
     
-    only_obligate_network[[new_name]] <- ob_new_net
+    only_obligate_network[[new_name]] <- as.matrix(ob_new_net)
     
   }
   only_obligate_network
@@ -147,7 +147,7 @@ prep_transient_network <- function(raw_network=spNet_micro, these_obligates, gen
     
     trans_rows_to_drop <- !grepl(bee.obligates, trans_rows)
     
-    trans_new_net <- raw_network[[x]][trans_rows_to_drop,]
+    trans_new_net <- raw_network[[x]][trans_rows_to_drop, , drop=FALSE]
     
     if (is.null(genera_to_keep)){
       trans_new_net <- raw_network[[x]][trans_rows_to_drop,]
@@ -155,14 +155,14 @@ prep_transient_network <- function(raw_network=spNet_micro, these_obligates, gen
       
       keep_these_genera <- grep(paste(genera_to_keep, collapse = "|"), colnames(raw_network[[x]]))
       #browser()
-      trans_new_net <- raw_network[[x]][trans_rows_to_drop,keep_these_genera]
+      trans_new_net <- raw_network[[x]][trans_rows_to_drop,keep_these_genera, drop=FALSE]
     }
     
     
     print(dim(trans_new_net))
     new_name <- x
     
-    only_transient_network[[new_name]] <- trans_new_net
+    only_transient_network[[new_name]] <- as.matrix(trans_new_net)
   }
   only_transient_network
 }
