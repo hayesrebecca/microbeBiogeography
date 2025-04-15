@@ -1,40 +1,40 @@
 
 ## this script prepares networks for analysis using the betalinkr function from betapartite
 
-CH <- only_obligate_network$CH
-CH <- CH[,colnames(CH)!=""]
-HM <- only_obligate_network$HM
-JC <- only_obligate_network$JC
-MM <- only_obligate_network$MM
-MM <- MM[,colnames(MM)!=""]
-PL <- only_obligate_network$PL
-PL <- PL[,colnames(PL)!=""]
-RP <- only_obligate_network$RP
-SC <- only_obligate_network$SC
-SM <- only_obligate_network$SM
 
-# CH <- as.matrix(only_obligate_network_BM$CH)
-# CH <- CH[,colnames(CH)!=""]
-# HM <- only_obligate_network_BM$HM
-# JC <- only_obligate_network_BM$JC
-# MM <- only_obligate_network_BM$MM 
-# MM <- MM[,colnames(MM)!=""]
-# PL <- only_obligate_network_BM$PL
-# PL <- PL[,colnames(PL)!=""]
-# SC <- only_obligate_network_BM$SC 
-# SM <- only_obligate_network_BM$SM
+## WIP trying to make this code more reproducible
 
 
-lower.order <- "Microbes"
-higher.order <- "Pollinators"
+find_sites_for_betalinkr <- function(these_networks){
+microbe_nets <- lapply(these_networks, function(x){
+  #net_dims <- dim()
+  ifelse(dim(x)[1]==0&dim(x)[2]==0, 0, 1)
+})
+
+sites_with_data <- names(which(unlist(microbe_nets) == 1))
+
+nets_to_include <- these_networks[names(these_networks) %in% sites_with_data]
+
+## drops unresolved species
+cleaned_obligate_network <- lapply(nets_to_include, function(df) {
+  df[, colnames(df) != "", drop = FALSE]
+})
+
+print(names(cleaned_obligate_network))
+
+## splits network list elements into their own objects
+return(list2env(cleaned_obligate_network, envir = .GlobalEnv))
+}
 
 
-obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
-                                          partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
+fix_betalinkr_output <- function(betalinkr_output){
+  
+  lower.order <- "Microbes"
+  higher.order <- "Pollinators"
 #View(obligate_poll_betalink)
 
-colnames(obligate_poll_betalink) <- c("Site1",
+  colnames(betalinkr_output) <- c("Site1",
                                       "Site2",
                                       "DissimilaritySpeciesComposition",
                                       "OnlySharedLinks",
@@ -45,18 +45,20 @@ colnames(obligate_poll_betalink) <- c("Site1",
                                       "TurnoverAbsenceBoth")
 
 
-geo <- unique(spec.net[, c("Site", "Lat", "Long")])
-geo <- geo[!duplicated(geo$Site),]
+  geo <- unique(spec.net[, c("Site", "Lat", "Long")])
+  geo <- geo[!duplicated(geo$Site),]
 
-geo.dist <- rdist.earth(cbind(geo$Long, geo$Lat),
+  geo.dist <- rdist.earth(cbind(geo$Long, geo$Lat),
                         cbind(geo$Long, geo$Lat))
-colnames(geo.dist) <- rownames(geo.dist) <- geo$Site
+  colnames(geo.dist) <- rownames(geo.dist) <- geo$Site
 
 ## add column for geographic distance between sites
-obligate_poll_betalink$GeoDist <- apply(obligate_poll_betalink, 1, function(x){
-  geo.dist[x["Site1"],  x["Site2"]]
-})
-
+  betalinkr_output$GeoDist <- apply(betalinkr_output, 1, function(x){
+    geo.dist[x["Site1"],  x["Site2"]]
+  })
+  
+  return(betalinkr_output)
+}
 dir.create("figures", showWarnings = FALSE)
 dir.create("figures/final", showWarnings = FALSE)
 

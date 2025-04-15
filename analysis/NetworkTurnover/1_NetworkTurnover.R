@@ -120,6 +120,7 @@ solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
 
 source("src/betalinkrPrep.R")
 
+## ALL HOSTS ALL STRONG ASSOCIATE NETWORKS
 find_sites_for_betalinkr(only_obligate_network)
 
 ## enter the site matrices printed above 
@@ -127,6 +128,25 @@ obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, 
                                           partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
 obligate_poll_betalink_clean <- fix_betalinkr_output(obligate_poll_betalink)
+
+## ALL HOSTS ALL WEAK ASSOCIATE NETWORKS
+find_sites_for_betalinkr(only_transient_network)
+
+## enter the site matrices printed above 
+transient_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                          partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+
+transient_poll_betalink_clean <- fix_betalinkr_output(transient_poll_betalink)
+
+## SOCIAL HOSTS SOCIAL OBLIGATE NETWORKS
+find_sites_for_betalinkr(social_obligate_network)
+
+## enter the site matrices printed above 
+obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                          partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+
+obligate_poll_betalink_clean <- fix_betalinkr_output(obligate_poll_betalink)
+
 
 ## **********************************************************
 ## Run or load turnover by geo distance models
