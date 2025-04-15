@@ -81,19 +81,11 @@
 #   containing only the obligate symbionts is created.
 # - The output is a list of networks where each site contains only the interactions of obligate species.
 #
-prep_obligate_network <- function(raw_network=spNet_micro, genera_to_keep=NULL){
+prep_obligate_network <- function(raw_network=spNet_micro, these_obligates, genera_to_keep=NULL){
+  
+  bee.obligates <- paste(these_obligates, collapse = "|")
   
   site_list <- names(raw_network)
-  
-  ## obligate symbionts
-  these_obligates <- c("Lactobacillus",
-                       "Bifidobacterium",
-                       "Snodgrassella",
-                       "Gilliamella",
-                       "Frischella",
-                       "Bartonella",
-                       "Commensalibacter")
-  
   
   only_obligate_network <- list()
   
@@ -101,7 +93,7 @@ prep_obligate_network <- function(raw_network=spNet_micro, genera_to_keep=NULL){
     
     obligates_rows <- rownames(raw_network[[x]])
     
-    ob_rows_to_keep <- grep(paste(these_obligates, collapse = "|"), obligates_rows)
+    ob_rows_to_keep <- grep(paste(bee.obligates, collapse = "|"), obligates_rows)
     
     if (is.null(genera_to_keep)){
       ob_new_net <- raw_network[[x]][ob_rows_to_keep,]
@@ -141,12 +133,11 @@ prep_obligate_network <- function(raw_network=spNet_micro, genera_to_keep=NULL){
 # - The function filters out rows corresponding to obligate symbionts and retains the transient ones.
 # - The output is a list of networks with transient symbionts for each site.
 #
-prep_transient_network <- function(raw_network=spNet_micro, genera_to_keep=NULL){
+prep_transient_network <- function(raw_network=spNet_micro, these_obligates, genera_to_keep=NULL){
   site_list <- names(raw_network)
   
   ## obligate symbionts
-  bee.obligates <- "Lactobacillus|Bifidobacterium|Snodgrassella|Gilliamella|Frischella|Bartonella|Commensalibacter"
-  
+  bee.obligates <- paste(these_obligates, collapse = "|")
   
   only_transient_network <- list()
   

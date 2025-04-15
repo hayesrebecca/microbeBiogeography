@@ -36,19 +36,83 @@ library(grid)
 library(gridExtra)
 library(ggborderline)
 
-load("../../microbeBiogeographyData.Rdata")
+#load("../../microbeBiogeographyData.Rdata") ## TODO update with correct filepath before ms submission
+load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+load("../../../skyIslands/data/networks/microNets.RData")
 ## **********************************************************
 ## Prep obligate and transient networks
 ## **********************************************************
 
-only_obligate_network <- prep_obligate_network(raw_network=spNet_micro)
+full_obligate_list <- c("Lactobacillaceae",
+                        "Bifidobacteriaceae",
+                        "Neisseriaceae",
+                        "Orbaceae",
+                        "Bartonella",
+                        "Acetobacteraceae",
+                        "Bacillaceae",
+                        "Burkholderiaceae",
+                        "Clostridiaceae",
+                        "Comamonadaceae",
+                        "Enterobacteriaceae",
+                        "Lachnospiraceae",
+                        "Methylobacteriaceae",
+                        "Moraxellaceae",
+                        "Sphingomonadaceae", 
+                        "Oxalobacteraceae"
+                        )
 
-only_obligate_network_BM <- prep_obligate_network(raw_network=spNet_micro,  
-                                                      genera_to_keep=c("Bombus"))
+social_obligate_list <- c("Lactobacillaceae",
+                          "Bifidobacteriaceae",
+                          "Neisseriaceae",
+                          "Orbaceae",
+                          "Bartonella",
+                          "Acetobacteraceae"
+                          )
+
+solitary_obligate_list <- c("Acetobacteraceae",
+                            "Bacillaceae",
+                            "Burkholderiaceae",
+                            "Clostridiaceae",
+                            "Comamonadaceae",
+                            "Enterobacteriaceae",
+                            "Lachnospiraceae",
+                            "Lactobacillaceae",
+                            "Methylobacteriaceae",
+                            "Moraxellaceae",
+                            "Sphingomonadaceae", 
+                            "Oxalobacteraceae"
+                            )
 
 
-only_transient_network <- prep_transient_network(raw_network=spNet_micro)
-only_transient_network_BM <- prep_transient_network(raw_network=spNet_micro,genera_to_keep=c("Bombus"))
+## Full host community, full set of strong host associates
+
+only_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
+                                               these_obligates=full_obligate_list
+                                               )
+
+only_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                 these_obligates=full_obligate_list
+                                                 )
+
+## Social host community, social obligates
+
+social_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
+                                                 these_obligates = social_obligate_list,
+                                                 genera_to_keep=c("Bombus", "Apis", "Melissodes"))
+
+social_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                   these_obligates = social_obligate_list,
+                                                   genera_to_keep=c("Bombus", "Apis"))
+
+## Solitary host community, solitary obligates
+
+solitary_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
+                                                 these_obligates = solitary_obligate_list,
+                                                 genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
+
+solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                   these_obligates = solitary_obligate_list,
+                                                   genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
 
 ## **********************************************************
 ## Run network betalinkr function and prep output table
@@ -122,9 +186,9 @@ save(int.obligate.mod,
        microbe.driven.transient.mod,
        complete.obligate.mod,
        complete.transient.mod,
-       file="../../../skyIslands/analysis/microbiome/saved/turnover_mods_BM.Rdata") ## TODO update with correct filepath
+       file="../../../skyIslands/analysis/microbiome/saved/turnover_mods_andrena.Rdata") ## TODO update with correct filepath
 } else { 
-  load("../../../skyIslands/analysis/microbiome/saved/turnover_mods_BM.Rdata") ## TODO update with correct filepath
+  load("../../../skyIslands/analysis/microbiome/saved/turnover_mods_andrena.Rdata") ## TODO update with correct filepath
 }
 
 
@@ -144,7 +208,7 @@ if (run.decay.genus.mods == TRUE){
     load("../../../skyIslands/analysis/microbiome/saved/decay_genus_mods.Rdata") ## TODO update corrected filepaths
 }
 
-run.decay.mictype.mods=TRUE
+run.decay.mictype.mods=FALSE
 
 if (run.decay.mictype.mods == TRUE){
   #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
@@ -159,9 +223,9 @@ if (run.decay.mictype.mods == TRUE){
   ## save out models
   save(ob_model,
        trans_model,
-       file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_BM.Rdata") ## TODO update filepaths
+       file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods.Rdata") ## TODO update filepaths
 } else {
-  load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_BM.Rdata") ## TODO update filepaths
+  load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods.Rdata") ## TODO update filepaths
 }
 
 
@@ -265,7 +329,7 @@ complete.table <- complete.plot[[2]]
 
 
 # Arrange all panels in the PDF output
-pdf("figures/turnover_combined_BM.pdf", width = 8.5, height = 11)  
+pdf("figures/turnover_combined_andrena.pdf", width = 8.5, height = 11)  
 grid.arrange(
     altpanelA,
     panelB,
@@ -285,4 +349,4 @@ combined.table <- bind_rows(int.table,
                             complete.table)
 
 write.csv(combined.table,
-          file=sprintf("saved/tables/turnover_BM.csv")) 
+          file=sprintf("saved/tables/turnover.csv")) 
