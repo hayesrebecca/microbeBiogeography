@@ -120,6 +120,14 @@ solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
 
 source("src/betalinkrPrep.R")
 
+find_sites_for_betalinkr(only_obligate_network)
+
+## enter the site matrices printed above 
+obligate_poll_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                          partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+
+obligate_poll_betalink_clean <- fix_betalinkr_output(obligate_poll_betalink)
+
 ## **********************************************************
 ## Run or load turnover by geo distance models
 ## **********************************************************
