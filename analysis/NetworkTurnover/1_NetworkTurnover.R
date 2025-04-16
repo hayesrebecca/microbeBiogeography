@@ -39,6 +39,8 @@ library(ggborderline)
 #load("../../microbeBiogeographyData.Rdata") ## TODO update with correct filepath before ms submission
 load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
 load("../../../skyIslands/data/networks/microNets.RData")
+
+hosts="All"
 ## **********************************************************
 ## Prep obligate and transient networks
 ## **********************************************************
@@ -85,42 +87,42 @@ solitary_obligate_list <- c("Acetobacteraceae",
 
 
 ## Full host community, full set of strong host associates
-
-only_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
-                                               these_obligates=full_obligate_list
-                                               )
-
-only_transient_network <- prep_transient_network(raw_network=spNet_micro,
+if(hosts=="All"){
+  only_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
                                                  these_obligates=full_obligate_list
                                                  )
-
+  
+  only_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                   these_obligates=full_obligate_list
+                                                   )
+}
 ## Social host community, social obligates
-
-social_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
-                                                 these_obligates = social_obligate_list,
-                                                 genera_to_keep=c("Bombus", "Apis"))
-
-social_transient_network <- prep_transient_network(raw_network=spNet_micro,
+if(hosts=="Social"){
+  social_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
                                                    these_obligates = social_obligate_list,
                                                    genera_to_keep=c("Bombus", "Apis"))
-
+  
+  social_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                     these_obligates = social_obligate_list,
+                                                     genera_to_keep=c("Bombus", "Apis"))
+}
 ## Solitary host community, solitary obligates
-
-solitary_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
-                                                 these_obligates = solitary_obligate_list,
-                                                 genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
-
-solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
+if(hosts=="Solitary"){
+  solitary_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
                                                    these_obligates = solitary_obligate_list,
                                                    genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
+  
+  solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                     these_obligates = solitary_obligate_list,
+                                                     genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
+}
 
 ## **********************************************************
 ## Run network betalinkr function and prep output table
 ## **********************************************************
 
-source("src/betalinkrPrep.R")
+#source("src/betalinkrPrep.R")
 
-hosts='All'
 if(hosts=='All'){
   ## ALL HOSTS ALL STRONG ASSOCIATE NETWORKS
   find_sites_for_betalinkr(only_obligate_network)
@@ -141,119 +143,77 @@ if(hosts=='All'){
   transient_poll_betalink_clean <- fix_betalinkr_output(transient_poll_betalink)
 }
 
-hosts='Social'
 if(hosts=='Social'){
  
-## SOCIAL HOSTS SOCIAL OBLIGATE NETWORKS
-find_sites_for_betalinkr(social_obligate_network)
+  ## SOCIAL HOSTS SOCIAL OBLIGATE NETWORKS
+  find_sites_for_betalinkr(social_obligate_network)
+  
+  ## enter the site matrices printed above 
+  obligate_social_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                            partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  obligate_social_betalink_clean <- fix_betalinkr_output(obligate_social_betalink)
+  
+  ## SOCIAL HOSTS SOCIAL transient NETWORKS
+  find_sites_for_betalinkr(social_transient_network)
+  
+  ## enter the site matrices printed above 
+  transient_social_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                              partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  transient_social_betalink_clean <- fix_betalinkr_output(transient_social_betalink)
 
-## enter the site matrices printed above 
-obligate_social_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
-                                          partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
 
-obligate_social_betalink_clean <- fix_betalinkr_output(obligate_social_betalink)
-
-## SOLITARY HOSTS SOLITARY OBLIGATE NETWORKS
-find_sites_for_betalinkr(solitary_obligate_network)
 }
 
-hosts='Solitary'
 if(hosts=='Solitary'){
+  
+  ## SOLITARY HOSTS SOLITARY OBLIGATE NETWORKS
+  find_sites_for_betalinkr(solitary_obligate_network)
   
   ## enter the site matrices printed above 
   obligate_solitary_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
                                               partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
   
   obligate_solitary_betalink_clean <- fix_betalinkr_output(obligate_solitary_betalink)
+  
+  ## SOCIAL HOSTS SOCIAL transient NETWORKS
+  find_sites_for_betalinkr(solitary_transient_network)
+  
+  ## enter the site matrices printed above 
+  transient_solitary_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                               partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  transient_solitary_betalink_clean <- fix_betalinkr_output(transient_solitary_betalink)
 }
 
 ## **********************************************************
 ## Run or load turnover by geo distance models
 ## **********************************************************
 
+## All hosts, both definitions of strong associated microbes included
 ## only need to run models once, otherwise will load models
 
-run.mods=TRUE
-
-if (run.mods==TRUE){
-  
-## Interaction turnover
-int.obligate.mod <- run_network_turnover_mod(this_component="WholeNetworkLinks",
-                                                    this_network=obligate_poll_betalink)
-  
-int.transient.mod <- run_network_turnover_mod(this_component="WholeNetworkLinks",
-                                                     this_network=transient_poll_betalink)
-
-## Turnover species composition
-speccomp.obligate.mod <- run_network_turnover_mod(this_component="DissimilaritySpeciesComposition",
-                                                  this_network=obligate_poll_betalink)
-
-speccomp.transient.mod <- run_network_turnover_mod(this_component="DissimilaritySpeciesComposition",
-                                                   this_network=transient_poll_betalink)
-  
-  
-## Rewiring
-rewiring.obligate.mod <- run_network_turnover_mod(this_component="OnlySharedLinks",
-                                                  this_network=obligate_poll_betalink)
-
-rewiring.transient.mod <- run_network_turnover_mod(this_component="OnlySharedLinks",
-                                                   this_network=transient_poll_betalink)
-
-## Host-driven turnover
-host.driven.obligate.mod <- run_network_turnover_mod(this_component="TurnoverAbsencePollinators",
-                                                     this_network=obligate_poll_betalink)
-
-host.driven.transient.mod <- run_network_turnover_mod(this_component="TurnoverAbsencePollinators",
-                                                      this_network=transient_poll_betalink)
-
-## Microbe-driven turnover
-microbe.driven.obligate.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceMicrobes",
-                                                        this_network=obligate_poll_betalink)
-
-microbe.driven.transient.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceMicrobes",
-                                                         this_network=transient_poll_betalink)
-
-## Complete turnover
-complete.obligate.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceBoth",
-                                                  this_network=obligate_poll_betalink)
-
-complete.transient.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceBoth",
-                                                   this_network=transient_poll_betalink)
-
-## save out models
-save(int.obligate.mod,
-     int.transient.mod,
-     speccomp.obligate.mod,
-     speccomp.transient.mod,
-     rewiring.obligate.mod,
-       rewiring.transient.mod,
-       host.driven.obligate.mod,
-       host.driven.transient.mod,
-       microbe.driven.obligate.mod,
-       microbe.driven.transient.mod,
-       complete.obligate.mod,
-       complete.transient.mod,
-       file="../../../skyIslands/analysis/microbiome/saved/turnover_mods_andrena.Rdata") ## TODO update with correct filepath
-} else { 
-  load("../../../skyIslands/analysis/microbiome/saved/turnover_mods_andrena.Rdata") ## TODO update with correct filepath
+if(hosts=="All"){
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+                        ob.net=obligate_poll_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                        trans.net=transient_poll_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
+                        filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_allhosts.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+  )
 }
+## All hosts, both definitions of strong associated microbes included
+## only need to run models once, otherwise will load models
+
+run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+                      ob.net=obligate_poll_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                      trans.net=transient_poll_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
+                      filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_allhosts.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+)
 
 
 ## Pairwise bray curtis distance decay models
 source("src/distDecay.R")
 
-run.decay.genus.mods=FALSE
-
-if (run.decay.genus.mods == TRUE){
-  bombus_model <- genusspecies_decay_model(spec16s, 'Bombus', type='Genus', model.type = 'exp')
-  melissodes_model <- genusspecies_decay_model(spec16s, 'Melissodes', type='Genus', model.type='exp')
-  ## save out models
-  save(bombus_model,
-       melissodes_model,
-       file="../../../skyIslands/analysis/microbiome/saved/decay_genus_mods.Rdata") ## TODO update corrected filepaths
-} else {
-    load("../../../skyIslands/analysis/microbiome/saved/decay_genus_mods.Rdata") ## TODO update corrected filepaths
-}
 
 run.decay.mictype.mods=FALSE
 
