@@ -40,7 +40,11 @@ library(ggborderline)
 load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
 load("../../../skyIslands/data/networks/microNets.RData")
 
+## set hosts="All" to run models for full host dataset with the full list of solitary and social strong HAMs
+## set hosts="Social" to run mods for social host dataset with social strong HAMS
+## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 hosts="All"
+
 ## **********************************************************
 ## Prep obligate and transient networks
 ## **********************************************************
@@ -201,15 +205,26 @@ if(hosts=="All"){
                         filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_allhosts.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
-## All hosts, both definitions of strong associated microbes included
-## only need to run models once, otherwise will load models
+## Social hosts, social strong associated microbes included
+if(hosts=="Social"){
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+                        ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                        trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
+                        filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+  )
+}
 
-run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
-                      ob.net=obligate_poll_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
-                      trans.net=transient_poll_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                      filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_allhosts.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
-)
+## Social hosts, social strong associated microbes included
+if(hosts=="Solitary"){
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+                        ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                        trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
+                        filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+  )
+}
 
+
+## WIP below
 
 ## Pairwise bray curtis distance decay models
 source("src/distDecay.R")
