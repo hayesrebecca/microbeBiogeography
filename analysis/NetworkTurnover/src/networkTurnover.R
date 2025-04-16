@@ -167,6 +167,62 @@ prep_transient_network <- function(raw_network=spNet_micro, these_obligates, gen
   only_transient_network
 }
 
+find_sites_for_betalinkr <- function(these_networks){
+  microbe_nets <- lapply(these_networks, function(x){
+    #net_dims <- dim()
+    ifelse(dim(x)[1]==0&dim(x)[2]==0, 0, 1)
+  })
+  
+  sites_with_data <- names(which(unlist(microbe_nets) == 1))
+  
+  nets_to_include <- these_networks[names(these_networks) %in% sites_with_data]
+  
+  ## drops unresolved species
+  cleaned_obligate_network <- lapply(nets_to_include, function(df) {
+    df[, colnames(df) != "", drop = FALSE]
+  })
+  
+  print(names(cleaned_obligate_network))
+  
+  ## splits network list elements into their own objects
+  return(list2env(cleaned_obligate_network, envir = .GlobalEnv))
+}
+
+
+
+fix_betalinkr_output <- function(betalinkr_output){
+  
+  lower.order <- "Microbes"
+  higher.order <- "Pollinators"
+  #View(obligate_poll_betalink)
+  
+  colnames(betalinkr_output) <- c("Site1",
+                                  "Site2",
+                                  "DissimilaritySpeciesComposition",
+                                  "OnlySharedLinks",
+                                  "WholeNetworkLinks",
+                                  "SpeciesTurnoverLinks",
+                                  paste("TurnoverAbsence",lower.order,sep=""),
+                                  paste("TurnoverAbsence",higher.order,sep=""),
+                                  "TurnoverAbsenceBoth")
+  
+  
+  geo <- unique(spec.net[, c("Site", "Lat", "Long")])
+  geo <- geo[!duplicated(geo$Site),]
+  
+  geo.dist <- rdist.earth(cbind(geo$Long, geo$Lat),
+                          cbind(geo$Long, geo$Lat))
+  colnames(geo.dist) <- rownames(geo.dist) <- geo$Site
+  
+  ## add column for geographic distance between sites
+  betalinkr_output$GeoDist <- apply(betalinkr_output, 1, function(x){
+    geo.dist[x["Site1"],  x["Site2"]]
+  })
+  
+  return(betalinkr_output)
+}
+
+
 # Function: run_network_turnover_mod
 #
 # Description:
@@ -211,6 +267,77 @@ run_network_turnover_mod <- function(this_component,
   
   mod1
 }
+
+run_all_turnover_mods <- function(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+                                  ob.net=NULL, # Null by default, if run.mods==TRUE input obligate network here
+                                  trans.net=NULL, # Null by default, if run.mods==TRUE input transient network here
+                                  filepath # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                                  ){
+  if (run.mods==TRUE){
+    
+    ## Interaction turnover
+    int.obligate.mod <- run_network_turnover_mod(this_component="WholeNetworkLinks",
+                                                 this_network=ob.net)
+    
+    int.transient.mod <- run_network_turnover_mod(this_component="WholeNetworkLinks",
+                                                  this_network=trans.net)
+    
+    ## Turnover species composition
+    speccomp.obligate.mod <- run_network_turnover_mod(this_component="DissimilaritySpeciesComposition",
+                                                      this_network=ob.net)
+    
+    speccomp.transient.mod <- run_network_turnover_mod(this_component="DissimilaritySpeciesComposition",
+                                                       this_network=trans.net)
+    
+    
+    ## Rewiring
+    rewiring.obligate.mod <- run_network_turnover_mod(this_component="OnlySharedLinks",
+                                                      this_network=ob.net)
+    
+    rewiring.transient.mod <- run_network_turnover_mod(this_component="OnlySharedLinks",
+                                                       this_network=trans.net)
+    
+    ## Host-driven turnover
+    host.driven.obligate.mod <- run_network_turnover_mod(this_component="TurnoverAbsencePollinators",
+                                                         this_network=ob.net)
+    
+    host.driven.transient.mod <- run_network_turnover_mod(this_component="TurnoverAbsencePollinators",
+                                                          this_network=trans.net)
+    
+    ## Microbe-driven turnover
+    microbe.driven.obligate.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceMicrobes",
+                                                            this_network=ob.net)
+    
+    microbe.driven.transient.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceMicrobes",
+                                                             this_network=trans.net)
+    
+    ## Complete turnover
+    complete.obligate.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceBoth",
+                                                      this_network=ob.net)
+    
+    complete.transient.mod <- run_network_turnover_mod(this_component="TurnoverAbsenceBoth",
+                                                       this_network=trans.net)
+    
+    ## save out models
+    save(int.obligate.mod,
+         int.transient.mod,
+         speccomp.obligate.mod,
+         speccomp.transient.mod,
+         rewiring.obligate.mod,
+         rewiring.transient.mod,
+         host.driven.obligate.mod,
+         host.driven.transient.mod,
+         microbe.driven.obligate.mod,
+         microbe.driven.transient.mod,
+         complete.obligate.mod,
+         complete.transient.mod,
+         file=filepath) ## TODO update with correct filepath
+  } else { 
+    load(filepath) ## TODO update with correct filepath
+  }
+}
+
+
 
 # Function: plot_network_turnover_mod_single
 #
