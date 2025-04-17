@@ -43,7 +43,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="All" to run models for full host dataset with the full list of solitary and social strong HAMs
 ## set hosts="Social" to run mods for social host dataset with social strong HAMS
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
-hosts="All"
+hosts="Solitary"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -199,7 +199,7 @@ if(hosts=='Solitary'){
 ## only need to run models once, otherwise will load models
 
 if(hosts=="All"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_poll_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_poll_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_allhosts.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -207,7 +207,7 @@ if(hosts=="All"){
 }
 ## Social hosts, social strong associated microbes included
 if(hosts=="Social"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -216,7 +216,7 @@ if(hosts=="Social"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
