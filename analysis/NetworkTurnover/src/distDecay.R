@@ -174,7 +174,7 @@ genusspecies_decay_model <- function(data, type, which, model.type){
 microbe_type_decay_model <- function(data, type, model.type){
   #bray curtis dissimilarity matrix of 16s
   
-  if(type == 'Obligate'){
+  if(type == 'ObligateAll'){
     abund <- data %>%
       filter(WeightsObligateMicrobe == 1) %>%
       select(UniqueID, starts_with('16s')) %>%
@@ -186,7 +186,7 @@ microbe_type_decay_model <- function(data, type, model.type){
       select(UniqueID, Long, Lat) %>%
       select(-UniqueID) %>%
       mutate()
-  } else if (type == 'Facultative'){
+  } else if (type == 'TransientAll'){
     abund <- data %>%
       filter(WeightsTransientMicrobe == 1) %>%
       select(UniqueID, starts_with('16s')) %>%
@@ -195,6 +195,54 @@ microbe_type_decay_model <- function(data, type, model.type){
     #distance matrix of sites
     geo <- data %>%
       filter(WeightsTransientMicrobe == 1) %>%
+      select(UniqueID, Long, Lat) %>%
+      select(-UniqueID) %>%
+      mutate()
+  } else if (type == 'ObligateSocial'){
+    abund <- data %>%
+      filter(WeightsObligateSocialMicrobe == 1) %>%
+      select(UniqueID, starts_with('16s')) %>%
+      select(-UniqueID)
+    
+    #distance matrix of sites
+    geo <- data %>%
+      filter(WeightsObligateSocialMicrobe == 1) %>%
+      select(UniqueID, Long, Lat) %>%
+      select(-UniqueID) %>%
+      mutate()
+  } else if (type == 'TransientSocial'){
+    abund <- data %>%
+      filter(WeightsTransientSocialMicrobe == 1) %>%
+      select(UniqueID, starts_with('16s')) %>%
+      select(-UniqueID)
+    
+    #distance matrix of sites
+    geo <- data %>%
+      filter(WeightsTransientSocialMicrobe == 1) %>%
+      select(UniqueID, Long, Lat) %>%
+      select(-UniqueID) %>%
+      mutate()
+  } else if (type == 'ObligateSolitary'){
+    abund <- data %>%
+      filter(WeightsObligateSolitaryMicrobe == 1) %>%
+      select(UniqueID, starts_with('16s')) %>%
+      select(-UniqueID)
+    
+    #distance matrix of sites
+    geo <- data %>%
+      filter(WeightsObligateSolitaryMicrobe == 1) %>%
+      select(UniqueID, Long, Lat) %>%
+      select(-UniqueID) %>%
+      mutate()
+  } else if (type == 'TransientSolitary'){
+    abund <- data %>%
+      filter(WeightsTransientSolitaryMicrobe == 1) %>%
+      select(UniqueID, starts_with('16s')) %>%
+      select(-UniqueID)
+    
+    #distance matrix of sites
+    geo <- data %>%
+      filter(WeightsTransientSolitaryMicrobe == 1) %>%
       select(UniqueID, Long, Lat) %>%
       select(-UniqueID) %>%
       mutate()
