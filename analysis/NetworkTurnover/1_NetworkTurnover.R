@@ -44,7 +44,9 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="All" to run models for full host dataset with the full list of solitary and social strong HAMs
 ## set hosts="Social" to run mods for social host dataset with social strong HAMS
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
-hosts="Solitary"
+## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
+
+hosts="AllPathogens"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -90,6 +92,10 @@ solitary_obligate_list <- c("Acetobacteraceae",
                             "Oxalobacteraceae"
                             )
 
+pathogens <- c("Wolbachia",
+               "Erwinia",
+               "Hafnia")
+
 
 ## Full host community, full set of strong host associates
 if(hosts=="All"){
@@ -120,6 +126,16 @@ if(hosts=="Solitary"){
   solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
                                                      these_obligates = solitary_obligate_list,
                                                      genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
+}
+## Full host community, all pathogens
+if(hosts=="AllPathogens"){
+  pathogen_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
+                                                 these_obligates=pathogens
+  )
+  
+  pathogen_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                   these_obligates=c(pathogens, full_obligate_list)
+  )
 }
 
 ## **********************************************************
@@ -192,6 +208,26 @@ if(hosts=='Solitary'){
   transient_solitary_betalink_clean <- fix_betalinkr_output(transient_solitary_betalink)
 }
 
+if(hosts=='AllPathogens'){
+  ## ALL HOSTS ALL STRONG ASSOCIATE NETWORKS
+  find_sites_for_betalinkr(pathogen_obligate_network)
+  
+  ## enter the site matrices printed above 
+  obligate_pathogen_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                            partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  obligate_pathogen_betalink_clean <- fix_betalinkr_output(obligate_pathogen_betalink)
+  
+  ## ALL HOSTS ALL WEAK ASSOCIATE NETWORKS
+  find_sites_for_betalinkr(pathogen_transient_network)
+  
+  ## enter the site matrices printed above 
+  transient_pathogen_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                             partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  transient_pathogen_betalink_clean <- fix_betalinkr_output(transient_pathogen_betalink)
+}
+
 ## **********************************************************
 ## Run or load turnover by geo distance models
 ## **********************************************************
@@ -225,6 +261,13 @@ if(hosts=="Solitary"){
   )
 }
 
+if(hosts=="AllPathogens"){
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+                        ob.net=obligate_pathogen_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                        trans.net=NULL, # Null by default, if run.mods==TRUE input transient network here
+                        filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_allpathogens.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+  )
+}
 
 ## Pairwise bray curtis distance decay models
 
