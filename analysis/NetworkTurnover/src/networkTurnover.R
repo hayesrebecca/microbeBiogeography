@@ -622,7 +622,7 @@ plot_network_turnover_mod_compare <- function(mod1,
     labs(x = "Geographic Distance (km)", y = label,
          fill = "Credible Interval") +
     theme_classic() +
-    ylim(-0.15,1) +
+    ylim(-0.25,1.25) +
     theme(axis.title.x = element_text(size=16),
           axis.title.y = element_text(size=16),
           text = element_text(size=16),

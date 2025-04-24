@@ -46,7 +46,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
 
-hosts="AllPathogens"
+hosts="Solitary"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -248,7 +248,7 @@ if(hosts=="Social"){
   run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                        filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
 
@@ -257,7 +257,7 @@ if(hosts=="Solitary"){
   run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                        filepath="../../../skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
 
@@ -269,7 +269,9 @@ if(hosts=="AllPathogens"){
   )
 }
 
-## Pairwise bray curtis distance decay models
+## **********************************************************
+## Pairwise bray curtis dissimilarity calculation and plots
+## **********************************************************
 
 ## prep microbe weights
 spec.net <- prepMicrobeWeights(spec.net)
@@ -297,6 +299,7 @@ if (hosts=="All"){
   }
 }
 
+hosts="Social"
 if (hosts=="Social"){
   if (run.decay.mictype.mods == TRUE){
     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
@@ -316,8 +319,22 @@ if (hosts=="Social"){
   } else {
     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
   }
+  ## microbe type comparison
+  social_bray <- plot_decay_ggplot_combined(ob_model,
+                                            trans_model,
+                                            mod1color='darkgreen',
+                                            mod2color='darkorange',
+                                            alpha1=0.003,
+                                            alpha2=0.005,
+                                            lty1='solid',
+                                            lty2='solid',
+                                            xlab="Geographic Distance (km)",
+                                            ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  
+  social_bray <- social_bray + labs(tag="A.")
+  
 }
-
+hosts="Solitary"
 if (hosts=="Solitary"){
   if (run.decay.mictype.mods == TRUE){
     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
@@ -337,6 +354,19 @@ if (hosts=="Solitary"){
   } else {
     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
   }
+  ## microbe type comparison
+  solitary_bray <- plot_decay_ggplot_combined(ob_model,
+                                          trans_model,
+                                          mod1color='darkgreen',
+                                          mod2color='darkorange',
+                                          alpha1=0.003,
+                                          alpha2=0.005,
+                                          lty1='solid',
+                                          lty2='solid',
+                                          xlab="Geographic Distance (km)",
+                                          ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  
+  solitary_bray <- solitary_bray + labs(tag="B.")
 }
 
 if (hosts=="AllPathogens"){
@@ -360,6 +390,18 @@ if (hosts=="AllPathogens"){
   }
 }
 
+bray_plots=TRUE
+if(bray_plots==TRUE){
+  # Arrange all panels in the PDF output
+  pdf("figures/bray_combined.pdf", width = 11, height = 8.5)  
+  grid.arrange(
+    social_bray,
+    solitary_bray,
+    ncol = 2
+  )
+  dev.off()
+}
+
 ## **********************************************************
 ## Make combined plots for model results for obligate vs
 ##  transient networks
@@ -367,18 +409,33 @@ if (hosts=="AllPathogens"){
 
 if (hosts=="All") {
   # microbe type comparison
-  altpanelA <- plot_decay_ggplot_combined(ob_model,
-                                       trans_model,
-                                       mod1color='darkgreen',
-                                       mod2color='darkorange',
-                                       alpha1=0.01,
-                                       alpha2=0.01,
-                                       lty1='solid',
-                                       lty2='solid',
-                                       xlab="Geographic Distance (km)",
-                                       ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # altpanelA <- plot_decay_ggplot_combined(ob_model,
+  #                                      trans_model,
+  #                                      mod1color='darkgreen',
+  #                                      mod2color='darkorange',
+  #                                      alpha1=0.01,
+  #                                      alpha2=0.01,
+  #                                      lty1='solid',
+  #                                      lty2='solid',
+  #                                      xlab="Geographic Distance (km)",
+  #                                      ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # 
+  # altpanelA <- altpanelA + labs(tag="A.")
   
-  altpanelA <- altpanelA + labs(tag="A.")
+  ## A. Species turnover
+  speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
+                                                mod2=speccomp.transient.mod,
+                                                this.network1=obligate_poll_betalink_clean,
+                                                this.network2=transient_poll_betalink_clean,
+                                                network_type1='Obligate',
+                                                network_type2='Transient',
+                                                this.effect="GeoDist",
+                                                this.resp="DissimilaritySpeciesComposition",
+                                                label="Total Composition Turnover")
+  speccomp.plot[[1]]
+  
+  panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  speccomp.table <- speccomp.plot[[2]]
   
   ## B. Interaction turnover
   int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
@@ -462,7 +519,7 @@ if (hosts=="All") {
   # Arrange all panels in the PDF output
   pdf("figures/turnover_combined_all.pdf", width = 8.5, height = 11)  
   grid.arrange(
-      altpanelA,
+      panelA,
       panelB,
       panelC,
       panelD,
@@ -473,7 +530,8 @@ if (hosts=="All") {
   dev.off()
   
   ## Combine results tables and save out
-  combined.table <- bind_rows(int.table,
+  combined.table <- bind_rows(speccomp.table,
+                              int.table,
                               rewiring.table,
                               host.table,
                               microbe.table,
@@ -483,21 +541,35 @@ if (hosts=="All") {
             file=sprintf("saved/tables/turnover_all.csv")) 
 }
 
-
 if (hosts=="Social") {
   # microbe type comparison
-  altpanelA <- plot_decay_ggplot_combined(ob_model,
-                                          trans_model,
-                                          mod1color='darkgreen',
-                                          mod2color='darkorange',
-                                          alpha1=0.01,
-                                          alpha2=0.01,
-                                          lty1='solid',
-                                          lty2='solid',
-                                          xlab="Geographic Distance (km)",
-                                          ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # altpanelA <- plot_decay_ggplot_combined(ob_model,
+  #                                         trans_model,
+  #                                         mod1color='darkgreen',
+  #                                         mod2color='darkorange',
+  #                                         alpha1=0.01,
+  #                                         alpha2=0.01,
+  #                                         lty1='solid',
+  #                                         lty2='solid',
+  #                                         xlab="Geographic Distance (km)",
+  #                                         ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # 
+  # altpanelA <- altpanelA + labs(tag="A.")
   
-  altpanelA <- altpanelA + labs(tag="A.")
+  ## A. Species turnover
+  speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
+                                                     mod2=speccomp.transient.mod,
+                                                     this.network1=obligate_social_betalink_clean,
+                                                     this.network2=transient_social_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="DissimilaritySpeciesComposition",
+                                                     label="Total Composition Turnover")
+  speccomp.plot[[1]]
+  
+  panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  speccomp.table <- speccomp.plot[[2]]
   
   ## B. Interaction turnover
   int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
@@ -581,7 +653,7 @@ if (hosts=="Social") {
   # Arrange all panels in the PDF output
   pdf("figures/turnover_combined_social.pdf", width = 8.5, height = 11)  
   grid.arrange(
-    altpanelA,
+    panelA,
     panelB,
     panelC,
     panelD,
@@ -592,7 +664,8 @@ if (hosts=="Social") {
   dev.off()
   
   ## Combine results tables and save out
-  combined.table <- bind_rows(int.table,
+  combined.table <- bind_rows(speccomp.table,
+                              int.table,
                               rewiring.table,
                               host.table,
                               microbe.table,
@@ -602,21 +675,35 @@ if (hosts=="Social") {
             file=sprintf("saved/tables/turnover_social.csv")) 
 }
 
-
 if (hosts=="Solitary") {
   # microbe type comparison
-  altpanelA <- plot_decay_ggplot_combined(ob_model,
-                                          trans_model,
-                                          mod1color='darkgreen',
-                                          mod2color='darkorange',
-                                          alpha1=0.01,
-                                          alpha2=0.01,
-                                          lty1='solid',
-                                          lty2='solid',
-                                          xlab="Geographic Distance (km)",
-                                          ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # altpanelA <- plot_decay_ggplot_combined(ob_model,
+  #                                         trans_model,
+  #                                         mod1color='darkgreen',
+  #                                         mod2color='darkorange',
+  #                                         alpha1=0.01,
+  #                                         alpha2=0.01,
+  #                                         lty1='solid',
+  #                                         lty2='solid',
+  #                                         xlab="Geographic Distance (km)",
+  #                                         ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # 
+  # altpanelA <- altpanelA + labs(tag="A.")
   
-  altpanelA <- altpanelA + labs(tag="A.")
+  ## A. Species turnover
+  speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
+                                                     mod2=speccomp.transient.mod,
+                                                     this.network1=obligate_solitary_betalink_clean,
+                                                     this.network2=transient_solitary_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="DissimilaritySpeciesComposition",
+                                                     label="Total Composition Turnover")
+  speccomp.plot[[1]]
+  
+  panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  speccomp.table <- speccomp.plot[[2]]
   
   ## B. Interaction turnover
   int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
@@ -700,7 +787,7 @@ if (hosts=="Solitary") {
   # Arrange all panels in the PDF output
   pdf("figures/turnover_combined_solitary.pdf", width = 8.5, height = 11)  
   grid.arrange(
-    altpanelA,
+    panelA,
     panelB,
     panelC,
     panelD,
@@ -711,7 +798,8 @@ if (hosts=="Solitary") {
   dev.off()
   
   ## Combine results tables and save out
-  combined.table <- bind_rows(int.table,
+  combined.table <- bind_rows(speccomp.table,
+                              int.table,
                               rewiring.table,
                               host.table,
                               microbe.table,
