@@ -261,7 +261,7 @@ microbe_type_decay_model <- function(data, type, model.type){
   
   dist_decay_model <- betapart::decay.model(dist.abund,
                                             dist.geo,
-                                            y.type='dissim',
+                                            y.type='similarities',
                                             model.type = model.type,
                                             perm=999)
   dist_decay_model
