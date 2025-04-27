@@ -46,7 +46,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
 
-hosts="Solitary"
+hosts="Social"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -276,7 +276,7 @@ if(hosts=="AllPathogens"){
 ## prep microbe weights
 spec.net <- prepMicrobeWeights(spec.net)
 
-run.decay.mictype.mods=FALSE
+run.decay.mictype.mods=TRUE
 
 if (hosts=="All"){
   if (run.decay.mictype.mods == TRUE){
@@ -291,6 +291,20 @@ if (hosts=="All"){
     ob_model <- microbe_type_decay_model(spec16s, 'ObligateAll', model.type = 'exp')
     trans_model <- microbe_type_decay_model(spec16s, 'TransientAll', model.type='exp')
     ## save out models
+    ## microbe type comparison
+    all_bray <- plot_decay_ggplot_combined(ob_model,
+                                              trans_model,
+                                              mod1color='darkgreen',
+                                              mod2color='darkorange',
+                                              alpha1=0.003,
+                                              alpha2=0.005,
+                                              lty1='solid',
+                                              lty2='solid',
+                                              xlab="Geographic Distance (km)",
+                                              ylab='Bray-Curtis Similarity', add.points=TRUE)
+    
+    plot(all_bray)
+    
     save(ob_model,
          trans_model,
          file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_all.Rdata") ## TODO update filepaths
@@ -329,7 +343,7 @@ if (hosts=="Social"){
                                             lty1='solid',
                                             lty2='solid',
                                             xlab="Geographic Distance (km)",
-                                            ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+                                            ylab='Bray-Curtis Similarity', add.points=TRUE)
   
   social_bray <- social_bray + labs(tag="A.")
   
@@ -364,7 +378,7 @@ if (hosts=="Solitary"){
                                           lty1='solid',
                                           lty2='solid',
                                           xlab="Geographic Distance (km)",
-                                          ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+                                          ylab='Bray-Curtis Similarity', add.points=TRUE)
   
   solitary_bray <- solitary_bray + labs(tag="B.")
 }

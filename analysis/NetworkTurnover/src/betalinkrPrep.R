@@ -64,56 +64,56 @@ dir.create("figures/final", showWarnings = FALSE)
 
 
 #### species level networks
-CH1 <- only_transient_network$CH
-CH1 <- CH1[,colnames(CH1)!=""]
-HM1 <- only_transient_network$HM
-JC1 <- only_transient_network$JC
-MM1 <- only_transient_network$MM
-MM1 <- MM1[,colnames(MM1)!=""]
-PL1 <- only_transient_network$PL
-PL1 <- PL1[,colnames(PL1)!=""]
-RP1 <- only_transient_network$RP
-SC1 <- only_transient_network$SC
-SM1 <- only_transient_network$SM
-
-# CH1 <- as.matrix(only_transient_network_BM$CH)
+# CH1 <- only_transient_network$CH
 # CH1 <- CH1[,colnames(CH1)!=""]
-# HM1 <- only_transient_network_BM$HM
-# JC1 <- only_transient_network_BM$JC
-# MM1 <- only_transient_network_BM$MM 
+# HM1 <- only_transient_network$HM
+# JC1 <- only_transient_network$JC
+# MM1 <- only_transient_network$MM
 # MM1 <- MM1[,colnames(MM1)!=""]
-# PL1 <- only_transient_network_BM$PL
+# PL1 <- only_transient_network$PL
 # PL1 <- PL1[,colnames(PL1)!=""]
-# #RP1 <- only_transient_network_BM$RP
-# SC1 <- only_transient_network_BM$SC 
-# SM1 <- only_transient_network_BM$SM
-
-
-lower.order <- "Microbes"
-higher.order <- "Pollinators"
-
-
-transient_poll_betalink <- betalinkr_multi(webarray = webs2array(HM1, JC1, MM1, PL1, SM1, SC1, CH1, RP1),
-                                           partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
-
-#View(transient_poll_betalink)
-
-colnames(transient_poll_betalink) <- c("Site1",
-                                       "Site2",
-                                       "DissimilaritySpeciesComposition",
-                                       "OnlySharedLinks",
-                                       "WholeNetworkLinks",
-                                       "SpeciesTurnoverLinks",
-                                       paste("TurnoverAbsence",lower.order,sep=""),
-                                       paste("TurnoverAbsence",higher.order,sep=""),
-                                       "TurnoverAbsenceBoth")
-
-## change Site1 and Site2 names to match obligate turnover betalinkr
-transient_poll_betalink$Site1 <- gsub("1", "", transient_poll_betalink$Site1)
-transient_poll_betalink$Site2 <- gsub("1", "", transient_poll_betalink$Site2)
-
-## add column for geographic distance between sites
-transient_poll_betalink$GeoDist <- apply(transient_poll_betalink, 1, function(x){
-  geo.dist[x["Site1"],  x["Site2"]]
-})
-
+# RP1 <- only_transient_network$RP
+# SC1 <- only_transient_network$SC
+# SM1 <- only_transient_network$SM
+# 
+# # CH1 <- as.matrix(only_transient_network_BM$CH)
+# # CH1 <- CH1[,colnames(CH1)!=""]
+# # HM1 <- only_transient_network_BM$HM
+# # JC1 <- only_transient_network_BM$JC
+# # MM1 <- only_transient_network_BM$MM 
+# # MM1 <- MM1[,colnames(MM1)!=""]
+# # PL1 <- only_transient_network_BM$PL
+# # PL1 <- PL1[,colnames(PL1)!=""]
+# # #RP1 <- only_transient_network_BM$RP
+# # SC1 <- only_transient_network_BM$SC 
+# # SM1 <- only_transient_network_BM$SM
+# 
+# 
+# lower.order <- "Microbes"
+# higher.order <- "Pollinators"
+# 
+# 
+# transient_poll_betalink <- betalinkr_multi(webarray = webs2array(HM1, JC1, MM1, PL1, SM1, SC1, CH1, RP1),
+#                                            partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+# 
+# #View(transient_poll_betalink)
+# 
+# colnames(transient_poll_betalink) <- c("Site1",
+#                                        "Site2",
+#                                        "DissimilaritySpeciesComposition",
+#                                        "OnlySharedLinks",
+#                                        "WholeNetworkLinks",
+#                                        "SpeciesTurnoverLinks",
+#                                        paste("TurnoverAbsence",lower.order,sep=""),
+#                                        paste("TurnoverAbsence",higher.order,sep=""),
+#                                        "TurnoverAbsenceBoth")
+# 
+# ## change Site1 and Site2 names to match obligate turnover betalinkr
+# transient_poll_betalink$Site1 <- gsub("1", "", transient_poll_betalink$Site1)
+# transient_poll_betalink$Site2 <- gsub("1", "", transient_poll_betalink$Site2)
+# 
+# ## add column for geographic distance between sites
+# transient_poll_betalink$GeoDist <- apply(transient_poll_betalink, 1, function(x){
+#   geo.dist[x["Site1"],  x["Site2"]]
+# })
+# 
