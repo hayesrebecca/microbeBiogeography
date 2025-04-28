@@ -385,7 +385,7 @@ plot_decay_ggplot_combined <- function(x,
                                        lwd = 1.5,
                                        cex = 1,
                                        add.points=TRUE) {
-  
+  browser()
   # Extract data and fitted values
   data1 <- data.frame(x$data.x, x$data.y)
   model1 <- x$model

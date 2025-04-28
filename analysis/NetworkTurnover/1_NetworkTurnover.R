@@ -291,19 +291,7 @@ if (hosts=="All"){
     ob_model <- microbe_type_decay_model(spec16s, 'ObligateAll', model.type = 'exp')
     trans_model <- microbe_type_decay_model(spec16s, 'TransientAll', model.type='exp')
     ## save out models
-    ## microbe type comparison
-    all_bray <- plot_decay_ggplot_combined(ob_model,
-                                              trans_model,
-                                              mod1color='darkgreen',
-                                              mod2color='darkorange',
-                                              alpha1=0.003,
-                                              alpha2=0.005,
-                                              lty1='solid',
-                                              lty2='solid',
-                                              xlab="Geographic Distance (km)",
-                                              ylab='Bray-Curtis Similarity', add.points=TRUE)
-    
-    plot(all_bray)
+   
     
     save(ob_model,
          trans_model,
@@ -311,6 +299,19 @@ if (hosts=="All"){
   } else {
     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_all.Rdata") ## TODO update filepaths
   }
+  ## microbe type comparison
+  all_bray <- plot_decay_ggplot_combined(ob_model,
+                                         trans_model,
+                                         mod1color='darkgreen',
+                                         mod2color='darkorange',
+                                         alpha1=0.003,
+                                         alpha2=0.005,
+                                         lty1='solid',
+                                         lty2='solid',
+                                         xlab="Geographic Distance (km)",
+                                         ylab='Bray-Curtis Similarity', add.points=TRUE)
+  
+  plot(all_bray)
 }
 
 hosts="Social"
@@ -349,6 +350,7 @@ if (hosts=="Social"){
   
 }
 hosts="Solitary"
+run.decay.mictype.mods = FALSE
 if (hosts=="Solitary"){
   if (run.decay.mictype.mods == TRUE){
     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
