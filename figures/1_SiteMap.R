@@ -87,13 +87,7 @@ map <-ggplot() +
           pch=25,
           size=3,
           stroke=1.1) +
-  geom_sf(data = subset(site_points[these_rows,], ScreenedMicrobes == "0"), 
-          color = "black",
-          fill = "orange",
-          pch=21,
-          size=2,
-          stroke=1.1) +
-  geom_sf_label_repel(data=subset(site_points[these_rows,]),
+  geom_sf_label_repel(data = subset(site_points[these_rows,], ScreenedMicrobes == "1"),
                       aes(label=Site, geometry=geometry),
                       #point.padding = 10,
                       min.segment.length = 0,
@@ -111,7 +105,7 @@ map <-ggplot() +
 map
 
 ## Toggle on to save out figure, updating filepath to your desired save location
-save.fig = FALSE
+save.fig = TRUE
 if (save.fig == TRUE){
 setwd("../../skyIslands/analysis/microbiome/figures/")
 ggsave(map, file="map.pdf", height=6, width=4)
