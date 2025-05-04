@@ -245,7 +245,7 @@ if(hosts=="All"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Social"){
-  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results

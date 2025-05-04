@@ -258,7 +258,7 @@ run_network_turnover_mod <- function(this_component,
   # Fit model
   mod1 <-  brm(forms, this_network,
                cores=1,
-               iter = 20000,
+               iter = 10^5,
                chains = 1,
                thin=1,
                init=0,
