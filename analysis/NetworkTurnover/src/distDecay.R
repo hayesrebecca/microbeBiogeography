@@ -385,15 +385,17 @@ plot_decay_ggplot_combined <- function(x,
                                        lwd = 1.5,
                                        cex = 1,
                                        add.points=TRUE) {
-  browser()
+  #browser()
   # Extract data and fitted values
   data1 <- data.frame(x$data.x, x$data.y)
+  data1$x.data.y <- 1 - data1$x.data.y
   model1 <- x$model
   fitted_values1 <- data.frame(fitted(model1)[order(data1$x.data.x)])
   sorted_data1 <- data1[order(data1$x.data.x), ]
   
   # Extract data and fitted values
   data2 <- data.frame(z$data.x, z$data.y)
+  data2$z.data.y <- 1 - data2$z.data.y
   model2 <- z$model
   fitted_values2 <- data.frame(fitted(model2)[order(data2$z.data.x)])
   sorted_data2 <- data2[order(data2$z.data.x), ]

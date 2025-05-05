@@ -46,7 +46,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
 
-hosts="Solitary"
+hosts="Social"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -254,7 +254,7 @@ if(hosts=="Social"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -273,10 +273,11 @@ if(hosts=="AllPathogens"){
 ## Pairwise bray curtis dissimilarity calculation and plots
 ## **********************************************************
 
+run.decay.mictype.mods=FALSE
+
+if (run.decay.mictype.mods){
 ## prep microbe weights
 spec.net <- prepMicrobeWeights(spec.net)
-
-run.decay.mictype.mods=FALSE
 
 if (hosts=="All"){
   if (run.decay.mictype.mods == TRUE){
@@ -314,7 +315,7 @@ if (hosts=="All"){
   plot(all_bray)
 }
 
-hosts="Social"
+#hosts="Social"
 if (hosts=="Social"){
   if (run.decay.mictype.mods == TRUE){
     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
@@ -349,7 +350,7 @@ if (hosts=="Social"){
   social_bray <- social_bray + labs(tag="A.")
   
 }
-hosts="Solitary"
+#hosts="Solitary"
 run.decay.mictype.mods = FALSE
 if (hosts=="Solitary"){
   if (run.decay.mictype.mods == TRUE){
@@ -405,7 +406,7 @@ if (hosts=="AllPathogens"){
     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_pathogens.Rdata") ## TODO update filepaths
   }
 }
-
+}
 bray_plots=FALSE
 if(bray_plots==TRUE){
   # Arrange all panels in the PDF output
