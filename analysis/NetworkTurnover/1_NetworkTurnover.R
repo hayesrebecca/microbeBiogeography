@@ -46,7 +46,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
 
-hosts="Social"
+hosts="Solitary"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -451,7 +451,7 @@ if (hosts=="Social") {
                                                 label="Total Interaction Turnover")
   int.plot[[1]]
   
-  panelB <- int.plot[[1]] + labs(tag="B.")
+  social_panelC <- int.plot[[1]] + labs(tag="C.")
   int.table <- int.plot[[2]]
   
   
@@ -468,7 +468,7 @@ if (hosts=="Social") {
                                                      label="Rewiring")
   rewiring.plot[[1]]
   
-  panelC <- rewiring.plot[[1]] + labs(tag="C.")
+  panelC <- rewiring.plot[[1]] + labs(tag="A.")
   rewiring.table <- rewiring.plot[[2]]
   
   ## D. Host-driven turnover
@@ -483,7 +483,7 @@ if (hosts=="Social") {
                                                         this.resp="TurnoverAbsencePollinators",
                                                         label="Host-Driven Turnover")
   host.driven.plot[[1]]
-  panelD <- host.driven.plot[[1]] + labs(tag="D.")
+  panelD <- host.driven.plot[[1]] + labs(tag="B.")
   host.table <- host.driven.plot[[2]]
   
   ## E. Microbe-driven turnover
@@ -498,7 +498,7 @@ if (hosts=="Social") {
                                                            this.resp="TurnoverAbsenceMicrobes",
                                                            label="Microbe-Driven Turnover")
   microbe.driven.plot[[1]]
-  panelE <- microbe.driven.plot[[1]] + labs(tag="E.")
+  panelE <- microbe.driven.plot[[1]] + labs(tag="C.")
   microbe.table <- microbe.driven.plot[[2]]
   
   ## F. Complete turnover
@@ -514,7 +514,7 @@ if (hosts=="Social") {
                                                      label="Complete Turnover")
   
   complete.plot[[1]]
-  panelF <- complete.plot[[1]] + labs(tag="F.")
+  panelF <- complete.plot[[1]] + labs(tag="D.")
   complete.table <- complete.plot[[2]]
   
   
@@ -585,7 +585,7 @@ if (hosts=="Solitary") {
                                                 label="Total Interaction Turnover")
   int.plot[[1]]
   
-  panelB <- int.plot[[1]] + labs(tag="B.")
+  solitary_panelD <- int.plot[[1]] + labs(tag="D.")
   int.table <- int.plot[[2]]
   
   
@@ -602,7 +602,7 @@ if (hosts=="Solitary") {
                                                      label="Rewiring")
   rewiring.plot[[1]]
   
-  panelC <- rewiring.plot[[1]] + labs(tag="C.")
+  panelC <- rewiring.plot[[1]] + labs(tag="A.")
   rewiring.table <- rewiring.plot[[2]]
   
   ## D. Host-driven turnover
@@ -617,7 +617,7 @@ if (hosts=="Solitary") {
                                                         this.resp="TurnoverAbsencePollinators",
                                                         label="Host-Driven Turnover")
   host.driven.plot[[1]]
-  panelD <- host.driven.plot[[1]] + labs(tag="D.")
+  panelD <- host.driven.plot[[1]] + labs(tag="B.")
   host.table <- host.driven.plot[[2]]
   
   ## E. Microbe-driven turnover
@@ -632,7 +632,7 @@ if (hosts=="Solitary") {
                                                            this.resp="TurnoverAbsenceMicrobes",
                                                            label="Microbe-Driven Turnover")
   microbe.driven.plot[[1]]
-  panelE <- microbe.driven.plot[[1]] + labs(tag="E.")
+  panelE <- microbe.driven.plot[[1]] + labs(tag="C.")
   microbe.table <- microbe.driven.plot[[2]]
   
   ## F. Complete turnover
@@ -648,7 +648,7 @@ if (hosts=="Solitary") {
                                                      label="Complete Turnover")
   
   complete.plot[[1]]
-  panelF <- complete.plot[[1]] + labs(tag="F.")
+  panelF <- complete.plot[[1]] + labs(tag="D.")
   complete.table <- complete.plot[[2]]
   
   
@@ -800,7 +800,7 @@ if (hosts=="AllPathogens") {
 ## Pairwise bray curtis dissimilarity calculation and plots
 ## **********************************************************
 
-run.decay.mictype.mods=FALSE
+run.decay.mictype.mods=TRUE
 
 ## prep microbe weights
 spec.net <- prepMicrobeWeights(spec.net)
@@ -877,7 +877,7 @@ if (hosts=="Social"){
   
 }
 #hosts="Solitary"
-run.decay.mictype.mods = FALSE
+run.decay.mictype.mods = TRUE
 if (hosts=="Solitary"){
   if (run.decay.mictype.mods == TRUE){
     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
@@ -890,6 +890,7 @@ if (hosts=="Solitary"){
     
     ob_model <- microbe_type_decay_model(spec16s, 'ObligateSolitary', model.type = 'exp')
     trans_model <- microbe_type_decay_model(spec16s, 'TransientSolitary', model.type='exp')
+    #browser()
     ## save out models
     save(ob_model,
          trans_model,
@@ -898,18 +899,18 @@ if (hosts=="Solitary"){
     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
   }
   ## microbe type comparison
-  solitary_bray <- plot_decay_ggplot_combined(ob_model,
-                                              trans_model,
-                                              mod1color='darkgreen',
-                                              mod2color='darkorange',
-                                              alpha1=0.003,
-                                              alpha2=0.005,
-                                              lty1='solid',
-                                              lty2='solid',
-                                              xlab="Geographic Distance (km)",
-                                              ylab='Bray-Curtis Similarity', add.points=TRUE)
-  
-  solitary_bray <- solitary_bray + labs(tag="B.")
+  # solitary_bray <- plot_decay_ggplot_combined(ob_model,
+  #                                             trans_model,
+  #                                             mod1color='darkgreen',
+  #                                             mod2color='darkorange',
+  #                                             alpha1=0.003,
+  #                                             alpha2=0.005,
+  #                                             lty1='solid',
+  #                                             lty2='solid',
+  #                                             xlab="Geographic Distance (km)",
+  #                                             ylab='Bray-Curtis Similarity', add.points=TRUE)
+  # 
+  # solitary_bray <- solitary_bray + labs(tag="B.")
   
   if (hosts=="AllPathogens"){
     if (run.decay.mictype.mods == TRUE){
