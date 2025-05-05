@@ -245,7 +245,7 @@ if(hosts=="All"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Social"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -269,155 +269,6 @@ if(hosts=="AllPathogens"){
   )
 }
 
-## **********************************************************
-## Pairwise bray curtis dissimilarity calculation and plots
-## **********************************************************
-
-run.decay.mictype.mods=FALSE
-
-if (run.decay.mictype.mods){
-## prep microbe weights
-spec.net <- prepMicrobeWeights(spec.net)
-
-if (hosts=="All"){
-  if (run.decay.mictype.mods == TRUE){
-    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
-    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateMicrobe", "WeightsTransientMicrobe")
-    
-    spec16s <- spec.net %>%
-      filter(Apidae == 1) %>%
-      select(all_of(meta_cols), starts_with('16s')) %>%
-      na.omit()
-    
-    ob_model <- microbe_type_decay_model(spec16s, 'ObligateAll', model.type = 'exp')
-    trans_model <- microbe_type_decay_model(spec16s, 'TransientAll', model.type='exp')
-    ## save out models
-   
-    
-    save(ob_model,
-         trans_model,
-         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_all.Rdata") ## TODO update filepaths
-  } else {
-    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_all.Rdata") ## TODO update filepaths
-  }
-  ## microbe type comparison
-  all_bray <- plot_decay_ggplot_combined(ob_model,
-                                         trans_model,
-                                         mod1color='darkgreen',
-                                         mod2color='darkorange',
-                                         alpha1=0.003,
-                                         alpha2=0.005,
-                                         lty1='solid',
-                                         lty2='solid',
-                                         xlab="Geographic Distance (km)",
-                                         ylab='Bray-Curtis Similarity', add.points=TRUE)
-  
-  plot(all_bray)
-}
-
-#hosts="Social"
-if (hosts=="Social"){
-  if (run.decay.mictype.mods == TRUE){
-    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
-    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateSocialMicrobe", "WeightsTransientSocialMicrobe")
-    
-    spec16s <- spec.net %>%
-      filter(Apidae == 1) %>%
-      select(all_of(meta_cols), starts_with('16s')) %>%
-      na.omit()
-    
-    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'exp')
-    trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type='exp')
-    ## save out models
-    save(ob_model,
-         trans_model,
-         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
-  } else {
-    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
-  }
-  ## microbe type comparison
-  social_bray <- plot_decay_ggplot_combined(ob_model,
-                                            trans_model,
-                                            mod1color='darkgreen',
-                                            mod2color='darkorange',
-                                            alpha1=0.003,
-                                            alpha2=0.005,
-                                            lty1='solid',
-                                            lty2='solid',
-                                            xlab="Geographic Distance (km)",
-                                            ylab='Bray-Curtis Similarity', add.points=TRUE)
-  
-  social_bray <- social_bray + labs(tag="A.")
-  
-}
-#hosts="Solitary"
-run.decay.mictype.mods = FALSE
-if (hosts=="Solitary"){
-  if (run.decay.mictype.mods == TRUE){
-    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
-    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateSolitaryMicrobe", "WeightsTransientSolitaryMicrobe")
-    
-    spec16s <- spec.net %>%
-      filter(Apidae == 1) %>%
-      select(all_of(meta_cols), starts_with('16s')) %>%
-      na.omit()
-    
-    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSolitary', model.type = 'exp')
-    trans_model <- microbe_type_decay_model(spec16s, 'TransientSolitary', model.type='exp')
-    ## save out models
-    save(ob_model,
-         trans_model,
-         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
-  } else {
-    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
-  }
-  ## microbe type comparison
-  solitary_bray <- plot_decay_ggplot_combined(ob_model,
-                                          trans_model,
-                                          mod1color='darkgreen',
-                                          mod2color='darkorange',
-                                          alpha1=0.003,
-                                          alpha2=0.005,
-                                          lty1='solid',
-                                          lty2='solid',
-                                          xlab="Geographic Distance (km)",
-                                          ylab='Bray-Curtis Similarity', add.points=TRUE)
-  
-  solitary_bray <- solitary_bray + labs(tag="B.")
-}
-
-if (hosts=="AllPathogens"){
-  if (run.decay.mictype.mods == TRUE){
-    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
-    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateMicrobe", "WeightsTransientMicrobe")
-    
-    spec16s <- spec.net %>%
-      filter(Apidae == 1) %>%
-      select(all_of(meta_cols), starts_with('16s')) %>%
-      na.omit()
-    
-    ob_model <- microbe_type_decay_model(spec16s, 'ObligateAll', model.type = 'exp')
-    trans_model <- microbe_type_decay_model(spec16s, 'TransientAll', model.type='exp')
-    ## save out models
-    save(ob_model,
-         trans_model,
-         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_pathogens.Rdata") ## TODO update filepaths
-  } else {
-    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_pathogens.Rdata") ## TODO update filepaths
-  }
-}
-}
-bray_plots=FALSE
-if(bray_plots==TRUE){
-  # Arrange all panels in the PDF output
-  pdf("figures/bray_combined.pdf", width = 11, height = 8.5)  
-  grid.arrange(
-    social_bray,
-    solitary_bray,
-    ncol = 2
-  )
-  dev.off()
-}
 
 ## **********************************************************
 ## Make combined plots for model results for obligate vs
@@ -670,8 +521,8 @@ if (hosts=="Social") {
   # Arrange all panels in the PDF output
   pdf("figures/turnover_combined_social.pdf", width = 8.5, height = 11)  
   grid.arrange(
-    panelA,
-    panelB,
+    #panelA,
+    #panelB,
     panelC,
     panelD,
     panelE,
@@ -804,8 +655,8 @@ if (hosts=="Solitary") {
   # Arrange all panels in the PDF output
   pdf("figures/turnover_combined_solitary.pdf", width = 8.5, height = 11)  
   grid.arrange(
-    panelA,
-    panelB,
+    #panelA,
+    #panelB,
     panelC,
     panelD,
     panelE,
@@ -825,6 +676,7 @@ if (hosts=="Solitary") {
   write.csv(combined.table,
             file=sprintf("saved/tables/turnover_solitary.csv")) 
 }
+
 
 if (hosts=="AllPathogens") {
   # # microbe type comparison
@@ -944,5 +796,151 @@ if (hosts=="AllPathogens") {
             file=sprintf("saved/tables/turnover_pathogens.csv")) 
 }
 
+## **********************************************************
+## Pairwise bray curtis dissimilarity calculation and plots
+## **********************************************************
 
+run.decay.mictype.mods=FALSE
+
+## prep microbe weights
+spec.net <- prepMicrobeWeights(spec.net)
+
+if (hosts=="All"){
+  if (run.decay.mictype.mods == TRUE){
+    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateMicrobe", "WeightsTransientMicrobe")
+    
+    spec16s <- spec.net %>%
+      filter(Apidae == 1) %>%
+      select(all_of(meta_cols), starts_with('16s')) %>%
+      na.omit()
+    
+    ob_model <- microbe_type_decay_model(spec16s, 'ObligateAll', model.type = 'exp')
+    trans_model <- microbe_type_decay_model(spec16s, 'TransientAll', model.type='exp')
+    ## save out models
+    
+    
+    save(ob_model,
+         trans_model,
+         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_all.Rdata") ## TODO update filepaths
+  } else {
+    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_all.Rdata") ## TODO update filepaths
+  }
+  ## microbe type comparison
+  all_bray <- plot_decay_ggplot_combined(ob_model,
+                                         trans_model,
+                                         mod1color='darkgreen',
+                                         mod2color='darkorange',
+                                         alpha1=0.003,
+                                         alpha2=0.005,
+                                         lty1='solid',
+                                         lty2='solid',
+                                         xlab="Geographic Distance (km)",
+                                         ylab='Bray-Curtis Similarity', add.points=TRUE)
+  
+  plot(all_bray)
+}
+
+#hosts="Social"
+if (hosts=="Social"){
+  if (run.decay.mictype.mods == TRUE){
+    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateSocialMicrobe", "WeightsTransientSocialMicrobe")
+    
+    spec16s <- spec.net %>%
+      filter(Apidae == 1) %>%
+      select(all_of(meta_cols), starts_with('16s')) %>%
+      na.omit()
+    
+    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'exp')
+    trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type='exp')
+    ## save out models
+    save(ob_model,
+         trans_model,
+         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
+  } else {
+    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
+  }
+  ## microbe type comparison
+  social_bray <- plot_decay_ggplot_combined(ob_model,
+                                            trans_model,
+                                            mod1color='darkgreen',
+                                            mod2color='darkorange',
+                                            alpha1=0.003,
+                                            alpha2=0.005,
+                                            lty1='solid',
+                                            lty2='solid',
+                                            xlab="Geographic Distance (km)",
+                                            ylab='Bray-Curtis Similarity', add.points=TRUE)
+  
+  social_bray <- social_bray + labs(tag="A.")
+  
+}
+#hosts="Solitary"
+run.decay.mictype.mods = FALSE
+if (hosts=="Solitary"){
+  if (run.decay.mictype.mods == TRUE){
+    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateSolitaryMicrobe", "WeightsTransientSolitaryMicrobe")
+    
+    spec16s <- spec.net %>%
+      filter(Apidae == 1) %>%
+      select(all_of(meta_cols), starts_with('16s')) %>%
+      na.omit()
+    
+    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSolitary', model.type = 'exp')
+    trans_model <- microbe_type_decay_model(spec16s, 'TransientSolitary', model.type='exp')
+    ## save out models
+    save(ob_model,
+         trans_model,
+         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
+  } else {
+    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
+  }
+  ## microbe type comparison
+  solitary_bray <- plot_decay_ggplot_combined(ob_model,
+                                              trans_model,
+                                              mod1color='darkgreen',
+                                              mod2color='darkorange',
+                                              alpha1=0.003,
+                                              alpha2=0.005,
+                                              lty1='solid',
+                                              lty2='solid',
+                                              xlab="Geographic Distance (km)",
+                                              ylab='Bray-Curtis Similarity', add.points=TRUE)
+  
+  solitary_bray <- solitary_bray + labs(tag="B.")
+  
+  if (hosts=="AllPathogens"){
+    if (run.decay.mictype.mods == TRUE){
+      #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+      meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateMicrobe", "WeightsTransientMicrobe")
+      
+      spec16s <- spec.net %>%
+        filter(Apidae == 1) %>%
+        select(all_of(meta_cols), starts_with('16s')) %>%
+        na.omit()
+      
+      ob_model <- microbe_type_decay_model(spec16s, 'ObligateAll', model.type = 'exp')
+      trans_model <- microbe_type_decay_model(spec16s, 'TransientAll', model.type='exp')
+      ## save out models
+      save(ob_model,
+           trans_model,
+           file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_pathogens.Rdata") ## TODO update filepaths
+    } else {
+      load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_pathogens.Rdata") ## TODO update filepaths
+    }
+  }
+}
+bray_plots=FALSE
+if(bray_plots==TRUE){
+  # Arrange all panels in the PDF output
+  pdf("figures/bray_combined.pdf", width = 11, height = 8.5)  
+  grid.arrange(
+    social_bray,
+    solitary_bray,
+    ncol = 2
+  )
+  dev.off()
+}
 
