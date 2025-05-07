@@ -60,8 +60,8 @@ finalASV <- tibble::rownames_to_column(finalASV, "UniqueID") #make rownames (Uni
 ## **********************************************************
 
 ## Bombus tree
-bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE, add_tip_labs = TRUE)
-panelA <- bombus_tree[[1]] + labs(tag="A. Bombus (n=444)")
+bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE, add_tip_labs = FALSE)
+panelA <- bombus_tree[[1]] + labs(tag="A. Bombus (n=283)")
 bombus_meta <- bombus_tree[[2]]
 panelA
 
@@ -76,8 +76,8 @@ plot(panelA)
 dev.off()
 
 ## Melissodes tree
-melissodes_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Melissodes", genus.or.spp='Genus', finalASV, melissodes_sites, do_collapse = TRUE, add_tip_labs = TRUE)
-panelD <- melissodes_tree[[1]] + labs(tag="D. Melissodes (n=51)")
+melissodes_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Melissodes", genus.or.spp='Genus', finalASV, melissodes_sites, do_collapse = TRUE, add_tip_labs = FALSE)
+panelD <- melissodes_tree[[1]] + labs(tag="D. Melissodes (n=46)")
 melissodes_meta <- melissodes_tree[[2]]
 panelD
 
@@ -93,8 +93,8 @@ dev.off()
 
 
 ## Apis tree
-apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE, add_tip_labs = TRUE)
-panelB <- apis_tree[[1]] + labs(tag="B. Apis (n=245)")
+apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE, add_tip_labs = FALSE)
+panelB <- apis_tree[[1]] + labs(tag="B. Apis (n=220)")
 apis_meta <- apis_tree[[2]]
 panelB
 
@@ -109,8 +109,8 @@ plot(panelB)
 dev.off()
 
 ## Megachile tree
-megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE, add_tip_labs = TRUE)
-panelF <- megachile_tree[[1]] + labs(tag="F. Megachile (n=43)")
+megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE, add_tip_labs = FALSE)
+panelF <- megachile_tree[[1]] + labs(tag="F. Megachile (n=41)")
 megachile_meta <- megachile_tree[[2]]
 panelF
 
@@ -125,8 +125,8 @@ plot(panelF)
 dev.off()
 
 ## Anthophora tree
-anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE, add_tip_labs = TRUE)
-panelC <- anthophora_tree[[1]] + labs(tag="C. Anthophora (n=38)")
+anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE, add_tip_labs = FALSE)
+panelC <- anthophora_tree[[1]] + labs(tag="C. Anthophora (n=34)")
 anthophora_meta <- anthophora_tree[[2]]
 panelC
 
@@ -141,8 +141,8 @@ plot(panelC)
 dev.off()
 
 ## Andrena tree
-andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE, add_tip_labs=TRUE)
-panelE <- andrena_tree[[1]] + labs(tag="E. Andrena (n=115)")
+andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE, add_tip_labs=FALSE)
+panelE <- andrena_tree[[1]] + labs(tag="E. Andrena (n=80)")
 andrena_meta <- andrena_tree[[2]]
 panelE
 
@@ -160,43 +160,109 @@ dev.off()
 ## **********************************************************
 ## Create custom legend
 ## **********************************************************
+library(ggplot2) 
+library(cowplot)  # for get_legend()
 
-## Obligate symbionts
-these_obligates <- c("Acetobacteraceae",
-                     "Bartonellaceae",
-                     "Bifidobacteriaceae",
-                     "Lactobacillaceae",
-                     "Neisseriaceae",
-                     "Orbaceae")
+# All 15 taxa
+these_obligates <- c(
+  "Acetobacteraceae", # BothObligate
+  "Lactobacillaceae", # BothObligate
+  "Bartonella",       # SocialObligate
+  "Bifidobacteriaceae",# SocialObligate
+  "Neisseriaceae",    # SocialObligate
+  "Orbaceae",         # SocialObligate
+  "Bacillaceae",      # SolitaryObligate
+  "Burkholderiaceae", # SolitaryObligate
+  "Clostridiaceae",   # SolitaryObligate
+  "Comamonadaceae",   # SolitaryObligate
+  "Enterobacteriaceae", # SolitaryObligate
+  "Methylobacteriaceae", # SolitaryObligate
+  "Moraxellaceae",    # SolitaryObligate
+  "Oxalobacteraceae", # SolitaryObligate
+  "Sphingomonadaceae" # SolitaryObligate
+)
 
+# Matching colors
+leg_col_order <- c(
+  "#F6A600", # Acetobacteraceae
+  "#882D17", # Lactobacillaceae
+  "#7C6BD0", # Bartonella
+  "#B3446C", # Bifidobacteriaceae
+  "#DCD300", # Neisseriaceae
+  "#8DB600", # Orbaceae
+  "#5AC8FA", # Bacillaceae
+  "#E66100", # Burkholderiaceae
+  "#3CB371", # Clostridiaceae
+  "#5D8AA8", # Comamonadaceae
+  "#C83737", # Enterobacteriaceae
+  "#A85C90", # Methylobacteriaceae
+  "#1F78B4", # Moraxellaceae
+  "#D2691E", # Oxalobacteraceae
+  "#20B2AA"  # Sphingomonadaceae
+)
 
-leg_col_order <- c("#F6A600", #Acetobacteriaceae
-                   "#604E97", #Bartonellaceae
-                   "#B3446C", #Bifidobacteriaceae
-                   "#882D17", #Lactobacillaceae
-                   "#DCD300", #Neisseriaceae
-                   "#8DB600") #Orbaceae
+# Matching shapes
+leg_shape_order <- c(
+  21, # Acetobacteraceae
+  21, # Lactobacillaceae
+  22, # Bartonella
+  22, # Bifidobacteriaceae
+  22, # Neisseriaceae
+  22, # Orbaceae
+  24, # Bacillaceae
+  24, # Burkholderiaceae
+  24, # Clostridiaceae
+  24, # Comamonadaceae
+  24, # Enterobacteriaceae
+  24, # Methylobacteriaceae
+  24, # Moraxellaceae
+  24, # Oxalobacteraceae
+  24  # Sphingomonadaceae
+)
 
-# Create a DataFrame to store legend data
-data.leg <- data.frame( 
-  Xdata = rnorm(6),
-  Ydata = rnorm(6), 
+# Create a DataFrame for legend
+data.leg <- data.frame(
+  Xdata = rnorm(length(these_obligates)),
+  Ydata = rnorm(length(these_obligates)),
   Family = these_obligates,
-  leg_color = leg_col_order)
+  leg_color = leg_col_order,
+  leg_shape = leg_shape_order
+)
 
-# Create a Scatter Plot to generate proper legend
-gplot <- ggplot(data.leg, aes(Xdata, Ydata, color = Family)) +    
-  geom_point(size = 7) +
-  scale_color_manual(values=data.leg$leg_color) +
-  theme(legend.position='bottom') +
-  labs(color='Bacteria Family') +
-  guides(colour = guide_legend(nrow = 1)) + theme(legend.key=element_blank(),
-                                                   legend.text=element_text(size=12),
-                                                  legend.title=element_text(size=12))
+# Order the taxa within each shape group alphabetically
+data.leg$Family <- factor(data.leg$Family, levels = unique(c(
+  # First, order taxa with shape 21 alphabetically
+  sort(data.leg$Family[data.leg$leg_shape == 21]), 
+  # Then, order taxa with shape 22 alphabetically
+  sort(data.leg$Family[data.leg$leg_shape == 22]),
+  # Then, order taxa with shape 24 alphabetically
+  sort(data.leg$Family[data.leg$leg_shape == 24])
+)))
 
-## Draw only legend without plot 
-panelG  <- get_legend(gplot)                     
-plot(get_legend(gplot) )
+# Create plot for legend
+gplot <- ggplot(data.leg, aes(Xdata, Ydata, fill = Family, shape = Family)) +
+  geom_point(size = 7, color = "black") +  # Black outline for clarity
+  scale_fill_manual(values = setNames(leg_col_order, these_obligates)) +
+  scale_shape_manual(values = setNames(leg_shape_order, these_obligates)) +
+  theme(
+    legend.position = 'bottom',
+    legend.box = "vertical",
+    legend.title = element_text(size = 14),
+    legend.text = element_text(size = 12),
+    legend.key = element_blank()
+  ) +
+  labs(fill = 'Bacteria Family', shape = 'Bacteria Family') +
+  guides(
+    fill = guide_legend(nrow = 3, ncol = 5),  # Adjust the number of rows and columns
+    shape = guide_legend(nrow = 3, ncol = 5)  # Adjust the number of rows and columns
+  )
+
+# Draw only the legend
+panelG <- get_legend(gplot)
+plot(panelG)
+
+
+
 
 ## **********************************************************
 ## Create full paneled figure with legend

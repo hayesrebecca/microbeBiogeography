@@ -267,20 +267,40 @@ phylotree_heatmap_byGenus <- function(tree.object,
     group_by(bacteria) %>%
     add_count(Site, name="n_individuals") %>%
     mutate(SiteCount = as.numeric(n_distinct(Site))) %>%
-    mutate(Obligate = as.numeric(str_detect(bacteria, "Lactobacillaceae|Bifidobacteriaceae|Neisseriaceae|Orbaceae|Bartonella|Acetobacteraceae")))
+    mutate(SocialObligate = as.numeric(str_detect(bacteria, "Bifidobacteriaceae|Neisseriaceae|Orbaceae|Bartonella"))) %>%
+    mutate(SolitaryObligate = as.numeric(str_detect(bacteria, "Bacillaceae|Burkholderiaceae|Clostridiaceae|Comamonadaceae|Enterobacteriaceae|Methylobacteriaceae|Moraxellaceae|Sphingomonadaceae|Oxalobacteraceae"))) %>%
+    mutate(BothObligate = as.numeric(str_detect(bacteria, "Lactobacillaceae|Acetobacteraceae")))
+  
   
   
   # Preprocess data to create a 'color' column
   features_site_metadata <- features_site_metadata %>%
     mutate(obligate_color = case_when(
-      grepl("Lactobacillaceae", bacteria) ~ "#882D17",   # Lactobacillaceae
-      grepl("Bifidobacteriaceae", bacteria) ~ "#B3446C", # Bifidobacteriaceae
-      grepl("Neisseriaceae", bacteria) ~ "#DCD300",      # Neisseriaceae
-      grepl("Orbaceae", bacteria) ~ "#8DB600",           # Orbaceae
-      grepl("Bartonella", bacteria) ~ "#604E97",         # Bartonella
-      grepl("Acetobacteraceae", bacteria) ~ "#F6A600",   # Acetobacteraceae
-      TRUE ~ NA_character_  # Default NA for non-matching cases
+      # BothObligate
+      grepl("Acetobacteraceae", bacteria) ~ "#F6A600",  # bright orange-yellow
+      grepl("Lactobacillaceae", bacteria) ~ "#882D17",  # dark red-brown
+      
+      # SocialObligate
+      grepl("Bartonella", bacteria) ~ "#7C6BD0",        # lighter blue-purple
+      grepl("Bifidobacteriaceae", bacteria) ~ "#B3446C", # magenta
+      grepl("Neisseriaceae", bacteria) ~ "#DCD300",     # yellow
+      grepl("Orbaceae", bacteria) ~ "#8DB600",          # lime green
+      
+      # SolitaryObligate
+      grepl("Bacillaceae", bacteria) ~ "#5AC8FA",        # sky blue
+      grepl("Burkholderiaceae", bacteria) ~ "#E66100",   # bright orange
+      grepl("Clostridiaceae", bacteria) ~ "#3CB371",     # medium green
+      grepl("Comamonadaceae", bacteria) ~ "#5D8AA8",     # dusty blue
+      grepl("Enterobacteriaceae", bacteria) ~ "#C83737", # red
+      grepl("Methylobacteriaceae", bacteria) ~ "#A85C90",# dusty pink
+      grepl("Moraxellaceae", bacteria) ~ "#1F78B4",      # vivid blue
+      grepl("Oxalobacteraceae", bacteria) ~ "#D2691E",   # orange-brown
+      grepl("Sphingomonadaceae", bacteria) ~ "#20B2AA",  # teal
+      
+      # Default
+      TRUE ~ NA_character_
     ))
+  
   
   tree_tip_labs <- gentree$tip.label
   
@@ -307,13 +327,25 @@ phylotree_heatmap_byGenus <- function(tree.object,
     p
   }
   # Add logical columns to p$data for each family
-  p$data$Orbaceae_match <- grepl("Orbaceae", p$data$label, fixed = TRUE)
-  p$data$Lactobacillaceae_match <- grepl("Lactobacillaceae", p$data$label, fixed = TRUE)
-  p$data$Neisseriaceae_match <- grepl("Neisseriaceae", p$data$label, fixed = TRUE)
-  p$data$Bifidobacteriaceae_match <- grepl("Bifidobacteriaceae", p$data$label, fixed = TRUE)
   p$data$Acetobacteraceae_match <- grepl("Acetobacteraceae", p$data$label, fixed = TRUE)
-  p$data$Bartonella_match <- grepl("Bartonella", p$data$label, fixed = TRUE)
+  p$data$Lactobacillaceae_match <- grepl("Lactobacillaceae", p$data$label, fixed = TRUE)
   
+  p$data$Bartonella_match <- grepl("Bartonella", p$data$label, fixed = TRUE)
+  p$data$Bifidobacteriaceae_match <- grepl("Bifidobacteriaceae", p$data$label, fixed = TRUE)
+  p$data$Neisseriaceae_match <- grepl("Neisseriaceae", p$data$label, fixed = TRUE)
+  p$data$Orbaceae_match <- grepl("Orbaceae", p$data$label, fixed = TRUE)
+  
+  p$data$Bacillaceae_match <- grepl("Bacillaceae", p$data$label, fixed = TRUE)
+  p$data$Burkholderiaceae_match <- grepl("Burkholderiaceae", p$data$label, fixed = TRUE)
+  p$data$Clostridiaceae_match <- grepl("Clostridiaceae", p$data$label, fixed = TRUE)
+  p$data$Comamonadaceae_match <- grepl("Comamonadaceae", p$data$label, fixed = TRUE)
+  p$data$Enterobacteriaceae_match <- grepl("Enterobacteriaceae", p$data$label, fixed = TRUE)
+  p$data$Methylobacteriaceae_match <- grepl("Methylobacteriaceae", p$data$label, fixed = TRUE)
+  p$data$Moraxellaceae_match <- grepl("Moraxellaceae", p$data$label, fixed = TRUE)
+  p$data$Oxalobacteraceae_match <- grepl("Oxalobacteraceae", p$data$label, fixed = TRUE)
+  p$data$Sphingomonadaceae_match <- grepl("Sphingomonadaceae", p$data$label, fixed = TRUE)
+  
+  # Plot
   p2 <- p +
     new_scale_fill() +
     coord_cartesian(clip="off") +
@@ -325,7 +357,7 @@ phylotree_heatmap_byGenus <- function(tree.object,
       mapping=aes(y=bacteria,
                   fill=SiteCount, width=0.1),
       show.legend=TRUE) +
-    labs(fill='Number of Sites')+
+    labs(fill='Number of Sites') +
     scale_fill_gradient(high = "black", low ="lightgrey") +
     new_scale_fill() +
     geom_fruit(
@@ -336,20 +368,45 @@ phylotree_heatmap_byGenus <- function(tree.object,
       mapping=aes(y=bacteria,
                   fill=obligate_color, width=0.1),
       show.legend=FALSE) +
-    scale_fill_identity() + 
+    scale_fill_identity() +
     new_scale_fill() +
-    geom_tippoint(aes(subset = Orbaceae_match), 
-                  pch = 21, fill = "#8DB600", size = 4) +
-    geom_tippoint(aes(subset = Lactobacillaceae_match), 
-                  pch = 21, fill = "#882D17", size = 4) +
-    geom_tippoint(aes(subset = Neisseriaceae_match), 
-                  pch = 21, fill = "#DCD300", size = 4) +
-    geom_tippoint(aes(subset = Bifidobacteriaceae_match), 
-                  pch = 21, fill = "#B3446C", size = 4) +
-    geom_tippoint(aes(subset = Acetobacteraceae_match), 
+    
+    # BothObligate taxa
+    geom_tippoint(aes(subset = Acetobacteraceae_match),
                   pch = 21, fill = "#F6A600", size = 4) +
-    geom_tippoint(aes(subset = Bartonella_match), 
-                  pch = 21, fill = "#604E97", size = 4)
+    geom_tippoint(aes(subset = Lactobacillaceae_match),
+                  pch = 21, fill = "#882D17", size = 4) +
+    
+    # SocialObligate taxa
+    geom_tippoint(aes(subset = Bartonella_match),
+                  pch = 22, fill = "#7C6BD0", size = 4) +
+    geom_tippoint(aes(subset = Bifidobacteriaceae_match),
+                  pch = 22, fill = "#B3446C", size = 4) +
+    geom_tippoint(aes(subset = Neisseriaceae_match),
+                  pch = 22, fill = "#DCD300", size = 4) +
+    geom_tippoint(aes(subset = Orbaceae_match),
+                  pch = 22, fill = "#8DB600", size = 4) +
+    
+    # SolitaryObligate taxa
+    geom_tippoint(aes(subset = Bacillaceae_match),
+                  pch = 24, fill = "#5AC8FA", size = 4) +
+    geom_tippoint(aes(subset = Burkholderiaceae_match),
+                  pch = 24, fill = "#E66100", size = 4) +
+    geom_tippoint(aes(subset = Clostridiaceae_match),
+                  pch = 24, fill = "#3CB371", size = 4) +
+    geom_tippoint(aes(subset = Comamonadaceae_match),
+                  pch = 24, fill = "#5D8AA8", size = 4) +
+    geom_tippoint(aes(subset = Enterobacteriaceae_match),
+                  pch = 24, fill = "#C83737", size = 4) +
+    geom_tippoint(aes(subset = Methylobacteriaceae_match),
+                  pch = 24, fill = "#A85C90", size = 4) +
+    geom_tippoint(aes(subset = Moraxellaceae_match),
+                  pch = 24, fill = "#1F78B4", size = 4) +
+    geom_tippoint(aes(subset = Oxalobacteraceae_match),
+                  pch = 24, fill = "#D2691E", size = 4) +
+    geom_tippoint(aes(subset = Sphingomonadaceae_match),
+                  pch = 24, fill = "#20B2AA", size = 4)
+  
   ## list [[1]] is tree, [[2]] is metadata, [[3]] is tip.order
 
   
