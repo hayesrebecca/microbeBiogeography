@@ -238,38 +238,39 @@ phylotree_heatmap_byGenus <- function(tree.object,
       filter(Site_present > 0) 
   }
   
-  if (genus.or.spp=='Genus'){
+  if (genus.or.spp == 'Genus') {
+    
+    # Get UniqueID and Site where the genus is present
     meta_match_sites <- match_shared_ID(meta, matched_pres_meta) %>%
       select(UniqueID, Site, Genus) %>%
-      mutate(Site = factor(Site)) %>%
-      filter(Genus==this.species) %>%
-      select(!Genus) %>%
-      group_by(UniqueID, Site) %>%
-      mutate(n= n()) %>%
-      pivot_wider(names_from=Site,
-                  values_from = n,
-                  names_expand = TRUE,
-                  id_expand=TRUE) %>%
-      pivot_longer(cols=2:length(colnames(.)),
-                   names_to='Site',
-                   values_to='Site_present') %>%
-      filter(Site_present > 0) 
+      filter(Genus == this.species) %>%
+      select(-Genus) %>%
+      distinct(UniqueID, Site) %>%
+      mutate(Site = factor(Site))
   }
   
+  # Now get the total number of unique sites for this genus
+  total_sites_genus <- meta_match_sites %>%
+    pull(Site) %>%
+    n_distinct()
   
+  # Then match metadata and calculate percent presence
   features_site_metadata <- match_shared_ID(matched_pres_meta, meta_match_sites) %>%
-    right_join(meta_match_sites, by='UniqueID') %>%
+    right_join(meta_match_sites, by = 'UniqueID') %>%
     pivot_longer(cols = starts_with('16s'), names_to = 'bacteria', values_to = 'bact_pres') %>%
-    group_by(bacteria) %>%
     filter(bact_pres == 1) %>%
-    select(!bact_pres) %>%
-    relocate(bacteria) %>%
+    group_by(bacteria, Site) %>%
+    summarise(present = 1, .groups = 'drop') %>%   # mark presence at each site
     group_by(bacteria) %>%
-    add_count(Site, name="n_individuals") %>%
-    mutate(SiteCount = as.numeric(n_distinct(Site))) %>%
-    mutate(SocialObligate = as.numeric(str_detect(bacteria, "Bifidobacteriaceae|Neisseriaceae|Orbaceae|Bartonella"))) %>%
-    mutate(SolitaryObligate = as.numeric(str_detect(bacteria, "Bacillaceae|Burkholderiaceae|Clostridiaceae|Comamonadaceae|Enterobacteriaceae|Methylobacteriaceae|Moraxellaceae|Sphingomonadaceae|Oxalobacteraceae"))) %>%
-    mutate(BothObligate = as.numeric(str_detect(bacteria, "Lactobacillaceae|Acetobacteraceae")))
+    summarise(
+      n_sites_present = n(),                     # how many sites this bacteria is present at
+      percent_sites = (n_sites_present / total_sites_genus) * 100
+    ) %>%
+    mutate(
+      SocialObligate = as.numeric(str_detect(bacteria, "Bifidobacteriaceae|Neisseriaceae|Orbaceae|Bartonella")),
+      SolitaryObligate = as.numeric(str_detect(bacteria, "Bacillaceae|Burkholderiaceae|Clostridiaceae|Comamonadaceae|Enterobacteriaceae|Methylobacteriaceae|Moraxellaceae|Sphingomonadaceae|Oxalobacteraceae")),
+      BothObligate = as.numeric(str_detect(bacteria, "Lactobacillaceae|Acetobacteraceae"))
+    )
   
   
   
@@ -277,29 +278,35 @@ phylotree_heatmap_byGenus <- function(tree.object,
   features_site_metadata <- features_site_metadata %>%
     mutate(obligate_color = case_when(
       # BothObligate
-      grepl("Acetobacteraceae", bacteria) ~ "#F6A600",  # bright orange-yellow
-      grepl("Lactobacillaceae", bacteria) ~ "#882D17",  # dark red-brown
+      grepl("Acetobacteraceae", bacteria) ~ "#F6A600",
+      grepl("Lactobacillaceae", bacteria) ~ "#882D17",
       
       # SocialObligate
-      grepl("Bartonella", bacteria) ~ "#7C6BD0",        # lighter blue-purple
-      grepl("Bifidobacteriaceae", bacteria) ~ "#B3446C", # magenta
-      grepl("Neisseriaceae", bacteria) ~ "#DCD300",     # yellow
-      grepl("Orbaceae", bacteria) ~ "#8DB600",          # lime green
+      grepl("Bartonella", bacteria) ~ "#7C6BD0",
+      grepl("Bifidobacteriaceae", bacteria) ~ "#B3446C",
+      grepl("Neisseriaceae", bacteria) ~ "#DCD300",
+      grepl("Orbaceae", bacteria) ~ "#8DB600",
       
       # SolitaryObligate
-      grepl("Bacillaceae", bacteria) ~ "#5AC8FA",        # sky blue
-      grepl("Burkholderiaceae", bacteria) ~ "#E66100",   # bright orange
-      grepl("Clostridiaceae", bacteria) ~ "#3CB371",     # medium green
-      grepl("Comamonadaceae", bacteria) ~ "#5D8AA8",     # dusty blue
-      grepl("Enterobacteriaceae", bacteria) ~ "#C83737", # red
-      grepl("Methylobacteriaceae", bacteria) ~ "#A85C90",# dusty pink
-      grepl("Moraxellaceae", bacteria) ~ "#1F78B4",      # vivid blue
-      grepl("Oxalobacteraceae", bacteria) ~ "#D2691E",   # orange-brown
-      grepl("Sphingomonadaceae", bacteria) ~ "#20B2AA",  # teal
+      grepl("Bacillaceae", bacteria) ~ "#5AC8FA",
+      grepl("Burkholderiaceae", bacteria) ~ "#E66100",
+      grepl("Clostridiaceae", bacteria) ~ "#3CB371",
+      grepl("Comamonadaceae", bacteria) ~ "#5D8AA8",
+      grepl("Enterobacteriaceae", bacteria) ~ "#C83737",
+      grepl("Methylobacteriaceae", bacteria) ~ "#A85C90",
+      grepl("Moraxellaceae", bacteria) ~ "#1F78B4",
+      grepl("Oxalobacteraceae", bacteria) ~ "#D2691E",
+      grepl("Sphingomonadaceae", bacteria) ~ "#20B2AA",
+      
+      # Pathogens
+      grepl("Wolbachia", bacteria) ~ "#E41A1C",   # bright red
+      grepl("Erwinia", bacteria) ~ "#377EB8",     # deep blue
+      grepl("Hafnia", bacteria) ~ "#4DAF4A",      # bright green
       
       # Default
       TRUE ~ NA_character_
     ))
+  
   
   
   tree_tip_labs <- gentree$tip.label
@@ -345,6 +352,12 @@ phylotree_heatmap_byGenus <- function(tree.object,
   p$data$Oxalobacteraceae_match <- grepl("Oxalobacteraceae", p$data$label, fixed = TRUE)
   p$data$Sphingomonadaceae_match <- grepl("Sphingomonadaceae", p$data$label, fixed = TRUE)
   
+  # Pathogens
+  p$data$Wolbachia_match <- grepl("Wolbachia", p$data$label, fixed = TRUE)
+  p$data$Erwinia_match <- grepl("Erwinia", p$data$label, fixed = TRUE)
+  p$data$Hafnia_match <- grepl("Hafnia", p$data$label, fixed = TRUE)
+  
+  
   # Plot
   p2 <- p +
     new_scale_fill() +
@@ -355,9 +368,8 @@ phylotree_heatmap_byGenus <- function(tree.object,
       pwidth=0.05,
       offset=0.1,
       mapping=aes(y=bacteria,
-                  fill=SiteCount, width=0.1),
-      show.legend=TRUE) +
-    labs(fill='Number of Sites') +
+                  fill=percent_sites, width=0.1),
+      show.legend=FALSE) +
     scale_fill_gradient(high = "black", low ="lightgrey") +
     new_scale_fill() +
     geom_fruit(
@@ -405,7 +417,16 @@ phylotree_heatmap_byGenus <- function(tree.object,
     geom_tippoint(aes(subset = Oxalobacteraceae_match),
                   pch = 24, fill = "#D2691E", size = 4) +
     geom_tippoint(aes(subset = Sphingomonadaceae_match),
-                  pch = 24, fill = "#20B2AA", size = 4)
+                  pch = 24, fill = "#20B2AA", size = 4) +
+    
+    # Pathogen taxa
+    geom_tippoint(aes(subset = Wolbachia_match),
+                  pch = 23, fill = "#E41A1C", size = 4) +
+    geom_tippoint(aes(subset = Erwinia_match),
+                  pch = 23, fill = "#377EB8", size = 4) +
+    geom_tippoint(aes(subset = Hafnia_match),
+                  pch = 23, fill = "#4DAF4A", size = 4)
+  
   
   ## list [[1]] is tree, [[2]] is metadata, [[3]] is tip.order
 

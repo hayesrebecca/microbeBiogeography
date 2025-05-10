@@ -46,7 +46,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
 
-hosts="Social"
+hosts="Solitary"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -75,7 +75,10 @@ social_obligate_list <- c("Lactobacillaceae",
                           "Neisseriaceae",
                           "Orbaceae",
                           "Bartonella",
-                          "Acetobacteraceae"
+                          "Acetobacteraceae",
+                          "Hafnia",
+                          "Wolbachia",
+                          "Erwinia"
                           )
 
 solitary_obligate_list <- c("Acetobacteraceae",
@@ -89,7 +92,10 @@ solitary_obligate_list <- c("Acetobacteraceae",
                             "Methylobacteriaceae",
                             "Moraxellaceae",
                             "Sphingomonadaceae", 
-                            "Oxalobacteraceae"
+                            "Oxalobacteraceae",
+                            "Hafnia",
+                            "Wolbachia",
+                            "Erwinia"
                             )
 
 pathogens <- c("Wolbachia",
@@ -245,7 +251,7 @@ if(hosts=="All"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Social"){
-  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -254,7 +260,7 @@ if(hosts=="Social"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -424,7 +430,7 @@ if (hosts=="Social") {
   # 
   # altpanelA <- altpanelA + labs(tag="A.")
   
-  ## A. Species turnover
+  # A. Species turnover
   speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
                                                      mod2=speccomp.transient.mod,
                                                      this.network1=obligate_social_betalink_clean,
@@ -435,7 +441,7 @@ if (hosts=="Social") {
                                                      this.resp="DissimilaritySpeciesComposition",
                                                      label="Total Composition Turnover")
   speccomp.plot[[1]]
-  
+
   panelA <- speccomp.plot[[1]] + labs(tag="A.")
   speccomp.table <- speccomp.plot[[2]]
   
