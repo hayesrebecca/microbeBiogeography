@@ -75,7 +75,10 @@ social_obligate_list <- c("Lactobacillaceae",
                           "Neisseriaceae",
                           "Orbaceae",
                           "Bartonella",
-                          "Acetobacteraceae"
+                          "Acetobacteraceae",
+                          "Hafnia",
+                          "Wolbachia",
+                          "Erwinia"
 )
 
 solitary_obligate_list <- c("Acetobacteraceae",
@@ -89,7 +92,10 @@ solitary_obligate_list <- c("Acetobacteraceae",
                             "Methylobacteriaceae",
                             "Moraxellaceae",
                             "Sphingomonadaceae", 
-                            "Oxalobacteraceae"
+                            "Oxalobacteraceae",
+                            "Hafnia",
+                            "Wolbachia",
+                            "Erwinia"
 )
 
 pathogens <- c("Wolbachia",
@@ -179,12 +185,34 @@ if(hosts=='Solitary'){
 ## Pairwise bray curtis dissimilarity calculation and plots
 ## **********************************************************
 
-run.decay.mictype.mods=FALSE
+run.decay.mictype.mods=TRUE
 
 ## prep microbe weights
-#spec.net <- prepMicrobeWeights(spec.net)
+spec.net <- prepMicrobeWeights(spec.net)
 
-load("C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata")
+hosts="Social"
+ if (hosts=="Social"){
+   if (run.decay.mictype.mods == TRUE){
+     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+     meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateSocialMicrobe", "WeightsTransientSocialMicrobe")
+
+     spec16s <- spec.net %>%
+       filter(Apidae == 1) %>%
+       select(all_of(meta_cols), starts_with('16s')) %>%
+       na.omit()
+
+     ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'exp')
+     trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type='exp')
+     ## save out models
+     save(ob_model,
+          trans_model,
+          file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
+   } else {
+     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
+   }
+ }
+
+#load("C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata")
 
 ## microbe type comparison
 social_bray <- plot_decay_ggplot_combined(ob_model,
@@ -196,13 +224,33 @@ social_bray <- plot_decay_ggplot_combined(ob_model,
                                           lty1='solid',
                                           lty2='solid',
                                           xlab="Geographic Distance (km)",
-                                          ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+                                          ylab='Microbial Dissimilarity', add.points=TRUE)
 
-social_bray <- social_bray + labs(tag="A.")
+social_bray <- social_bray + labs(tag="A")
 
 
-
-load("C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata")
+hosts="Solitary"
+if (hosts=="Solitary"){
+  if (run.decay.mictype.mods == TRUE){
+    #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
+    meta_cols <- c('UniqueID', 'Genus', 'Species', 'GenusSpecies', 'Site', 'Lat', 'Long',"WeightsObligateSolitaryMicrobe", "WeightsTransientSolitaryMicrobe")
+    
+    spec16s <- spec.net %>%
+      filter(Apidae == 1) %>%
+      select(all_of(meta_cols), starts_with('16s')) %>%
+      na.omit()
+    
+    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSolitary', model.type = 'exp')
+    trans_model <- microbe_type_decay_model(spec16s, 'TransientSolitary', model.type='exp')
+    #browser()
+    ## save out models
+    save(ob_model,
+         trans_model,
+         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
+  } else {
+    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
+  }
+}
 solitary_bray <- plot_decay_ggplot_combined(ob_model,
                                           trans_model,
                                           mod1color='darkgreen',
@@ -212,9 +260,9 @@ solitary_bray <- plot_decay_ggplot_combined(ob_model,
                                           lty1='solid',
                                           lty2='solid',
                                           xlab="Geographic Distance (km)",
-                                          ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+                                          ylab='Microbial Dissimilarity', add.points=TRUE)
 
-solitary_bray <- solitary_bray + labs(tag="B.")
+solitary_bray <- solitary_bray + labs(tag="B")
 
 ## make panels for interaction turnover
 load("C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata")
@@ -229,9 +277,10 @@ social.int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
                                                      this.effect="GeoDist",
                                                      this.resp="WholeNetworkLinks",
                                                      label="Total Network Dissimilarity")
+
 social.int.plot[[1]]
 
-social_panelC <- social.int.plot[[1]] + labs(tag="C.")
+social_panelC <- social.int.plot[[1]] + labs(tag="C")
 
 
 
@@ -249,7 +298,7 @@ solitary.int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
                                                      label="Total Network Dissimilarity")
 solitary.int.plot[[1]]
 
-solitary_panelD <- solitary.int.plot[[1]] + labs(tag="D.")
+solitary_panelD <- solitary.int.plot[[1]] + labs(tag="D")
 
 
 bray_plots=TRUE

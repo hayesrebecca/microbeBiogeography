@@ -61,12 +61,12 @@ finalASV <- tibble::rownames_to_column(finalASV, "UniqueID") #make rownames (Uni
 
 ## Bombus tree
 bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelA <- bombus_tree[[1]] + labs(tag="A. Bombus (n=283)")
+panelA <- bombus_tree[[1]] + labs(tag="A Bombus")
 bombus_meta <- bombus_tree[[2]]
 panelA
 
 # Open a PDF device to save the plot
-pdf("bombus.pdf",
+pdf("figures/bombus.pdf",
     height=24, width=33)  # Adjust width and height as needed
 
 # Plot the final combined figure
@@ -77,12 +77,12 @@ dev.off()
 
 ## Melissodes tree
 melissodes_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Melissodes", genus.or.spp='Genus', finalASV, melissodes_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelD <- melissodes_tree[[1]] + labs(tag="D. Melissodes (n=46)")
+panelD <- melissodes_tree[[1]] + labs(tag="D Melissodes")
 melissodes_meta <- melissodes_tree[[2]]
 panelD
 
 # Open a PDF device to save the plot
-pdf("melissodes.pdf",
+pdf("figures/melissodes.pdf",
     height=24, width=33)  # Adjust width and height as needed
 
 # Plot the final combined figure
@@ -94,12 +94,12 @@ dev.off()
 
 ## Apis tree
 apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelB <- apis_tree[[1]] + labs(tag="B. Apis (n=220)")
+panelB <- apis_tree[[1]] + labs(tag="B Apis")
 apis_meta <- apis_tree[[2]]
 panelB
 
 # Open a PDF device to save the plot
-pdf("apis.pdf",
+pdf("figures/apis.pdf",
     height=24, width=33)  # Adjust width and height as needed
 
 # Plot the final combined figure
@@ -110,12 +110,12 @@ dev.off()
 
 ## Megachile tree
 megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelF <- megachile_tree[[1]] + labs(tag="F. Megachile (n=41)")
+panelF <- megachile_tree[[1]] + labs(tag="F Megachile")
 megachile_meta <- megachile_tree[[2]]
 panelF
 
 # Open a PDF device to save the plot
-pdf("megachile.pdf",
+pdf("figures/megachile.pdf",
     height=24, width=33)  # Adjust width and height as needed
 
 # Plot the final combined figure
@@ -126,12 +126,12 @@ dev.off()
 
 ## Anthophora tree
 anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelC <- anthophora_tree[[1]] + labs(tag="C. Anthophora (n=34)")
+panelC <- anthophora_tree[[1]] + labs(tag="C Anthophora")
 anthophora_meta <- anthophora_tree[[2]]
 panelC
 
 # Open a PDF device to save the plot
-pdf("anthophora.pdf",
+pdf("figures/anthophora.pdf",
     height=24, width=33)  # Adjust width and height as needed
 
 # Plot the final combined figure
@@ -142,7 +142,7 @@ dev.off()
 
 ## Andrena tree
 andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE, add_tip_labs=FALSE)
-panelE <- andrena_tree[[1]] + labs(tag="E. Andrena (n=80)")
+panelE <- andrena_tree[[1]] + labs(tag="E Andrena")
 andrena_meta <- andrena_tree[[2]]
 panelE
 
@@ -160,106 +160,87 @@ dev.off()
 ## **********************************************************
 ## Create custom legend
 ## **********************************************************
-library(ggplot2) 
-library(cowplot)  # for get_legend()
+library(ggplot2)
+library(cowplot) # for get_legend()
 
-# All 15 taxa
-these_obligates <- c(
-  "Acetobacteraceae", # BothObligate
-  "Lactobacillaceae", # BothObligate
-  "Bartonella",       # SocialObligate
-  "Bifidobacteriaceae",# SocialObligate
-  "Neisseriaceae",    # SocialObligate
-  "Orbaceae",         # SocialObligate
-  "Bacillaceae",      # SolitaryObligate
-  "Burkholderiaceae", # SolitaryObligate
-  "Clostridiaceae",   # SolitaryObligate
-  "Comamonadaceae",   # SolitaryObligate
-  "Enterobacteriaceae", # SolitaryObligate
-  "Methylobacteriaceae", # SolitaryObligate
-  "Moraxellaceae",    # SolitaryObligate
-  "Oxalobacteraceae", # SolitaryObligate
-  "Sphingomonadaceae" # SolitaryObligate
+# Define all families and their colors
+legend_families <- c(
+  # BothObligate
+  "Acetobacteraceae", "Lactobacillaceae",
+  
+  # SocialObligate
+  "Bartonellaceae", "Bifidobacteriaceae", "Neisseriaceae", "Orbaceae",
+  
+  # SolitaryObligate
+  "Bacillaceae", "Burkholderiaceae", "Clostridiaceae", "Comamonadaceae",
+  "Enterobacteriaceae", "Methylobacteriaceae", "Moraxellaceae", "Oxalobacteraceae", "Sphingomonadaceae",
+  
+  # Pathogens
+  "Wolbachia", "Erwinia", "Hafnia"
 )
 
-# Matching colors
-leg_col_order <- c(
-  "#F6A600", # Acetobacteraceae
-  "#882D17", # Lactobacillaceae
-  "#7C6BD0", # Bartonella
-  "#B3446C", # Bifidobacteriaceae
-  "#DCD300", # Neisseriaceae
-  "#8DB600", # Orbaceae
-  "#5AC8FA", # Bacillaceae
-  "#E66100", # Burkholderiaceae
-  "#3CB371", # Clostridiaceae
-  "#5D8AA8", # Comamonadaceae
-  "#C83737", # Enterobacteriaceae
-  "#A85C90", # Methylobacteriaceae
-  "#1F78B4", # Moraxellaceae
-  "#D2691E", # Oxalobacteraceae
-  "#20B2AA"  # Sphingomonadaceae
+legend_colors <- c(
+  # BothObligate
+  "#F6A600", "#882D17",
+  
+  # SocialObligate
+  "#7C6BD0", "#B3446C", "#DCD300", "#8DB600",
+  
+  # SolitaryObligate
+  "#5AC8FA", "#E66100", "#3CB371", "#5D8AA8",
+  "#C83737", "#A85C90", "#1F78B4", "#D2691E", "#20B2AA",
+  
+  # Pathogens
+  "#E41A1C", "#377EB8", "#4DAF4A"
 )
 
-# Matching shapes
-leg_shape_order <- c(
-  21, # Acetobacteraceae
-  21, # Lactobacillaceae
-  22, # Bartonella
-  22, # Bifidobacteriaceae
-  22, # Neisseriaceae
-  22, # Orbaceae
-  24, # Bacillaceae
-  24, # Burkholderiaceae
-  24, # Clostridiaceae
-  24, # Comamonadaceae
-  24, # Enterobacteriaceae
-  24, # Methylobacteriaceae
-  24, # Moraxellaceae
-  24, # Oxalobacteraceae
-  24  # Sphingomonadaceae
+legend_shapes <- c(
+  # BothObligate
+  21, 21,
+  
+  # SocialObligate
+  22, 22, 22, 22,
+  
+  # SolitaryObligate
+  24, 24, 24, 24, 24, 24, 24, 24, 24,
+  
+  # Pathogens
+  23, 23, 23
 )
 
-# Create a DataFrame for legend
-data.leg <- data.frame(
-  Xdata = rnorm(length(these_obligates)),
-  Ydata = rnorm(length(these_obligates)),
-  Family = these_obligates,
-  leg_color = leg_col_order,
-  leg_shape = leg_shape_order
+# Create a DataFrame
+legend_df <- data.frame(
+  Xdata = rnorm(length(legend_families)),
+  Ydata = rnorm(length(legend_families)),
+  Family = legend_families,
+  Color = legend_colors,
+  Shape = legend_shapes
 )
 
-# Order the taxa within each shape group alphabetically
-data.leg$Family <- factor(data.leg$Family, levels = unique(c(
-  # First, order taxa with shape 21 alphabetically
-  sort(data.leg$Family[data.leg$leg_shape == 21]), 
-  # Then, order taxa with shape 22 alphabetically
-  sort(data.leg$Family[data.leg$leg_shape == 22]),
-  # Then, order taxa with shape 24 alphabetically
-  sort(data.leg$Family[data.leg$leg_shape == 24])
-)))
-
-# Create plot for legend
-gplot <- ggplot(data.leg, aes(Xdata, Ydata, fill = Family, shape = Family)) +
-  geom_point(size = 7, color = "black") +  # Black outline for clarity
-  scale_fill_manual(values = setNames(leg_col_order, these_obligates)) +
-  scale_shape_manual(values = setNames(leg_shape_order, these_obligates)) +
+# Make a scatter plot just for the legend
+gplot <- ggplot(legend_df, aes(x = Xdata, y = Ydata, fill = Family, shape = Family)) +
+  geom_point(size = 7, color = "black") +  # 'color' sets outline, 'fill' sets inside
+  scale_fill_manual(values = setNames(legend_colors, legend_families)) +
+  scale_shape_manual(values = setNames(legend_shapes, legend_families)) +
+  theme_void() +
   theme(
-    legend.position = 'bottom',
-    legend.box = "vertical",
-    legend.title = element_text(size = 14),
+    legend.position = "right",
+    legend.key = element_blank(),
     legend.text = element_text(size = 12),
-    legend.key = element_blank()
+    legend.title = element_text(size = 12)
   ) +
-  labs(fill = 'Bacteria Family', shape = 'Bacteria Family') +
   guides(
-    fill = guide_legend(nrow = 3, ncol = 5),  # Adjust the number of rows and columns
-    shape = guide_legend(nrow = 3, ncol = 5)  # Adjust the number of rows and columns
-  )
+    fill = guide_legend(ncol = 1),  # stacked vertically
+    shape = guide_legend(ncol = 1)  # stacked vertically
+  ) +
+  labs(fill = "Bacteria Family", shape = "Bacteria Family")
 
-# Draw only the legend
+# Extract legend only
 panelG <- get_legend(gplot)
+
+# Plot just the legend
 plot(panelG)
+
 
 
 
@@ -283,8 +264,8 @@ panelG_centered <- arrangeGrob(panelG,
                                padding = unit(1, "lines"))  # Add padding if necessary
 
 # Open a PDF device to save the plot
-pdf("grid_trees_all.pdf",
-    height=24, width=33)  # Adjust width and height as needed
+pdf("figures/grid_trees_all.pdf",
+    height=20, width=24)  # Adjust width and height as needed
 
 # Plot the final combined figure
 grid.arrange(final_plot)
