@@ -304,7 +304,7 @@ solitary_panelD <- solitary.int.plot[[1]] + labs(tag="D")
 bray_plots=TRUE
 if(bray_plots==TRUE){
   # Arrange all panels in the PDF output
-  pdf("figures/bray_combined.pdf", width = 8.5, height = 11)  
+  pdf("figures/bray_combined.pdf", width = 7, height = 7)  
   grid.arrange(
     social_bray,
     solitary_bray,
