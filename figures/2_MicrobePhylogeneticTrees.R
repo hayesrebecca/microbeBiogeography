@@ -35,6 +35,7 @@ library(phytools)
 
 load("../microbeBiogeographyData.Rdata")
 
+load("C:/Users/rah10/Dropbox (University of Oregon)/skyIslands/data/spec_RBCL_16s.Rdata")
 source('src/trees_init.R')
 source('src/tree_functions.R')
 
@@ -161,9 +162,9 @@ dev.off()
 ## Create custom legend
 ## **********************************************************
 library(ggplot2)
-library(cowplot) # for get_legend()
+library(cowplot)
 
-# Define all families and their colors
+# Define all families, colors, shapes
 legend_families <- c(
   # BothObligate
   "Acetobacteraceae", "Lactobacillaceae",
@@ -180,66 +181,66 @@ legend_families <- c(
 )
 
 legend_colors <- c(
-  # BothObligate
-  "#F6A600", "#882D17",
-  
-  # SocialObligate
-  "#7C6BD0", "#B3446C", "#DCD300", "#8DB600",
-  
-  # SolitaryObligate
+  "#F6A600", "#882D17",           # circles
+  "#7C6BD0", "#B3446C", "#DCD300", "#8DB600",  # squares
   "#5AC8FA", "#E66100", "#3CB371", "#5D8AA8",
-  "#C83737", "#A85C90", "#1F78B4", "#D2691E", "#20B2AA",
-  
-  # Pathogens
-  "#E41A1C", "#377EB8", "#4DAF4A"
+  "#C83737", "#A85C90", "#1F78B4", "#D2691E", "#20B2AA", # triangles
+  "#E41A1C", "#377EB8", "#4DAF4A"  # diamonds
 )
 
 legend_shapes <- c(
-  # BothObligate
-  21, 21,
-  
-  # SocialObligate
-  22, 22, 22, 22,
-  
-  # SolitaryObligate
-  24, 24, 24, 24, 24, 24, 24, 24, 24,
-  
-  # Pathogens
-  23, 23, 23
+  21, 21,     # circles
+  22, 22, 22, 22,   # squares
+  24, 24, 24, 24, 24, 24, 24, 24, 24, # triangles
+  23, 23, 23   # diamonds
 )
 
-# Create a DataFrame
+# Create DataFrame
 legend_df <- data.frame(
-  Xdata = rnorm(length(legend_families)),
-  Ydata = rnorm(length(legend_families)),
   Family = legend_families,
   Color = legend_colors,
-  Shape = legend_shapes
+  Shape = legend_shapes,
+  stringsAsFactors = FALSE
 )
 
-# Make a scatter plot just for the legend
+# NOW: sort by shape first, then alphabetically within shape
+legend_df <- legend_df[order(legend_df$Shape, legend_df$Family), ]
+
+# Set Family as a factor with *this sorted order*
+legend_df$Family <- factor(legend_df$Family, levels = legend_df$Family)
+
+# Create fake coordinates
+legend_df$Xdata <- rnorm(nrow(legend_df))
+legend_df$Ydata <- rnorm(nrow(legend_df))
+# Create fake x and y for plotting (we don't actually care about them)
+legend_df$Xdata <- rnorm(nrow(legend_df))
+legend_df$Ydata <- rnorm(nrow(legend_df))
+
+# Make plot
 gplot <- ggplot(legend_df, aes(x = Xdata, y = Ydata, fill = Family, shape = Family)) +
-  geom_point(size = 7, color = "black") +  # 'color' sets outline, 'fill' sets inside
-  scale_fill_manual(values = setNames(legend_colors, legend_families)) +
-  scale_shape_manual(values = setNames(legend_shapes, legend_families)) +
+  geom_point(size = 7, color = "black") +  # 'color' is the outline
+  scale_fill_manual(values = setNames(legend_df$Color, legend_df$Family)) +
+  scale_shape_manual(values = setNames(legend_df$Shape, legend_df$Family)) +
   theme_void() +
   theme(
-    legend.position = "right",
-    legend.key = element_blank(),
+    legend.position = "bottom",
+    legend.box = "vertical",
+    legend.title = element_text(size = 14),
     legend.text = element_text(size = 12),
-    legend.title = element_text(size = 12)
+    legend.key = element_blank()
   ) +
+  labs(fill = "Bacteria Family", shape = "Bacteria Family") +
   guides(
-    fill = guide_legend(ncol = 1),  # stacked vertically
-    shape = guide_legend(ncol = 1)  # stacked vertically
-  ) +
-  labs(fill = "Bacteria Family", shape = "Bacteria Family")
+    fill = guide_legend(nrow = 3, ncol = 6, byrow = FALSE),  # Stack by group
+    shape = guide_legend(nrow = 3, ncol = 6, byrow = FALSE)
+  )
 
-# Extract legend only
+# Extract just the legend
 panelG <- get_legend(gplot)
 
 # Plot just the legend
 plot(panelG)
+
 
 
 
