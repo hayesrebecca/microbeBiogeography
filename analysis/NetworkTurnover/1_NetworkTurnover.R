@@ -251,7 +251,7 @@ if(hosts=="All"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Social"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -260,7 +260,7 @@ if(hosts=="Social"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -442,7 +442,7 @@ if (hosts=="Social") {
                                                      label="Total Composition Turnover")
   speccomp.plot[[1]]
 
-  panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  #panelA <- speccomp.plot[[1]] + labs(tag="A.")
   speccomp.table <- speccomp.plot[[2]]
   
   ## B. Interaction turnover
@@ -457,7 +457,7 @@ if (hosts=="Social") {
                                                 label="Total Interaction Turnover")
   int.plot[[1]]
   
-  social_panelC <- int.plot[[1]] + labs(tag="C.")
+  #social_panelC <- int.plot[[1]] + labs(tag="C.")
   int.table <- int.plot[[2]]
   
   
@@ -474,7 +474,7 @@ if (hosts=="Social") {
                                                      label="Rewiring")
   rewiring.plot[[1]]
   
-  panelC <- rewiring.plot[[1]] + labs(tag="A.")
+  panelA <- rewiring.plot[[1]] + labs(tag="A")
   rewiring.table <- rewiring.plot[[2]]
   
   ## D. Host-driven turnover
@@ -489,7 +489,7 @@ if (hosts=="Social") {
                                                         this.resp="TurnoverAbsencePollinators",
                                                         label="Host-Driven Turnover")
   host.driven.plot[[1]]
-  panelD <- host.driven.plot[[1]] + labs(tag="B.")
+  panelC <- host.driven.plot[[1]] + labs(tag="C")
   host.table <- host.driven.plot[[2]]
   
   ## E. Microbe-driven turnover
@@ -504,7 +504,7 @@ if (hosts=="Social") {
                                                            this.resp="TurnoverAbsenceMicrobes",
                                                            label="Microbe-Driven Turnover")
   microbe.driven.plot[[1]]
-  panelE <- microbe.driven.plot[[1]] + labs(tag="C.")
+  panelD <- microbe.driven.plot[[1]] + labs(tag="D")
   microbe.table <- microbe.driven.plot[[2]]
   
   ## F. Complete turnover
@@ -520,19 +520,19 @@ if (hosts=="Social") {
                                                      label="Complete Turnover")
   
   complete.plot[[1]]
-  panelF <- complete.plot[[1]] + labs(tag="D.")
+  panelB <- complete.plot[[1]] + labs(tag="B")
   complete.table <- complete.plot[[2]]
   
   
   # Arrange all panels in the PDF output
-  pdf("figures/turnover_combined_social.pdf", width = 8.5, height = 11)  
+  pdf("figures/turnover_combined_social.pdf", width = 7, height = 7)  
   grid.arrange(
     #panelA,
     #panelB,
+    panelA,
+    panelB,
     panelC,
     panelD,
-    panelE,
-    panelF,
     ncol = 2
   )
   dev.off()
@@ -576,7 +576,7 @@ if (hosts=="Solitary") {
                                                      label="Total Composition Turnover")
   speccomp.plot[[1]]
   
-  panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  #panelA <- speccomp.plot[[1]] + labs(tag="A.")
   speccomp.table <- speccomp.plot[[2]]
   
   ## B. Interaction turnover
@@ -591,7 +591,7 @@ if (hosts=="Solitary") {
                                                 label="Total Interaction Turnover")
   int.plot[[1]]
   
-  solitary_panelD <- int.plot[[1]] + labs(tag="D.")
+  #solitary_panelD <- int.plot[[1]] + labs(tag="D.")
   int.table <- int.plot[[2]]
   
   
@@ -608,7 +608,7 @@ if (hosts=="Solitary") {
                                                      label="Rewiring")
   rewiring.plot[[1]]
   
-  panelC <- rewiring.plot[[1]] + labs(tag="A.")
+  panelA <- rewiring.plot[[1]] + labs(tag="A")
   rewiring.table <- rewiring.plot[[2]]
   
   ## D. Host-driven turnover
@@ -623,7 +623,7 @@ if (hosts=="Solitary") {
                                                         this.resp="TurnoverAbsencePollinators",
                                                         label="Host-Driven Turnover")
   host.driven.plot[[1]]
-  panelD <- host.driven.plot[[1]] + labs(tag="B.")
+  panelC <- host.driven.plot[[1]] + labs(tag="C")
   host.table <- host.driven.plot[[2]]
   
   ## E. Microbe-driven turnover
@@ -638,7 +638,7 @@ if (hosts=="Solitary") {
                                                            this.resp="TurnoverAbsenceMicrobes",
                                                            label="Microbe-Driven Turnover")
   microbe.driven.plot[[1]]
-  panelE <- microbe.driven.plot[[1]] + labs(tag="C.")
+  panelD <- microbe.driven.plot[[1]] + labs(tag="D")
   microbe.table <- microbe.driven.plot[[2]]
   
   ## F. Complete turnover
@@ -654,19 +654,19 @@ if (hosts=="Solitary") {
                                                      label="Complete Turnover")
   
   complete.plot[[1]]
-  panelF <- complete.plot[[1]] + labs(tag="D.")
+  panelB <- complete.plot[[1]] + labs(tag="B")
   complete.table <- complete.plot[[2]]
   
   
   # Arrange all panels in the PDF output
-  pdf("figures/turnover_combined_solitary.pdf", width = 8.5, height = 11)  
+  pdf("figures/turnover_combined_solitary.pdf", width = 7, height = 7)  
   grid.arrange(
     #panelA,
     #panelB,
+    panelA,
+    panelB,
     panelC,
     panelD,
-    panelE,
-    panelF,
     ncol = 2
   )
   dev.off()
