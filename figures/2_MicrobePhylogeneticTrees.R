@@ -62,7 +62,7 @@ finalASV <- tibble::rownames_to_column(finalASV, "UniqueID") #make rownames (Uni
 
 ## Bombus tree
 bombus_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta=meta, "Bombus", genus.or.spp='Genus', finalASV, bombus_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelA <- bombus_tree[[1]] + labs(tag="A Bombus")
+panelA <- bombus_tree[[1]] + labs(tag="A") + theme(plot.tag = element_text(size = 30))
 bombus_meta <- bombus_tree[[2]]
 panelA
 
@@ -78,7 +78,7 @@ dev.off()
 
 ## Melissodes tree
 melissodes_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Melissodes", genus.or.spp='Genus', finalASV, melissodes_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelD <- melissodes_tree[[1]] + labs(tag="D Melissodes")
+panelD <- melissodes_tree[[1]] + labs(tag="D") + theme(plot.tag = element_text(size = 30))
 melissodes_meta <- melissodes_tree[[2]]
 panelD
 
@@ -95,7 +95,7 @@ dev.off()
 
 ## Apis tree
 apis_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Apis", genus.or.spp='Genus', finalASV, apis_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelB <- apis_tree[[1]] + labs(tag="B Apis")
+panelB <- apis_tree[[1]] + labs(tag="B") + theme(plot.tag = element_text(size = 30))
 apis_meta <- apis_tree[[2]]
 panelB
 
@@ -111,7 +111,7 @@ dev.off()
 
 ## Megachile tree
 megachile_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Megachile", genus.or.spp='Genus', finalASV, megachile_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelF <- megachile_tree[[1]] + labs(tag="F Megachile")
+panelF <- megachile_tree[[1]] + labs(tag="F") + theme(plot.tag = element_text(size = 30))
 megachile_meta <- megachile_tree[[2]]
 panelF
 
@@ -127,7 +127,7 @@ dev.off()
 
 ## Anthophora tree
 anthophora_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Anthophora", genus.or.spp='Genus', finalASV, anthophora_sites, do_collapse = TRUE, add_tip_labs = FALSE)
-panelC <- anthophora_tree[[1]] + labs(tag="C Anthophora")
+panelC <- anthophora_tree[[1]] + labs(tag="C") + theme(plot.tag = element_text(size = 30))
 anthophora_meta <- anthophora_tree[[2]]
 panelC
 
@@ -143,7 +143,7 @@ dev.off()
 
 ## Andrena tree
 andrena_tree <- phylotree_heatmap_byGenus(physeq16sR0, meta, "Andrena", genus.or.spp='Genus', finalASV, andrena_sites, do_collapse = TRUE, add_tip_labs=FALSE)
-panelE <- andrena_tree[[1]] + labs(tag="E Andrena")
+panelE <- andrena_tree[[1]] + labs(tag="E") + theme(plot.tag = element_text(size = 30))
 andrena_meta <- andrena_tree[[2]]
 panelE
 
@@ -225,11 +225,11 @@ gplot <- ggplot(legend_df, aes(x = Xdata, y = Ydata, fill = Family, shape = Fami
   theme(
     legend.position = "bottom",
     legend.box = "vertical",
-    legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 22),
+    legend.text = element_text(size = 22),
     legend.key = element_blank()
   ) +
-  labs(fill = "Bacteria Family", shape = "Bacteria Family") +
+  labs(fill = "Bacteria\n Family", shape = "Bacteria\n Family") +
   guides(
     fill = guide_legend(nrow = 3, ncol = 6, byrow = FALSE),  # Stack by group
     shape = guide_legend(nrow = 3, ncol = 6, byrow = FALSE)
@@ -241,6 +241,42 @@ panelG <- get_legend(gplot)
 # Plot just the legend
 plot(panelG)
 
+df_continuous <- data.frame(
+  x = 1:100,
+  y = 1,
+  percent_sites = 0:99  # full range of values
+)
+
+
+# Build the plot with dummy point instead of tile
+gradient_legend_plot <- ggplot(df_continuous, aes(x = x, y = y, fill = percent_sites)) +
+  geom_point(shape = 21, size = 5) +
+  scale_fill_gradient(
+    low = "lightgrey", high = "black",
+    name = "%\n Sites\n Present",
+    limits = c(0, 100)
+  ) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(size = 22),
+    legend.text = element_text(size = 22),
+    legend.key.width = unit(1, "cm")
+    #legend.key.height = unit(0.6, "cm")
+  )
+
+# Extract just the legend
+gradient_legend <- get_legend(gradient_legend_plot)
+
+# Plot just the legend (for visual test)
+plot(gradient_legend)
+
+
+#gradient_legend <- cowplot::get_legend(gradient_legend_plot)
+
+# Combine both legends into a horizontal row
+#combined_legend <- cowplot::plot_grid(panelG, gradient_legend, 
+#                                      ncol = 2, rel_widths = c(2.5, 1))
 
 
 
@@ -252,10 +288,10 @@ plot(panelG)
 
 #Set up the layout matrix so that the bottom legend spans both columns
 layout <- rbind(c(1, 2, 3, 4, 5, 6),
-                c(7, 7, 7, 7, 7, 7)) # The legend will span both columns
+                c(7, 7, 7, 7, 7, 8)) # The legend will span both columns
 
 # Create the final layout
-final_plot <- arrangeGrob(panelA, panelB, panelC, panelD, panelE, panelF, panelG,
+final_plot <- arrangeGrob(panelA, panelB, panelC, panelD, panelE, panelF, panelG, gradient_legend,
                           layout_matrix = layout,
                           heights = c(9, 1)) # Adjust the heights as needed
 
