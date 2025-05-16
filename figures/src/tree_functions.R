@@ -274,38 +274,37 @@ phylotree_heatmap_byGenus <- function(tree.object,
   
   
   
-  # Preprocess data to create a 'color' column
   features_site_metadata <- features_site_metadata %>%
     mutate(obligate_color = case_when(
       # BothObligate
-      grepl("Acetobacteraceae", bacteria) ~ "#F6A600",
-      grepl("Lactobacillaceae", bacteria) ~ "#882D17",
+      grepl("Acetobacteraceae", bacteria) ~ "#e6194B",
+      grepl("Lactobacillaceae", bacteria) ~ "#3cb44b",
       
       # SocialObligate
-      grepl("Bartonella", bacteria) ~ "#7C6BD0",
-      grepl("Bifidobacteriaceae", bacteria) ~ "#B3446C",
-      grepl("Neisseriaceae", bacteria) ~ "#DCD300",
-      grepl("Orbaceae", bacteria) ~ "#8DB600",
+      grepl("Bartonella", bacteria) ~ "#ffe119",
+      grepl("Bifidobacteriaceae", bacteria) ~ "#4363d8",
+      grepl("Neisseriaceae", bacteria) ~ "#f58231",
+      grepl("Orbaceae", bacteria) ~ "#911eb4",
       
       # SolitaryObligate
-      grepl("Bacillaceae", bacteria) ~ "#5AC8FA",
-      grepl("Burkholderiaceae", bacteria) ~ "#E66100",
-      grepl("Clostridiaceae", bacteria) ~ "#3CB371",
-      grepl("Comamonadaceae", bacteria) ~ "#5D8AA8",
-      grepl("Enterobacteriaceae", bacteria) ~ "#C83737",
-      grepl("Methylobacteriaceae", bacteria) ~ "#A85C90",
-      grepl("Moraxellaceae", bacteria) ~ "#1F78B4",
-      grepl("Oxalobacteraceae", bacteria) ~ "#D2691E",
-      grepl("Sphingomonadaceae", bacteria) ~ "#20B2AA",
+      grepl("Bacillaceae", bacteria) ~ "#42d4f4",
+      grepl("Burkholderiaceae", bacteria) ~ "#f032e6",
+      grepl("Clostridiaceae", bacteria) ~ "#bfef45",
+      grepl("Comamonadaceae", bacteria) ~ "#fabed4",
+      grepl("Enterobacteriaceae", bacteria) ~ "#469990",
+      grepl("Methylobacteriaceae", bacteria) ~ "#dcbeff",
+      grepl("Moraxellaceae", bacteria) ~ "#9A6324",
+      grepl("Oxalobacteraceae", bacteria) ~ "#800000",
+      grepl("Sphingomonadaceae", bacteria) ~ "#aaffc3",
       
       # Pathogens
-      grepl("Wolbachia", bacteria) ~ "#E41A1C",   # bright red
-      grepl("Erwinia", bacteria) ~ "#377EB8",     # deep blue
-      grepl("Hafnia", bacteria) ~ "#4DAF4A",      # bright green
+      grepl("Wolbachia", bacteria) ~ "#808000",
+      grepl("Erwinia", bacteria) ~ "#ffd8b1",
+      grepl("Hafnia", bacteria) ~ "#000075",
       
-      # Default
       TRUE ~ NA_character_
     ))
+  
   
   
   
@@ -358,6 +357,32 @@ phylotree_heatmap_byGenus <- function(tree.object,
   p$data$Hafnia_match <- grepl("Hafnia", p$data$label, fixed = TRUE)
   
   
+  # Define your color vector
+  taxa_colors <- c(
+    Acetobacteraceae_match = '#e6194B',
+    Lactobacillaceae_match = '#3cb44b',
+    
+    Bartonella_match = '#ffe119',
+    Bifidobacteriaceae_match = '#4363d8',
+    Neisseriaceae_match = '#f58231',
+    Orbaceae_match = '#911eb4',
+    
+    Bacillaceae_match = '#42d4f4',
+    Burkholderiaceae_match = '#f032e6',
+    Clostridiaceae_match = '#bfef45',
+    Comamonadaceae_match = '#fabed4',
+    Enterobacteriaceae_match = '#469990',
+    Methylobacteriaceae_match = '#dcbeff',
+    Moraxellaceae_match = '#9A6324',
+    Oxalobacteraceae_match = '#800000',
+    Sphingomonadaceae_match = '#aaffc3',
+    
+    Wolbachia_match = '#808000',
+    Erwinia_match = '#ffd8b1',
+    Hafnia_match = '#000075'
+  )
+  
+  
   # Plot
   p2 <- p +
     new_scale_fill() +
@@ -385,47 +410,48 @@ phylotree_heatmap_byGenus <- function(tree.object,
     
     # BothObligate taxa
     geom_tippoint(aes(subset = Acetobacteraceae_match),
-                  pch = 21, fill = "#F6A600", size = 4) +
+                  pch = 21, fill = taxa_colors["Acetobacteraceae_match"], size = 4) +
     geom_tippoint(aes(subset = Lactobacillaceae_match),
-                  pch = 21, fill = "#882D17", size = 4) +
+                  pch = 21, fill = taxa_colors["Lactobacillaceae_match"], size = 4) +
     
     # SocialObligate taxa
     geom_tippoint(aes(subset = Bartonella_match),
-                  pch = 22, fill = "#7C6BD0", size = 4) +
+                  pch = 22, fill = taxa_colors["Bartonella_match"], size = 4) +
     geom_tippoint(aes(subset = Bifidobacteriaceae_match),
-                  pch = 22, fill = "#B3446C", size = 4) +
+                  pch = 22, fill = taxa_colors["Bifidobacteriaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Neisseriaceae_match),
-                  pch = 22, fill = "#DCD300", size = 4) +
+                  pch = 22, fill = taxa_colors["Neisseriaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Orbaceae_match),
-                  pch = 22, fill = "#8DB600", size = 4) +
+                  pch = 22, fill = taxa_colors["Orbaceae_match"], size = 4) +
     
     # SolitaryObligate taxa
     geom_tippoint(aes(subset = Bacillaceae_match),
-                  pch = 24, fill = "#5AC8FA", size = 4) +
+                  pch = 24, fill = taxa_colors["Bacillaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Burkholderiaceae_match),
-                  pch = 24, fill = "#E66100", size = 4) +
+                  pch = 24, fill = taxa_colors["Burkholderiaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Clostridiaceae_match),
-                  pch = 24, fill = "#3CB371", size = 4) +
+                  pch = 24, fill = taxa_colors["Clostridiaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Comamonadaceae_match),
-                  pch = 24, fill = "#5D8AA8", size = 4) +
+                  pch = 24, fill = taxa_colors["Comamonadaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Enterobacteriaceae_match),
-                  pch = 24, fill = "#C83737", size = 4) +
+                  pch = 24, fill = taxa_colors["Enterobacteriaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Methylobacteriaceae_match),
-                  pch = 24, fill = "#A85C90", size = 4) +
+                  pch = 24, fill = taxa_colors["Methylobacteriaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Moraxellaceae_match),
-                  pch = 24, fill = "#1F78B4", size = 4) +
+                  pch = 24, fill = taxa_colors["Moraxellaceae_match"], size = 4) +
     geom_tippoint(aes(subset = Oxalobacteraceae_match),
-                  pch = 24, fill = "#D2691E", size = 4) +
+                  pch = 24, fill = taxa_colors["Oxalobacteraceae_match"], size = 4) +
     geom_tippoint(aes(subset = Sphingomonadaceae_match),
-                  pch = 24, fill = "#20B2AA", size = 4) +
+                  pch = 24, fill = taxa_colors["Sphingomonadaceae_match"], size = 4) +
     
     # Pathogen taxa
     geom_tippoint(aes(subset = Wolbachia_match),
-                  pch = 23, fill = "#E41A1C", size = 4) +
+                  pch = 23, fill = taxa_colors["Wolbachia_match"], size = 4) +
     geom_tippoint(aes(subset = Erwinia_match),
-                  pch = 23, fill = "#377EB8", size = 4) +
+                  pch = 23, fill = taxa_colors["Erwinia_match"], size = 4) +
     geom_tippoint(aes(subset = Hafnia_match),
-                  pch = 23, fill = "#4DAF4A", size = 4)
+                  pch = 23, fill = taxa_colors["Hafnia_match"], size = 4)
+  
   
   
   ## list [[1]] is tree, [[2]] is metadata, [[3]] is tip.order

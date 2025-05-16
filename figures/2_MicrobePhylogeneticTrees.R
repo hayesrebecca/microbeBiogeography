@@ -180,45 +180,66 @@ legend_families <- c(
   "Wolbachia", "Erwinia", "Hafnia"
 )
 
-legend_colors <- c(
-  "#F6A600", "#882D17",           # circles
-  "#7C6BD0", "#B3446C", "#DCD300", "#8DB600",  # squares
-  "#5AC8FA", "#E66100", "#3CB371", "#5D8AA8",
-  "#C83737", "#A85C90", "#1F78B4", "#D2691E", "#20B2AA", # triangles
-  "#E41A1C", "#377EB8", "#4DAF4A"  # diamonds
+# Named vector mapping family names to hex colors
+taxa_colors <- c(
+  Acetobacteraceae = '#e6194B',
+  Lactobacillaceae = '#3cb44b',
+  
+  Bartonella = '#ffe119',
+  Bifidobacteriaceae = '#4363d8',
+  Neisseriaceae = '#f58231',
+  Orbaceae = '#911eb4',
+  
+  Bacillaceae = '#42d4f4',
+  Burkholderiaceae = '#f032e6',
+  Clostridiaceae = '#bfef45',
+  Comamonadaceae = '#fabed4',
+  Enterobacteriaceae = '#469990',
+  Methylobacteriaceae = '#dcbeff',
+  Moraxellaceae = '#9A6324',
+  Oxalobacteraceae = '#800000',
+  Sphingomonadaceae = '#aaffc3',
+  
+  Wolbachia = '#808000',
+  Erwinia = '#ffd8b1',
+  Hafnia = '#000075'
 )
 
-legend_shapes <- c(
-  21, 21,     # circles
-  22, 22, 22, 22,   # squares
-  24, 24, 24, 24, 24, 24, 24, 24, 24, # triangles
-  23, 23, 23   # diamonds
+
+taxa_shapes <- c(
+  Acetobacteraceae = 21, Lactobacillaceae = 21,              # circles
+  Bartonella = 22, Bifidobacteriaceae = 22, Neisseriaceae = 22, Orbaceae = 22, # squares
+  Bacillaceae = 24, Burkholderiaceae = 24, Clostridiaceae = 24, Comamonadaceae = 24,
+  Enterobacteriaceae = 24, Methylobacteriaceae = 24, Moraxellaceae = 24,
+  Oxalobacteraceae = 24, Sphingomonadaceae = 24,             # triangles
+  Wolbachia = 23, Erwinia = 23, Hafnia = 23                  # diamonds
 )
 
-# Create DataFrame
+legend_families <- names(taxa_colors)
+
 legend_df <- data.frame(
   Family = legend_families,
-  Color = legend_colors,
-  Shape = legend_shapes,
+  Color = unname(taxa_colors[legend_families]),
+  Shape = unname(taxa_shapes[legend_families]),
   stringsAsFactors = FALSE
 )
 
-# NOW: sort by shape first, then alphabetically within shape
+# Sort by shape and then alphabetically
 legend_df <- legend_df[order(legend_df$Shape, legend_df$Family), ]
 
-# Set Family as a factor with *this sorted order*
+# Factorize Family based on sorted order
 legend_df$Family <- factor(legend_df$Family, levels = legend_df$Family)
 
-# Create fake coordinates
-legend_df$Xdata <- rnorm(nrow(legend_df))
-legend_df$Ydata <- rnorm(nrow(legend_df))
-# Create fake x and y for plotting (we don't actually care about them)
+# Add dummy X and Y values
 legend_df$Xdata <- rnorm(nrow(legend_df))
 legend_df$Ydata <- rnorm(nrow(legend_df))
 
-# Make plot
+
+library(ggplot2)
+library(cowplot)
+
 gplot <- ggplot(legend_df, aes(x = Xdata, y = Ydata, fill = Family, shape = Family)) +
-  geom_point(size = 7, color = "black") +  # 'color' is the outline
+  geom_point(size = 7, color = "black") +
   scale_fill_manual(values = setNames(legend_df$Color, legend_df$Family)) +
   scale_shape_manual(values = setNames(legend_df$Shape, legend_df$Family)) +
   theme_void() +
@@ -231,15 +252,14 @@ gplot <- ggplot(legend_df, aes(x = Xdata, y = Ydata, fill = Family, shape = Fami
   ) +
   labs(fill = "Bacteria\n Family", shape = "Bacteria\n Family") +
   guides(
-    fill = guide_legend(nrow = 3, ncol = 6, byrow = FALSE),  # Stack by group
+    fill = guide_legend(nrow = 3, ncol = 6, byrow = FALSE),
     shape = guide_legend(nrow = 3, ncol = 6, byrow = FALSE)
   )
 
-# Extract just the legend
 panelG <- get_legend(gplot)
 
-# Plot just the legend
 plot(panelG)
+
 
 df_continuous <- data.frame(
   x = 1:100,
