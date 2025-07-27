@@ -171,7 +171,7 @@
  # - The function filters the data based on the `WeightsObligateMicrobe` or `WeightsTransientMicrobe` column to select either 
  #   obligate or facultative microbes.
  #
- microbe_type_decay_model <- function(data, type, model.type){
+ microbe_type_decay_model <- function(data, type, model.type, decay.type){
    #bray curtis dissimilarity matrix of 16s
    if(type == 'ObligateAll'){
      abund <- data %>%
@@ -262,7 +262,7 @@
  
    dist_decay_model <- betapart::decay.model(dist.abund,
                                              dist.geo,
-                                             y.type='dissim',
+                                             y.type=decay.type,
                                              model.type = model.type,
                                              perm=999)
    dist_decay_model
