@@ -171,7 +171,7 @@
  # - The function filters the data based on the `WeightsObligateMicrobe` or `WeightsTransientMicrobe` column to select either 
  #   obligate or facultative microbes.
  #
- microbe_type_decay_model <- function(data, type, model.type, decay.type){
+ microbe_type_decay_model <- function(data, type, model.type, decay.type, log.dist=FALSE){
    #bray curtis dissimilarity matrix of 16s
    if(type == 'ObligateAll'){
      abund <- data %>%
@@ -251,6 +251,7 @@
  
    #abundance data frame - bray curtis dissimilarity
    dist.abund <- vegdist(abund, method = "bray")
+   dist.abund <- 1 - dist.abund
  
    #geographic data frame - haversine distance in m (takes a df with lat and long and calculates dist)
    d.geo <- distm(geo, fun = distHaversine)
@@ -259,7 +260,10 @@
    #abundance vs geographic mantel test
    abund_geo  = mantel(dist.abund, dist.geo, method = "spearman", permutations = 999, na.rm = TRUE)
    print(abund_geo)
- 
+   #browser()
+   if(model.type=="power"){
+      dist.geo[dist.geo == 0] <- 0.0001
+   }   
    dist_decay_model <- betapart::decay.model(dist.abund,
                                              dist.geo,
                                              y.type=decay.type,
@@ -319,10 +323,10 @@
  
    # Create the ggplot object
    p <- ggplot(data, aes(x = x.data.x, y = x.data.y)) +
-     geom_jitter(fill = mod1color, alpha = 0.1 , color="black", pch=21, cex=3) +
-     geom_line(aes(x = sorted_data$x.data.x, y = (1 - fitted_values$fitted.model..order.data.x.data.x..)),
+     geom_point(fill = mod1color, alpha = 0.1 , color="black", pch=21, cex=3) +
+     geom_line(aes(x = sorted_data$x.data.x, y = fitted_values$fitted.model..order.data.x.data.x..),
                color = 'black', linewidth=2.5,) +
-     geom_line(aes(x = sorted_data$x.data.x, y = (1 - fitted_values$fitted.model..order.data.x.data.x..)), color = mod1color, linewidth=2) +
+     geom_line(aes(x = sorted_data$x.data.x, y = fitted_values$fitted.model..order.data.x.data.x..), color = mod1color, linewidth=2) +
      labs(x=xlab, y=ylab) +
      theme_classic() +
      theme(axis.title.x = element_text(size=16),
@@ -385,7 +389,8 @@
                                         lty2,
                                         lwd = 1.5,
                                         cex = 1,
-                                        add.points=TRUE) {
+                                        add.points=TRUE,
+                                        log.dist=FALSE) {
  
    # Extract data and fitted values
    data1 <- data.frame(x$data.x, x$data.y)
@@ -401,20 +406,42 @@
  
    if(add.points==TRUE){
    # Create the ggplot object
-   p <- ggplot(data1, aes(x = x.data.x, y = x.data.y)) +
-     geom_point(data=data1, aes(x = x.data.x, y = x.data.y), fill = mod1color, alpha = alpha1 , color="black", pch=21, cex=3, position = position_jitter(w = 10, h = 0)) +
-     geom_point(data=data2, aes(x = z.data.x, y = z.data.y), fill = mod2color, alpha = alpha2 , color="black", pch=21, cex=3, position = position_jitter(w = 10, h = 0)) +
-     geom_line(aes(x = sorted_data1$x.data.x, y = (1 - fitted_values1$fitted.model1..order.data1.x.data.x..)),
+   p <- ggplot(data1, aes(x = log(x.data.x), y = x.data.y)) +
+     geom_point(data=data1, aes(x = log(x.data.x), y = (1-x.data.y)), fill = mod1color, alpha = alpha1 , color="black", pch=21, cex=3, position = position_jitter(w = 10, h = 0)) +
+     geom_point(data=data2, aes(x = log(z.data.x), y = (1-z.data.y)), fill = mod2color, alpha = alpha2 , color="black", pch=21, cex=3, position = position_jitter(w = 10, h = 0)) +
+     geom_line(aes(x = log(sorted_data1$x.data.x), y = (1 - fitted_values1$fitted.model1..order.data1.x.data.x..)),
                color = 'black', linewidth=2.5,) +
-     geom_line(aes(x = sorted_data1$x.data.x, y = (1 - fitted_values1$fitted.model1..order.data1.x.data.x..)), color = mod1color, linewidth=2, linetype=lty1) +
-     geom_line(data=data2, aes(x = sorted_data2$z.data.x, y = (1 - fitted_values2$fitted.model2..order.data2.z.data.x..)),
+     geom_line(aes(x = log(sorted_data1$x.data.x), y = (1 - fitted_values1$fitted.model1..order.data1.x.data.x..)), color = mod1color, linewidth=2, linetype=lty1) +
+     geom_line(data=data2, aes(x = log(sorted_data2$z.data.x), y = (1 - fitted_values2$fitted.model2..order.data2.z.data.x..)),
                color = 'black', linewidth=2.5,) +
-     geom_line(data=data2, aes(x = sorted_data2$z.data.x, y = (1 - fitted_values2$fitted.model2..order.data2.z.data.x..)), color = mod2color, linewidth=2, linetype=lty2) +
+     geom_line(data=data2, aes(x = log(sorted_data2$z.data.x), y = (1 - fitted_values2$fitted.model2..order.data2.z.data.x..)), color = mod2color, linewidth=2, linetype=lty2) +
      labs(x=xlab, y=ylab) +
      theme_classic() +
      theme(axis.title.x = element_text(size=16),
            axis.title.y = element_text(size=16),
            text = element_text(size=16))
+   }
+   
+   if(log.dist==TRUE){
+      # Create the ggplot object
+      p <- ggplot(data1, aes(x = x.data.x, y = x.data.y)) +
+         geom_point(data=data1, aes(x = x.data.x, y = x.data.y), fill = mod1color, alpha = alpha1 , color="black", pch=21, cex=3, position = position_jitter(w = 0.01, h = 0)) +
+         geom_point(data=data2, aes(x = z.data.x, y = z.data.y), fill = mod2color, alpha = alpha2 , color="black", pch=21, cex=3, position = position_jitter(w = 0.01, h = 0)) +
+         geom_line(aes(x = sorted_data1$x.data.x, y = fitted_values1$fitted.model1..order.data1.x.data.x..),
+                   color = 'black', linewidth=2.5,) +
+         geom_line(aes(x = sorted_data1$x.data.x, y = fitted_values1$fitted.model1..order.data1.x.data.x..), color = mod1color, linewidth=2, linetype=lty1) +
+         geom_line(data=data2, aes(x = sorted_data2$z.data.x, y = fitted_values2$fitted.model2..order.data2.z.data.x..),
+                   color = 'black', linewidth=2.5,) +
+         geom_line(data=data2, aes(x = sorted_data2$z.data.x, y = fitted_values2$fitted.model2..order.data2.z.data.x..), color = mod2color, linewidth=2, linetype=lty2) +
+         labs(x=xlab, y=ylab) +
+         scale_x_log10()+
+            #limits = c(60, 350)) +  # Adjust upper limit based on your data
+         #   breaks = c(1, 10, 100, 1000),
+         #   labels = scales::label_number()) +
+         theme_classic() +
+         theme(axis.title.x = element_text(size=16),
+               axis.title.y = element_text(size=16),
+               text = element_text(size=16)) 
    }
  
    if(add.points==FALSE){
@@ -436,3 +463,5 @@
    return(p)
  
  }
+ 
+ 
