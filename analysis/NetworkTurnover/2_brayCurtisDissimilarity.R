@@ -185,7 +185,7 @@ if(hosts=='Solitary'){
 ## Pairwise bray curtis dissimilarity calculation and plots
 ## **********************************************************
 
-run.decay.mictype.mods=TRUE
+run.decay.mictype.mods=FALSE
 
 ## prep microbe weights
 spec.net <- prepMicrobeWeights(spec.net)
@@ -201,14 +201,14 @@ hosts="Social"
        select(all_of(meta_cols), starts_with('16s')) %>%
        na.omit()
 
-     ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'exp')
-     trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type='exp')
+     ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'power', decay.type = "sim") ## power if plan to log transform x axis
+     trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type='power', decay.type = "sim")
      ## save out models
      save(ob_model,
           trans_model,
-          file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
+          file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social_power.Rdata") ## TODO update filepaths
    } else {
-     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social.Rdata") ## TODO update filepaths
+     load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_social_power.Rdata") ## TODO update filepaths
    }
  }
 
@@ -223,13 +223,19 @@ social_bray <- plot_decay_ggplot_combined(ob_model,
                                           alpha2=0.005,
                                           lty1='solid',
                                           lty2='solid',
-                                          xlab="Geographic Distance (km)",
-                                          ylab='Microbial Dissimilarity', add.points=TRUE)
+                                          xlab="log Geographic Distance (km)",
+                                          ylab='Social Associate Similarity',
+                                          add.points=TRUE,
+                                          log.dist=TRUE)
+
+#plot_decay_ggplot_combined(ob_model, trans_model)
 
 social_bray <- social_bray + labs(tag="A")
-
+social_bray
 
 hosts="Solitary"
+run.decay.mictype.mods=TRUE
+dist.decay.type="power"
 if (hosts=="Solitary"){
   if (run.decay.mictype.mods == TRUE){
     #load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
@@ -240,15 +246,15 @@ if (hosts=="Solitary"){
       select(all_of(meta_cols), starts_with('16s')) %>%
       na.omit()
     
-    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSolitary', model.type = 'exp')
-    trans_model <- microbe_type_decay_model(spec16s, 'TransientSolitary', model.type='exp')
+    ob_model <- microbe_type_decay_model(spec16s, 'ObligateSolitary', model.type = dist.decay.type, decay.type = "sim")
+    trans_model <- microbe_type_decay_model(spec16s, 'TransientSolitary', model.type=dist.decay.type, decay.type = "sim")
     #browser()
     ## save out models
     save(ob_model,
          trans_model,
-         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
+         file="../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary_power.Rdata") ## TODO update filepaths
   } else {
-    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary.Rdata") ## TODO update filepaths
+    load("../../../skyIslands/analysis/microbiome/saved/decay_mictype_mods_solitary_power.Rdata") ## TODO update filepaths
   }
 }
 solitary_bray <- plot_decay_ggplot_combined(ob_model,
@@ -259,11 +265,11 @@ solitary_bray <- plot_decay_ggplot_combined(ob_model,
                                           alpha2=0.005,
                                           lty1='solid',
                                           lty2='solid',
-                                          xlab="Geographic Distance (km)",
-                                          ylab='Microbial Dissimilarity', add.points=TRUE)
+                                          xlab="log Geographic Distance (km)",
+                                          ylab='Solitary Associate Similarity', add.points=TRUE, log.dist = TRUE)
 
 solitary_bray <- solitary_bray + labs(tag="B")
-
+solitary_bray
 ## make panels for interaction turnover
 load("C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata")
 
@@ -301,7 +307,7 @@ solitary.int.plot[[1]]
 solitary_panelD <- solitary.int.plot[[1]] + labs(tag="D")
 
 
-bray_plots=TRUE
+bray_plots=FALSE
 if(bray_plots==TRUE){
   # Arrange all panels in the PDF output
   pdf("figures/bray_combined.pdf", width = 7, height = 7)  
@@ -315,3 +321,14 @@ if(bray_plots==TRUE){
   dev.off()
 }
 
+
+### temp
+pdf("figures/bray_similarity_logdist.pdf", width = 7, height = 3.5)  
+grid.arrange(
+  social_bray,
+  solitary_bray,
+  #social_panelC,
+  #solitary_panelD,
+  ncol = 2
+)
+dev.off()
