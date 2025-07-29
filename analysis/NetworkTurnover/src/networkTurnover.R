@@ -206,20 +206,28 @@ fix_betalinkr_output <- function(betalinkr_output){
                                   paste("TurnoverAbsence",higher.order,sep=""),
                                   "TurnoverAbsenceBoth")
   
+  #browser()
+  geo <- spec.net %>%
+    filter(Site %in% betalinkr_output$Site1 | Site %in% betalinkr_output$Site2) %>%
+    select(Site, Long, Lat) %>%
+    distinct()
   
-  geo <- unique(spec.net[, c("Site", "Lat", "Long")])
-  geo <- geo[!duplicated(geo$Site),]
+  site_coords1 <- geo %>%
+    rename(Site1 = Site, Long1 = Long, Lat1 = Lat)
   
-  geo.dist <- rdist.earth(cbind(geo$Long, geo$Lat),
-                          cbind(geo$Long, geo$Lat))
-  colnames(geo.dist) <- rownames(geo.dist) <- geo$Site
+  site_coords2 <- geo %>%
+    rename(Site2 = Site, Long2 = Long, Lat2 = Lat)
   
-  ## add column for geographic distance between sites
-  betalinkr_output$GeoDist <- apply(betalinkr_output, 1, function(x){
-    geo.dist[x["Site1"],  x["Site2"]]
-  })
+  dissim_df <- betalinkr_output %>%
+    left_join(site_coords1, by = "Site1") %>%
+    left_join(site_coords2, by = "Site2")
   
-  return(betalinkr_output)
+  
+  betalinkr_output_temp <- dissim_df %>%
+    mutate(GeoDist = geosphere::distHaversine(cbind(Long2, Lat2), cbind(Long1, Lat1))/1000)
+    
+  
+  return(betalinkr_output_temp)
 }
 
 
