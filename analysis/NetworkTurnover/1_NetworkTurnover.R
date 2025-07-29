@@ -45,6 +45,8 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="Social" to run mods for social host dataset with social strong HAMS
 ## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
+## set hosts="SocialPathogens" to run models for social host dataset with the pathogenic microbes
+## set hosts="SolitaryPathogens" to run models for social host dataset with the pathogenic microbes
 
 hosts="Solitary"
 
@@ -144,6 +146,32 @@ if(hosts=="AllPathogens"){
   )
 }
 
+## Full host community, all pathogens
+if(hosts=="SocialPathogens"){
+  pathogen_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
+                                                     these_obligates=pathogens,
+                                                     genera_to_keep=c("Bombus", "Apis")
+  )
+  
+  pathogen_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                       these_obligates=pathogens,
+                                                       genera_to_keep=c("Bombus", "Apis")
+  )
+}
+
+## Full host community, all pathogens
+if(hosts=="SolitaryPathogens"){
+  pathogen_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
+                                                     these_obligates=pathogens,
+                                                     genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena")
+  )
+  
+  pathogen_transient_network <- prep_transient_network(raw_network=spNet_micro,
+                                                       these_obligates=pathogens,
+                                                       genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena")
+  )
+}
+
 ## **********************************************************
 ## Run network betalinkr function and prep output table
 ## **********************************************************
@@ -234,6 +262,45 @@ if(hosts=='AllPathogens'){
   transient_pathogen_betalink_clean <- fix_betalinkr_output(transient_pathogen_betalink)
 }
 
+if(hosts=='SocialPathogens'){
+  ## ALL HOSTS ALL STRONG ASSOCIATE NETWORKS
+  find_sites_for_betalinkr(pathogen_obligate_network)
+  
+  ## enter the site matrices printed above 
+  obligate_pathogen_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                                partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  obligate_pathogen_betalink_clean <- fix_betalinkr_output(obligate_pathogen_betalink)
+  
+  ## ALL HOSTS ALL WEAK ASSOCIATE NETWORKS
+  find_sites_for_betalinkr(pathogen_transient_network)
+  
+  ## enter the site matrices printed above 
+  transient_pathogen_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                                 partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  transient_pathogen_betalink_clean <- fix_betalinkr_output(transient_pathogen_betalink)
+}
+
+if(hosts=='SolitaryPathogens'){
+  ## ALL HOSTS ALL STRONG ASSOCIATE NETWORKS
+  find_sites_for_betalinkr(pathogen_obligate_network)
+  
+  ## enter the site matrices printed above 
+  obligate_pathogen_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                                partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  obligate_pathogen_betalink_clean <- fix_betalinkr_output(obligate_pathogen_betalink)
+  
+  ## ALL HOSTS ALL WEAK ASSOCIATE NETWORKS
+  find_sites_for_betalinkr(pathogen_transient_network)
+  
+  ## enter the site matrices printed above 
+  transient_pathogen_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+                                                 partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+  
+  transient_pathogen_betalink_clean <- fix_betalinkr_output(transient_pathogen_betalink)
+}
 ## **********************************************************
 ## Run or load turnover by geo distance models
 ## **********************************************************
@@ -260,7 +327,7 @@ if(hosts=="Social"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -275,6 +342,21 @@ if(hosts=="AllPathogens"){
   )
 }
 
+if(hosts=="SocialPathogens"){
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+                        ob.net=obligate_pathogen_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                        trans.net=transient_pathogen_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social_pathogens.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+  )
+}
+
+if(hosts=="SolitaryPathogens"){
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+                        ob.net=obligate_pathogen_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
+                        trans.net=transient_pathogen_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary_pathogens.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+  )
+}
 
 ## **********************************************************
 ## Make combined plots for model results for obligate vs
@@ -683,7 +765,6 @@ if (hosts=="Solitary") {
             file=sprintf("saved/tables/turnover_solitary.csv")) 
 }
 
-
 if (hosts=="AllPathogens") {
   # # microbe type comparison
   # altpanelA <- plot_decay_ggplot_combined(ob_model,
@@ -800,6 +881,262 @@ if (hosts=="AllPathogens") {
   
   write.csv(combined.table,
             file=sprintf("saved/tables/turnover_pathogens.csv")) 
+}
+
+if (hosts=="SolitaryPathogens") {
+
+  
+  ## A. Species turnover
+  speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
+                                                     mod2=speccomp.transient.mod,
+                                                     this.network1=obligate_pathogen_betalink_clean,
+                                                     this.network2=transient_pathogen_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="DissimilaritySpeciesComposition",
+                                                     label="Total Composition Turnover")
+  speccomp.plot[[1]]
+  
+  #panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  speccomp.table <- speccomp.plot[[2]]
+  
+  ## B. Interaction turnover
+  int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
+                                                mod2=int.transient.mod,
+                                                this.network1=obligate_pathogen_betalink_clean,
+                                                this.network2=transient_pathogen_betalink_clean,
+                                                network_type1='Obligate',
+                                                network_type2='Transient',
+                                                this.effect="GeoDist",
+                                                this.resp="WholeNetworkLinks",
+                                                label="Total Interaction Turnover")
+  int.plot[[1]]
+  
+  #solitary_panelD <- int.plot[[1]] + labs(tag="D.")
+  int.table <- int.plot[[2]]
+  
+  
+  ## C. rewiring
+  
+  rewiring.plot <- plot_network_turnover_mod_compare(mod1=rewiring.obligate.mod,
+                                                     mod2=rewiring.transient.mod,
+                                                     this.network1=obligate_pathogen_betalink_clean,
+                                                     this.network2=transient_pathogen_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="OnlySharedLinks",
+                                                     label="Rewiring")
+  rewiring.plot[[1]]
+  
+  panelA <- rewiring.plot[[1]] + labs(tag="A")
+  rewiring.table <- rewiring.plot[[2]]
+  
+  ## D. Host-driven turnover
+  
+  host.driven.plot <- plot_network_turnover_mod_compare(mod1=host.driven.obligate.mod,
+                                                        mod2=host.driven.transient.mod,
+                                                        this.network1=obligate_pathogen_betalink_clean,
+                                                        this.network2=transient_pathogen_betalink_clean,
+                                                        network_type1='Obligate',
+                                                        network_type2='Transient',
+                                                        this.effect="GeoDist",
+                                                        this.resp="TurnoverAbsencePollinators",
+                                                        label="Host-Driven Turnover")
+  host.driven.plot[[1]]
+  panelC <- host.driven.plot[[1]] + labs(tag="C")
+  host.table <- host.driven.plot[[2]]
+  
+  ## E. Microbe-driven turnover
+  
+  microbe.driven.plot <- plot_network_turnover_mod_compare(mod1=microbe.driven.obligate.mod,
+                                                           mod2=microbe.driven.transient.mod,
+                                                           this.network1=obligate_pathogen_betalink_clean,
+                                                           this.network2=transient_pathogen_betalink_clean,
+                                                           network_type1='Obligate',
+                                                           network_type2='Transient',
+                                                           this.effect="GeoDist",
+                                                           this.resp="TurnoverAbsenceMicrobes",
+                                                           label="Microbe-Driven Turnover")
+  microbe.driven.plot[[1]]
+  panelD <- microbe.driven.plot[[1]] + labs(tag="D")
+  microbe.table <- microbe.driven.plot[[2]]
+  
+  ## F. Complete turnover
+  
+  complete.plot <- plot_network_turnover_mod_compare(mod1=complete.obligate.mod,
+                                                     mod2=complete.transient.mod,
+                                                     this.network1=obligate_pathogen_betalink_clean,
+                                                     this.network2=transient_pathogen_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="TurnoverAbsenceBoth",
+                                                     label="Complete Turnover")
+  
+  complete.plot[[1]]
+  panelB <- complete.plot[[1]] + labs(tag="B")
+  complete.table <- complete.plot[[2]]
+  
+  
+  # Arrange all panels in the PDF output
+  pdf("figures/turnover_combined_solitary_pathogens.pdf", width = 7, height = 7)  
+  grid.arrange(
+    #panelA,
+    #panelB,
+    panelA,
+    panelB,
+    panelC,
+    panelD,
+    ncol = 2
+  )
+  dev.off()
+  
+  ## Combine results tables and save out
+  combined.table <- bind_rows(speccomp.table,
+                              int.table,
+                              rewiring.table,
+                              host.table,
+                              microbe.table,
+                              complete.table)
+  
+  write.csv(combined.table,
+            file=sprintf("saved/tables/turnover_solitary_pathogens.csv")) 
+}
+
+if (hosts=="SocialPathogens") {
+  # microbe type comparison
+  # altpanelA <- plot_decay_ggplot_combined(ob_model,
+  #                                         trans_model,
+  #                                         mod1color='darkgreen',
+  #                                         mod2color='darkorange',
+  #                                         alpha1=0.01,
+  #                                         alpha2=0.01,
+  #                                         lty1='solid',
+  #                                         lty2='solid',
+  #                                         xlab="Geographic Distance (km)",
+  #                                         ylab='Bray-Curtis Dissimilarity', add.points=TRUE)
+  # 
+  # altpanelA <- altpanelA + labs(tag="A.")
+  
+  # A. Species turnover
+  speccomp.plot <- plot_network_turnover_mod_compare(mod1=speccomp.obligate.mod,
+                                                     mod2=speccomp.transient.mod,
+                                                     this.network1=obligate_pathogen_betalink_clean,
+                                                     this.network2=transient_pathogen_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="DissimilaritySpeciesComposition",
+                                                     label="Total Composition Turnover")
+  speccomp.plot[[1]]
+  
+  #panelA <- speccomp.plot[[1]] + labs(tag="A.")
+  speccomp.table <- speccomp.plot[[2]]
+  
+  ## B. Interaction turnover
+  int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
+                                                mod2=int.transient.mod,
+                                                this.network1=obligate_pathogen_betalink_clean,
+                                                this.network2=transient_pathogen_betalink_clean,
+                                                network_type1='Obligate',
+                                                network_type2='Transient',
+                                                this.effect="GeoDist",
+                                                this.resp="WholeNetworkLinks",
+                                                label="Total Interaction Turnover")
+  int.plot[[1]]
+  
+  #social_panelC <- int.plot[[1]] + labs(tag="C.")
+  int.table <- int.plot[[2]]
+  
+  
+  ## C. rewiring
+  
+  rewiring.plot <- plot_network_turnover_mod_compare(mod1=rewiring.obligate.mod,
+                                                     mod2=rewiring.transient.mod,
+                                                     this.network1=obligate_pathogen_betalink_clean,
+                                                     this.network2=transient_pathogen_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="OnlySharedLinks",
+                                                     label="Rewiring")
+  rewiring.plot[[1]]
+  
+  panelA <- rewiring.plot[[1]] + labs(tag="A")
+  rewiring.table <- rewiring.plot[[2]]
+  
+  ## D. Host-driven turnover
+  
+  host.driven.plot <- plot_network_turnover_mod_compare(mod1=host.driven.obligate.mod,
+                                                        mod2=host.driven.transient.mod,
+                                                        this.network1=obligate_pathogen_betalink_clean,
+                                                        this.network2=transient_pathogen_betalink_clean,
+                                                        network_type1='Obligate',
+                                                        network_type2='Transient',
+                                                        this.effect="GeoDist",
+                                                        this.resp="TurnoverAbsencePollinators",
+                                                        label="Host-Driven Turnover")
+  host.driven.plot[[1]]
+  panelC <- host.driven.plot[[1]] + labs(tag="C")
+  host.table <- host.driven.plot[[2]]
+  
+  ## E. Microbe-driven turnover
+  
+  microbe.driven.plot <- plot_network_turnover_mod_compare(mod1=microbe.driven.obligate.mod,
+                                                           mod2=microbe.driven.transient.mod,
+                                                           this.network1=obligate_pathogen_betalink_clean,
+                                                           this.network2=transient_pathogen_betalink_clean,
+                                                           network_type1='Obligate',
+                                                           network_type2='Transient',
+                                                           this.effect="GeoDist",
+                                                           this.resp="TurnoverAbsenceMicrobes",
+                                                           label="Microbe-Driven Turnover")
+  microbe.driven.plot[[1]]
+  panelD <- microbe.driven.plot[[1]] + labs(tag="D")
+  microbe.table <- microbe.driven.plot[[2]]
+  
+  ## F. Complete turnover
+  
+  complete.plot <- plot_network_turnover_mod_compare(mod1=complete.obligate.mod,
+                                                     mod2=complete.transient.mod,
+                                                     this.network1=obligate_pathogen_betalink_clean,
+                                                     this.network2=transient_pathogen_betalink_clean,
+                                                     network_type1='Obligate',
+                                                     network_type2='Transient',
+                                                     this.effect="GeoDist",
+                                                     this.resp="TurnoverAbsenceBoth",
+                                                     label="Complete Turnover")
+  
+  complete.plot[[1]]
+  panelB <- complete.plot[[1]] + labs(tag="B")
+  complete.table <- complete.plot[[2]]
+  
+  
+  # Arrange all panels in the PDF output
+  pdf("figures/turnover_combined_solitary_pathogens.pdf", width = 7, height = 7)  
+  grid.arrange(
+    #panelA,
+    #panelB,
+    panelA,
+    panelB,
+    panelC,
+    panelD,
+    ncol = 2
+  )
+  dev.off()
+  
+  ## Combine results tables and save out
+  combined.table <- bind_rows(speccomp.table,
+                              int.table,
+                              rewiring.table,
+                              host.table,
+                              microbe.table,
+                              complete.table)
+  
+  write.csv(combined.table,
+            file=sprintf("saved/tables/turnover_solitary_pathogens.csv")) 
 }
 
 ## **********************************************************
