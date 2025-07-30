@@ -48,7 +48,7 @@ load("../../../skyIslands/data/networks/microNets.RData")
 ## set hosts="SocialPathogens" to run models for social host dataset with the pathogenic microbes
 ## set hosts="SolitaryPathogens" to run models for social host dataset with the pathogenic microbes
 
-hosts="Solitary"
+hosts="Social"
 
 ## **********************************************************
 ## Prep obligate and transient networks
@@ -327,7 +327,7 @@ if(hosts=="Social"){
 
 ## Social hosts, social strong associated microbes included
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
                         filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
@@ -628,7 +628,7 @@ if (hosts=="Social") {
                               complete.table)
   
   write.csv(combined.table,
-            file=sprintf("saved/tables/turnover_social.csv")) 
+            file=sprintf("saved/tables/turnover_social_similarity.csv")) 
 }
 
 if (hosts=="Solitary") {
@@ -762,7 +762,7 @@ if (hosts=="Solitary") {
                               complete.table)
   
   write.csv(combined.table,
-            file=sprintf("saved/tables/turnover_solitary.csv")) 
+            file=sprintf("saved/tables/turnover_solitary_similarity.csv")) 
 }
 
 if (hosts=="AllPathogens") {
