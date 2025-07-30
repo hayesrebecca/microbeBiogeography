@@ -453,6 +453,61 @@
        rownames(geo) <- sitenames
        geo$Site <- NULL
     }
+   if (host.type == "Bombus") {
+     abund <- data %>%
+       filter(WeightsMicrobe == 1) %>%
+       filter(Genus == "Bombus") %>%
+       select(Site, GenusSpecies) %>%
+       group_by(Site, GenusSpecies) %>%
+       arrange(Site) %>%
+       filter(GenusSpecies != "") %>%
+       summarize(HostAbund = n()) %>%
+       pivot_wider(names_from = GenusSpecies, values_from = HostAbund) %>%
+       mutate_all(~replace(., is.na(.), 0))
+     
+     sitenames <- abund$Site
+     abund$Site <- NULL
+     rownames(abund) <- sitenames
+     
+     geo <- data %>%
+       filter(WeightsMicrobe == 1) %>%
+       filter(Genus == "Bombus") %>%
+       group_by(Site) %>%
+       select(Site, Long, Lat) %>%
+       distinct() %>%
+       arrange(Site)
+     
+     rownames(geo) <- sitenames
+     geo$Site <- NULL
+     browser()
+   }
+   if (host.type == "Apis") {
+     abund <- data %>%
+       filter(WeightsMicrobe == 1) %>%
+       filter(Genus == "Apis") %>%
+       select(Site, GenusSpecies) %>%
+       group_by(Site, GenusSpecies) %>%
+       arrange(Site) %>%
+       filter(GenusSpecies != "") %>%
+       summarize(HostAbund = n()) %>%
+       pivot_wider(names_from = GenusSpecies, values_from = HostAbund) %>%
+       mutate_all(~replace(., is.na(.), 0))
+     
+     sitenames <- abund$Site
+     abund$Site <- NULL
+     rownames(abund) <- sitenames
+     
+     geo <- data %>%
+       filter(WeightsMicrobe == 1) %>%
+       filter(Genus == "Apis") %>%
+       group_by(Site) %>%
+       select(Site, Long, Lat) %>%
+       distinct() %>%
+       arrange(Site)
+     
+     rownames(geo) <- sitenames
+     geo$Site <- NULL
+   }
     
     # Calculate Bray-Curtis dissimilarity matrix from abundance data
     dist.abund <- vegdist(abund, method = "bray")
@@ -651,18 +706,18 @@
     
     if(add.points){
        p <- p +
-          geom_point(data = data1, aes(x = x, y = (1-y), fill = group),
+          geom_point(data = data1, aes(x = x, y = y, fill = group),
                      alpha = alpha1, color = "black", shape = 21, size = 3,
                      position = position_jitter(w = ifelse(log.dist, 0.1, 10), h = 0)) +
-          geom_point(data = data2, aes(x = x, y = (1-y), fill = group),
+          geom_point(data = data2, aes(x = x, y = y, fill = group),
                      alpha = alpha2, color = "black", shape = 21, size = 3,
                      position = position_jitter(w = ifelse(log.dist, 0.1, 10), h = 0))
     }
     
     # Add lines regardless of add.points
     p <- p +
-       geom_line(data = sorted_data1, aes(x = x, y = (1-fitted), linetype = group, color = group), linewidth = 2) +
-       geom_line(data = sorted_data2, aes(x = x, y = (1-fitted), linetype = group, color = group), linewidth = 2)
+       geom_line(data = sorted_data1, aes(x = x, y = fitted, linetype = group, color = group), linewidth = 2) +
+       geom_line(data = sorted_data2, aes(x = x, y = fitted, linetype = group, color = group), linewidth = 2)
     
     # Add scales (always include to support group mapping)
     p <- p +
