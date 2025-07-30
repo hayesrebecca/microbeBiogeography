@@ -651,18 +651,18 @@
     
     if(add.points){
        p <- p +
-          geom_point(data = data1, aes(x = x, y = y, fill = group),
+          geom_point(data = data1, aes(x = x, y = (1-y), fill = group),
                      alpha = alpha1, color = "black", shape = 21, size = 3,
                      position = position_jitter(w = ifelse(log.dist, 0.1, 10), h = 0)) +
-          geom_point(data = data2, aes(x = x, y = y, fill = group),
+          geom_point(data = data2, aes(x = x, y = (1-y), fill = group),
                      alpha = alpha2, color = "black", shape = 21, size = 3,
                      position = position_jitter(w = ifelse(log.dist, 0.1, 10), h = 0))
     }
     
     # Add lines regardless of add.points
     p <- p +
-       geom_line(data = sorted_data1, aes(x = x, y = fitted, linetype = group, color = group), linewidth = 2) +
-       geom_line(data = sorted_data2, aes(x = x, y = fitted, linetype = group, color = group), linewidth = 2)
+       geom_line(data = sorted_data1, aes(x = x, y = (1-fitted), linetype = group, color = group), linewidth = 2) +
+       geom_line(data = sorted_data2, aes(x = x, y = (1-fitted), linetype = group, color = group), linewidth = 2)
     
     # Add scales (always include to support group mapping)
     p <- p +
