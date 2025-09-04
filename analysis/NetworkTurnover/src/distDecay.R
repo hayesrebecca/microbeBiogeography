@@ -331,10 +331,10 @@
        geom_point(color = "black", fill = mod1color, alpha = 0.1, shape = 21, size = cex * 3) +
        
        # Add fitted decay curve (first as a thick black line for outline)
-       geom_line(data = fit_df, aes(x = x, y = y), color = "black", linewidth = lwd + 1) +
+       geom_line(data = fit_df, aes(x = x, y = 1-y), color = "black", linewidth = lwd + 1) +
        
        # Overlay colored fitted line for emphasis
-       geom_line(data = fit_df, aes(x = x, y = y), color = mod1color, linewidth = lwd) +
+       geom_line(data = fit_df, aes(x = x, y = 1-y), color = mod1color, linewidth = lwd) +
        
        # Customize axes labels
        labs(x = xlab, y = ylab) +

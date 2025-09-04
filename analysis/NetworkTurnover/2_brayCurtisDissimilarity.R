@@ -185,7 +185,7 @@ if(hosts=='Solitary'){
 ## Pairwise bray curtis dissimilarity calculation and plots
 ## **********************************************************
 
-run.decay.mictype.mods=FALSE
+run.decay.mictype.mods=TRUE
 
 ## prep microbe weights
 spec.net <- prepMicrobeWeights(spec.net)
@@ -201,8 +201,8 @@ hosts="Social"
        select(all_of(meta_cols), starts_with('16s')) %>%
        na.omit()
 
-     ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'power', decay.type = "sim") ## power if plan to log transform x axis
-     trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type='power', decay.type = "sim")
+     ob_model <- microbe_type_decay_model(spec16s, 'ObligateSocial', model.type = 'exp', decay.type = "dissimilarities") ## power if plan to log transform x axis
+     trans_model <- microbe_type_decay_model(spec16s, 'TransientSocial', model.type = 'exp', decay.type = "dissimilarities")
      ## save out models
      save(ob_model,
           trans_model,
@@ -224,7 +224,7 @@ social_bray <- plot_decay_ggplot_combined(ob_model,
                                           lty1='solid',
                                           lty2='solid',
                                           xlab="Geographic Distance (km)",
-                                          ylab='Social Associate Dissimilarity',
+                                          ylab='Social Associate\n Dissimilarity',
                                           add.points=TRUE,
                                           log.dist=FALSE)
 
@@ -266,7 +266,7 @@ solitary_bray <- plot_decay_ggplot_combined(ob_model,
                                           lty1='solid',
                                           lty2='solid',
                                           xlab="Geographic Distance (km)",
-                                          ylab='Solitary Associate Dissimilarity', add.points=TRUE, log.dist = FALSE)
+                                          ylab='Solitary Associate\n Dissimilarity', add.points=TRUE, log.dist = FALSE)
 
 solitary_bray <- solitary_bray + labs(tag="B")
 solitary_bray
@@ -282,7 +282,7 @@ social.int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
                                                      network_type2='Transient',
                                                      this.effect="GeoDist",
                                                      this.resp="WholeNetworkLinks",
-                                                     label="Social Network Dissimilarity")
+                                                     label="Social Network\n Dissimilarity")
 
 social.int.plot[[1]]
 
@@ -301,7 +301,7 @@ solitary.int.plot <- plot_network_turnover_mod_compare(mod1=int.obligate.mod,
                                                      network_type2='Transient',
                                                      this.effect="GeoDist",
                                                      this.resp="WholeNetworkLinks",
-                                                     label="Solitary Network Dissimilarity")
+                                                     label="Solitary Network\n Dissimilarity")
 solitary.int.plot[[1]]
 
 solitary_panelD <- solitary.int.plot[[1]] + labs(tag="D")
@@ -310,7 +310,7 @@ solitary_panelD <- solitary.int.plot[[1]] + labs(tag="D")
 bray_plots=TRUE
 if(bray_plots==TRUE){
   # Arrange all panels in the PDF output
-  pdf("figures/bray_combined.pdf", width = 7, height = 7)  
+  pdf("figures/bray_combined.pdf", width = 7.5, height = 7)  
   grid.arrange(
     social_bray,
     solitary_bray,
