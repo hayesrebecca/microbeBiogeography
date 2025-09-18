@@ -291,17 +291,6 @@ gradient_legend <- get_legend(gradient_legend_plot)
 # Plot just the legend (for visual test)
 plot(gradient_legend)
 
-
-#gradient_legend <- cowplot::get_legend(gradient_legend_plot)
-
-# Combine both legends into a horizontal row
-#combined_legend <- cowplot::plot_grid(panelG, gradient_legend, 
-#                                      ncol = 2, rel_widths = c(2.5, 1))
-
-
-
-
-
 ## **********************************************************
 ## Create full paneled figure with legend
 ## **********************************************************
