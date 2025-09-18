@@ -479,7 +479,7 @@
      
      rownames(geo) <- sitenames
      geo$Site <- NULL
-     browser()
+     #browser()
    }
    if (host.type == "Apis") {
      abund <- data %>%
@@ -716,8 +716,8 @@
     
     # Add lines regardless of add.points
     p <- p +
-       geom_line(data = sorted_data1, aes(x = x, y = fitted, linetype = group, color = group), linewidth = 2) +
-       geom_line(data = sorted_data2, aes(x = x, y = fitted, linetype = group, color = group), linewidth = 2)
+       geom_line(data = sorted_data1, aes(x = x, y = 1-fitted, linetype = group, color = group), linewidth = 2) +
+       geom_line(data = sorted_data2, aes(x = x, y = 1-fitted, linetype = group, color = group), linewidth = 2)
     
     # Add scales (always include to support group mapping)
     p <- p +
@@ -737,8 +737,8 @@
        p <- p + theme(legend.position = "none")
     } else {
        p <- p + theme(
-          legend.position = c(0.95, 0.95),
-          legend.justification = c("right", "top"),
+          legend.position = c(0.95, 0.05),
+          legend.justification = c("right", "bottom"),
           legend.key.size = unit(0.5, "lines"),
           legend.text = element_text(size = 10),
           legend.title = element_text(size = 11)

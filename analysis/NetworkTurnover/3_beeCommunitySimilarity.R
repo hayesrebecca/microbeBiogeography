@@ -163,8 +163,8 @@ spec.net <- prepMicrobeWeights(spec.net)
 
 
 ##
-social_model <- get_bee_community_dissim(spec.net, host.type="Social", sim.type="similarities")
-solitary_model <- get_bee_community_dissim(spec.net, host.type="Solitary", sim.type="similarities")
+social_model <- get_bee_community_dissim(spec.net, host.type="Social", sim.type="dissimilarities")
+solitary_model <- get_bee_community_dissim(spec.net, host.type="Solitary", sim.type="dissimilarities")
 
 plot_decay_ggplot_combined(social_model,
                            solitary_model,
@@ -177,15 +177,16 @@ plot_decay_ggplot_combined(social_model,
                            lty1='solid',
                            lty2='solid',
                            xlab="Geographic Distance (km)",
-                           ylab='Bee Community Similarity', 
+                           ylab='Bee Community Dissimilarity', 
                            add.points=TRUE, 
                            add.legend=TRUE,
                            legend.title='Host Type',
                            log.dist = FALSE)
 
 
-bombus_model <- get_bee_community_dissim(spec.net, host.type="Bombus", sim.type="similarities")
-apis_model <- get_bee_community_dissim(spec.net, host.type="Apis", sim.type="similarities")
+
+bombus_model <- get_bee_community_dissim(spec.net, host.type="Bombus", sim.type="dissimilarities")
+apis_model <- get_bee_community_dissim(spec.net, host.type="Apis", sim.type="dissimilarities")
 
 
 plot_decay_ggplot_combined(bombus_model,
@@ -199,7 +200,7 @@ plot_decay_ggplot_combined(bombus_model,
                            lty1='solid',
                            lty2='solid',
                            xlab="Geographic Distance (km)",
-                           ylab='Bee Community Similarity', 
+                           ylab='Bee Community Dissimilarity', 
                            add.points=TRUE, 
                            add.legend=TRUE,
                            legend.title='Host Genus',
