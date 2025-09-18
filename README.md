@@ -1,5 +1,6 @@
 
 ## Description of manuscript  
+This repository contains all of the necessary data products and code to reproduce analyses and results from the manuscript titled "Drivers of distance decay of host-associated microbiomes vary by host sociality and microbial association strength". We analyzed wild bee gut microbe communities across mountain meadows in the Sky Islands region of Arizona and New Mexico to understand how host sociality and microbial association strength influence the distance decay of similarity relationship. We used Bray-Curtis dissimilarity of individual host gut communities and interaction dissimilarity approaches to understand these relationships at the individual and whole host community levels, and then decomposed interaction dissimilarity into its components (rewiring, host-driven turnover, microbe-driven turnover, and complete turnover) to explore the mechanisms of spatial dissimilarity.
 
 ## Repository organization  
 
@@ -38,18 +39,19 @@ microbeBiogeographyData.Rdata
 
 analysis  
   - This folder includes the scripts to run the two main analyses for this manuscript, including:  
-    - SEM  
-      - 1_microbeSEM.R  
-        - This script runs the structural equation modeling script for each host genus and microbial association type.
-      - 2_SEMplotting.R  
-        - This script creates the scatterplots for the results from the SEM.
     - NetworkTurnover  
       - 1_NetworkTurnover.R  
-        - This script runs the network turnover and dissimilarity by geographic distance analyses and generates the results figures.  
+        - This script runs the network turnover components and dissimilarity by geographic distance analyses and generates the results figures.
+      - 2_brayCurtisDissimilarity.R
+        - This script runs the microbial community dissimilarity and interaction dissimilarity by geographic distance analyses and generates the results figures.
+      - 3_beeCommunityDissimilarity.R
+        - This script runs the bee community dissimilarity by geographic distance analysis and generates the results figure from the supplement.
+      - 4_plantCommunityDissimilarity.R
+        - This script runs the plant community dissimilarity by geographic distance analysis and generates the results figure from the supplement. 
   
 figures  
   - This folder includes the scripts to generate the site map and microbial phylogenetic tree figures.  
 
 ## To use this repository  
   1. Run packages.sh to install all necessary packages.  
-  1. The only scripts that need to be run in particular order are the SEM scripts. Otherwise, scripts are self-contained and can be run out of order.
+  1. Scripts are self-contained and can be run out of order.
