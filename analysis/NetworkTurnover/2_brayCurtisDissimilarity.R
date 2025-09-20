@@ -37,13 +37,11 @@ library(grid)
 library(gridExtra)
 library(ggborderline)
 
-#load("../../microbeBiogeographyData.Rdata") ## TODO update with correct filepath before ms submission
-load("../../../skyIslands/data/spec_RBCL_16s.Rdata")
-load("../../../skyIslands/data/networks/microNets.RData")
+load("../../microbeBiogeographyData.Rdata")
 
-## set hosts="All" to run models for full host dataset with the full list of solitary and social strong HAMs
-## set hosts="Social" to run mods for social host dataset with social strong HAMS
-## set hosts="Solitary" to run mods for solitary host dataset with solitary strong HAMS
+## set hosts="All" to run models for full host dataset with the full list of solitary and social strong associates
+## set hosts="Social" to run mods for social host dataset with social strong associates
+## set hosts="Solitary" to run mods for solitary host dataset with solitary strong associates
 ## set hosts="AllPathogens" to run models for full host dataset with the pathogenic microbes
 
 hosts="Social"
@@ -322,13 +320,3 @@ if(bray_plots==TRUE){
 }
 
 
-### temp
-# pdf("figures/network_similarity.pdf", width = 7, height = 3.5)  
-# grid.arrange(
-#   #social_bray,
-#   #solitary_bray,
-#   social_panelC,
-#   solitary_panelD,
-#   ncol = 2
-# )
-# dev.off()
