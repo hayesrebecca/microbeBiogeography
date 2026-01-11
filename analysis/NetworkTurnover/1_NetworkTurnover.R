@@ -37,7 +37,7 @@ library(grid)
 library(gridExtra)
 library(ggborderline)
 
-#load("../../microbeBiogeographyData.Rdata") 
+load("../../microbeBiogeographyData.Rdata") 
 
 ## set hosts="All" to run models for full host dataset with the full list of solitary and social strong HAMs
 ## set hosts="Social" to run mods for social host dataset with social strong HAMS
@@ -102,6 +102,24 @@ pathogens <- c("Wolbachia",
                "Erwinia",
                "Hafnia")
 
+## 1-11-26 need to rerun mods restricted to all, 20+, 40+ indiv
+## need to find which species meet these requirements
+## filter networks to just include these
+## rerun mods for strong and weak for both
+
+twentyNet <- spec.net %>%
+  filter(WeightsMicrobe==1) %>%
+  group_by(GenusSpecies) %>%
+  dplyr::summarize(speciesCount = n()) %>%
+  filter(speciesCount >= 20)
+print(twentyNet$GenusSpecies)
+
+fortyNet <- spec.net %>%
+  filter(WeightsMicrobe==1) %>%
+  group_by(GenusSpecies) %>%
+  dplyr::summarize(speciesCount = n()) %>%
+  filter(speciesCount >= 40)
+print(fortyNet$GenusSpecies)
 
 ## Full host community, full set of strong host associates
 if(hosts=="All"){
@@ -117,21 +135,29 @@ if(hosts=="All"){
 if(hosts=="Social"){
   social_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
                                                    these_obligates = social_obligate_list,
-                                                   genera_to_keep=c("Bombus", "Apis"))
+                                                   genera_to_keep=c("Bombus", "Apis"),
+                                                   drop_species=TRUE,
+                                                   these_bees=twentyNet$GenusSpecies)
   
   social_transient_network <- prep_transient_network(raw_network=spNet_micro,
                                                      these_obligates = social_obligate_list,
-                                                     genera_to_keep=c("Bombus", "Apis"))
+                                                     genera_to_keep=c("Bombus", "Apis"),
+                                                     drop_species=TRUE,
+                                                     these_bees=twentyNet$GenusSpecies)
 }
 ## Solitary host community, solitary obligates
 if(hosts=="Solitary"){
   solitary_obligate_network <- prep_obligate_network(raw_network=spNet_micro,
                                                    these_obligates = solitary_obligate_list,
-                                                   genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
+                                                   genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"),
+                                                   drop_species=TRUE,
+                                                   these_bees=twentyNet$GenusSpecies)
   
   solitary_transient_network <- prep_transient_network(raw_network=spNet_micro,
                                                      these_obligates = solitary_obligate_list,
-                                                     genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"))
+                                                     genera_to_keep=c("Melissodes", "Megachile", "Anthophora", "Andrena"),
+                                                     drop_species=TRUE,
+                                                     these_bees=twentyNet$GenusSpecies)
 }
 ## Full host community, all pathogens
 if(hosts=="AllPathogens"){
@@ -314,21 +340,21 @@ if(hosts=="All"){
   )
 }
 
-## Social hosts, social strong associated microbes included
+## Social hosts
 if(hosts=="Social"){
-  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social_20.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
 
-## Social hosts, social strong associated microbes included
+## Solitary hosts
 if(hosts=="Solitary"){
-  run_all_turnover_mods(run.mods=FALSE, # TRUE if never ran model before, false if you want to load models
+  run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary_20.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
 
@@ -579,7 +605,7 @@ if (hosts=="Social") {
   
   
   # Arrange all panels in the PDF output
-  pdf("figures/turnover_combined_social.pdf", width = 7, height = 7)  
+  pdf("figures/turnover_combined_social_20.pdf", width = 7, height = 7)  
   grid.arrange(
     #panelA,
     #panelB,
@@ -600,7 +626,7 @@ if (hosts=="Social") {
                               complete.table)
   
   write.csv(combined.table,
-            file=sprintf("saved/tables/turnover_social_similarity.csv")) 
+            file=sprintf("saved/tables/turnover_social_similarity_20.csv")) 
 }
 
 if (hosts=="Solitary") {
@@ -701,7 +727,7 @@ if (hosts=="Solitary") {
   
   
   # Arrange all panels in the PDF output
-  pdf("figures/turnover_combined_solitary.pdf", width = 7, height = 7)  
+  pdf("figures/turnover_combined_solitary_20.pdf", width = 7, height = 7)  
   grid.arrange(
     #panelA,
     #panelB,
@@ -722,7 +748,7 @@ if (hosts=="Solitary") {
                               complete.table)
   
   write.csv(combined.table,
-            file=sprintf("saved/tables/turnover_solitary_similarity.csv")) 
+            file=sprintf("saved/tables/turnover_solitary_similarity_20.csv")) 
 }
 
 if (hosts=="AllPathogens") {

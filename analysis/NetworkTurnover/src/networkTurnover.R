@@ -81,7 +81,11 @@
 #   containing only the obligate symbionts is created.
 # - The output is a list of networks where each site contains only the interactions of obligate species.
 #
-prep_obligate_network <- function(raw_network=spNet_micro, these_obligates, genera_to_keep=NULL){
+prep_obligate_network <- function(raw_network=spNet_micro,
+                                  these_obligates,
+                                  genera_to_keep=NULL,
+                                  drop_species=NULL,
+                                  these_bees=NULL){
   
   bee.obligates <- paste(these_obligates, collapse = "|")
   
@@ -105,12 +109,20 @@ prep_obligate_network <- function(raw_network=spNet_micro, these_obligates, gene
     }
     
     print(dim(ob_new_net))
+    #browser()
+    if(drop_species == TRUE){
+      ob_new_net <- ob_new_net[,colnames(ob_new_net) %in% these_bees, drop=FALSE]
+      print(dim(ob_new_net))
+    }
+    
     new_name <- x
     
     only_obligate_network[[new_name]] <- as.matrix(ob_new_net)
     
   }
-  only_obligate_network
+
+  
+  return(only_obligate_network)
   
 }
 
@@ -133,7 +145,11 @@ prep_obligate_network <- function(raw_network=spNet_micro, these_obligates, gene
 # - The function filters out rows corresponding to obligate symbionts and retains the transient ones.
 # - The output is a list of networks with transient symbionts for each site.
 #
-prep_transient_network <- function(raw_network=spNet_micro, these_obligates, genera_to_keep=NULL){
+prep_transient_network <- function(raw_network=spNet_micro,
+                                   these_obligates,
+                                   genera_to_keep=NULL,
+                                   drop_species=NULL,
+                                   these_bees=NULL){
   site_list <- names(raw_network)
   
   ## obligate symbionts
@@ -160,11 +176,18 @@ prep_transient_network <- function(raw_network=spNet_micro, these_obligates, gen
     
     
     print(dim(trans_new_net))
+    
+    if(drop_species == TRUE){
+      trans_new_net <- trans_new_net[,colnames(trans_new_net) %in% these_bees, drop=FALSE]
+      print(dim(trans_new_net))
+    }
+    
     new_name <- x
     
     only_transient_network[[new_name]] <- as.matrix(trans_new_net)
+    
   }
-  only_transient_network
+  return(only_transient_network)
 }
 
 find_sites_for_betalinkr <- function(these_networks){
