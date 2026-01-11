@@ -46,7 +46,7 @@ load("../../microbeBiogeographyData.Rdata")
 ## set hosts="SocialPathogens" to run models for social host dataset with the pathogenic microbes
 ## set hosts="SolitaryPathogens" to run models for social host dataset with the pathogenic microbes
 
-hosts="Social"
+hosts="Solitary"
 
 ## **********************************************************
 ## Prep obligate and transient networks
