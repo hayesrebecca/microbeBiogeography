@@ -121,6 +121,13 @@ fortyNet <- spec.net %>%
   filter(speciesCount >= 40)
 print(fortyNet$GenusSpecies)
 
+hundredNet <- spec.net %>%
+  filter(WeightsMicrobe==1) %>%
+  group_by(GenusSpecies) %>%
+  dplyr::summarize(speciesCount = n()) %>%
+  filter(speciesCount >= 100)
+print(hundredNet$GenusSpecies)
+
 ## Full host community, full set of strong host associates
 if(hosts=="All"){
   only_obligate_network <- prep_obligate_network(raw_network=spNet_micro, 
@@ -137,13 +144,13 @@ if(hosts=="Social"){
                                                    these_obligates = social_obligate_list,
                                                    genera_to_keep=c("Bombus", "Apis"),
                                                    drop_species=TRUE,
-                                                   these_bees=fortyNet$GenusSpecies)
+                                                   these_bees=hundredNet$GenusSpecies)
   
   social_transient_network <- prep_transient_network(raw_network=spNet_micro,
                                                      these_obligates = social_obligate_list,
                                                      genera_to_keep=c("Bombus", "Apis"),
                                                      drop_species=TRUE,
-                                                     these_bees=fortyNet$GenusSpecies)
+                                                     these_bees=hundredNet$GenusSpecies)
 }
 ## Solitary host community, solitary obligates
 if(hosts=="Solitary"){
@@ -252,19 +259,37 @@ if(hosts=='Solitary'){
   find_sites_for_betalinkr(solitary_obligate_network)
   
   ## enter the site matrices printed above 
-  obligate_solitary_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+  if(dim(webs2array(CH, HM, JC, MM, PL, SC, RP))[[2]] != 1){
+  obligate_solitary_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SC, RP),
                                               partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
   
-  obligate_solitary_betalink_clean <- fix_betalinkr_output(obligate_solitary_betalink)
   
+  obligate_solitary_betalink_clean <- fix_betalinkr_output(obligate_solitary_betalink)
+  } else {
+    obligate_solitary_betalink <- betalinkr_pairwise(webarray = webs2array(CH, HM, JC, MM, PL, SC, RP),
+                                                  partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+    
+    
+    obligate_solitary_betalink_clean <- fix_betalinkr_output(obligate_solitary_betalink)
+    
+  }
   ## SOCIAL HOSTS SOCIAL transient NETWORKS
   find_sites_for_betalinkr(solitary_transient_network)
   
   ## enter the site matrices printed above 
-  transient_solitary_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SM, SC, RP),
+  if(dim(webs2array(CH, HM, JC, MM, PL, SC, RP))[[2]] != 1){
+  
+  transient_solitary_betalink <- betalinkr_multi(webarray = webs2array(CH, HM, JC, MM, PL, SC, RP),
                                                partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
   
   transient_solitary_betalink_clean <- fix_betalinkr_output(transient_solitary_betalink)
+  } else {
+    transient_solitary_betalink <- betalinkr_pairwise(webarray = webs2array(CH, HM, JC, MM, PL, SC, RP),
+                                                   partitioning="commondenom", binary=FALSE, distofempty='zero', partition.st=TRUE, partition.rr=FALSE)
+    
+    transient_solitary_betalink_clean <- fix_betalinkr_output(transient_solitary_betalink)
+    
+  }
 }
 
 if(hosts=='AllPathogens'){
@@ -346,7 +371,7 @@ if(hosts=="Social"){
   run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_social_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_social_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social_40.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_social_100.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
 
@@ -355,7 +380,7 @@ if(hosts=="Solitary"){
   run_all_turnover_mods(run.mods=TRUE, # TRUE if never ran model before, false if you want to load models
                         ob.net=obligate_solitary_betalink_clean, # Null by default, if run.mods==TRUE input obligate network here
                         trans.net=transient_solitary_betalink_clean, # Null by default, if run.mods==TRUE input transient network here
-                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary_40.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
+                        filepath="C:/Users/rah10/University of Oregon Dropbox/Rebecca Hayes/skyIslands/analysis/microbiome/saved/turnover_mods_solitary_100.Rdata" # if run.mods=TRUE, input desired save filepath, otherwise input the filepath to load model results
   )
 }
 
@@ -606,7 +631,7 @@ if (hosts=="Social") {
   
   
   # Arrange all panels in the PDF output
-  pdf("figures/turnover_combined_social_40.pdf", width = 7, height = 7)  
+  pdf("figures/turnover_combined_social_100.pdf", width = 7, height = 7)  
   grid.arrange(
     #panelA,
     #panelB,
@@ -627,7 +652,7 @@ if (hosts=="Social") {
                               complete.table)
   
   write.csv(combined.table,
-            file=sprintf("saved/tables/turnover_social_similarity_40.csv")) 
+            file=sprintf("saved/tables/turnover_social_similarity_100.csv")) 
 }
 
 if (hosts=="Solitary") {
